@@ -1,3 +1,18 @@
+#IDE files
+.vscode
+*.vcxproj
+*.vcxproj.*
+*.sln
+
+#CMake Files
+*.cmake
+CMakeCache.txt
+CMakeFiles
+
+#build files and folders
+build
+bin
+
 # Prerequisites
 *.d
 
