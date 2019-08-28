@@ -1,3 +1,7 @@
 # IDE folders and files
 .idea
 .vs
+.vscode
+
+# Build folders
+build
