@@ -72,5 +72,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         TranslateMessage(&Msg);
         DispatchMessage(&Msg);
     }
+
     return Msg.wParam;
 }
