@@ -1,4 +1,5 @@
-#include <windows.h>
+#include <Windows.h>
+#include "Core/Window.hpp"
 
 const char g_szClassName[] = "myWindowClass";
 
@@ -65,6 +66,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
+
+    Window::test ();
 
     // Step 3: The Message Loop
     while(GetMessage(&Msg, NULL, 0, 0) > 0)
