@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include "Core/Windows Abstractions/Window.hpp"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
 {
 	DXR::Window window{ hInstance,nCmdShow,{1280,720},"DX Renderer" };

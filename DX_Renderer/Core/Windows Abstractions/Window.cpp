@@ -7,18 +7,22 @@ namespace DXR
 		switch (Message)
 		{
 		case WM_CLOSE:
+			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
 			DestroyWindow(WindowHandle);
 			break;
 		case WM_DESTROY:
+			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
 			PostQuitMessage(0);
 			break;
 		default:
+			if(current_window)
+				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
 			return DefWindowProc(WindowHandle, Message, WParam, LParam);
 		}
 		return 0;
 	}
 
-	Window* GetCurrentWindowHanlde()
+	Window* GetCurrentWindowHandle()
 	{
 		return current_window;
 	}
@@ -52,6 +56,21 @@ namespace DXR
 		if(updateStatus == 0 || updateStatus == -1)
 		{
 			this->ShouldContinue = false;
+		}
+	}
+
+	void Window::RegisterWindowEventCallback(UINT message, const WindowEventMessageCallback& callback)
+	{
+		this->m_registered_window_event_callbacks.emplace(message, callback);
+	}
+
+	void Window::HandleMessage(UINT Message, HWND windowHandle, WPARAM WParam, LPARAM LParam)
+	{
+		auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(Message);
+		while(currentCallback != rangeEnd)
+		{
+			currentCallback->second.callback(windowHandle, Message, WParam, LParam);
+			++currentCallback;
 		}
 	}
 
