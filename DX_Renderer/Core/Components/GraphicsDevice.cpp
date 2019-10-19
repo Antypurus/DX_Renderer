@@ -15,7 +15,7 @@ namespace DXR
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const
 	{
 		std::vector<WRL::ComPtr<IDXGIAdapter>> adapter_list;
-		UINT8 adapter_index = 1;
+		UINT8 adapter_index = 0;
 		IDXGIAdapter* current_adapter = nullptr;
 		while(m_dxgi_factory->EnumAdapters(adapter_index,&current_adapter) != DXGI_ERROR_NOT_FOUND)
 		{
