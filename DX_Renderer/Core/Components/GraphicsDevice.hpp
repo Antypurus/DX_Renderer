@@ -26,7 +26,8 @@ namespace DXR
 		GraphicsDevice(UINT8 DeviceIndex);
 	private:
 		void CreateDXGIFactory();
-		std::vector<WRL::ComPtr<IDXGIAdapter>> GetGraphicsAdapterList() const;
 		void CreateDefaultD3D12Device();
+		void CreateD3D12Device(UINT8 deviceIndex);
+		std::vector<WRL::ComPtr<IDXGIAdapter>> GetGraphicsAdapterList() const;
 	};
 }

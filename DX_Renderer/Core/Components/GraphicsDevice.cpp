@@ -8,6 +8,12 @@ namespace DXR
 		this->CreateDefaultD3D12Device();
 	}
 
+	GraphicsDevice::GraphicsDevice(UINT8 DeviceIndex)
+	{
+		this->CreateDXGIFactory();
+		this->CreateD3D12Device(DeviceIndex);
+	}
+
 	void GraphicsDevice::CreateDXGIFactory()
 	{
 		::CreateDXGIFactory(IID_PPV_ARGS(&this->m_dxgi_factory));
@@ -17,6 +23,13 @@ namespace DXR
 	{
 		// TODO(Tiago): Handle the result from the creation to check if it created the device successfully
 		HRESULT result = D3D12CreateDevice(nullptr, this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device));
+	}
+
+	void GraphicsDevice::CreateD3D12Device(UINT8 deviceIndex)
+	{
+		auto adapter_list = this->GetGraphicsAdapterList();
+		// TODO(Tiago): Handle the result from the creation to check if it created the device successfully
+		HRESULT result = D3D12CreateDevice(adapter_list[deviceIndex].Get(),this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device));
 	}
 
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const
