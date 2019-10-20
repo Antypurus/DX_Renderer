@@ -12,13 +12,6 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	freopen("CONOUT$", "w", stderr);
 
 	DXR::GraphicsDevice device;
-	auto devices = device.GetGraphicsAdapterList();
-	for (auto& adapter : devices)
-	{
-		DXGI_ADAPTER_DESC description;
-		adapter->GetDesc(&description);
-		wprintf(L"%s\n", description.Description);
-	}
 	
 	DXR::Window window{ hInstance,nCmdShow,{1280,720},"DX Renderer" };
 	while(window.ShouldContinue)

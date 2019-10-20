@@ -5,11 +5,18 @@ namespace DXR
 	GraphicsDevice::GraphicsDevice()
 	{
 		this->CreateDXGIFactory();
+		this->CreateDefaultD3D12Device();
 	}
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
 		::CreateDXGIFactory(IID_PPV_ARGS(&this->m_dxgi_factory));
+	}
+
+	void GraphicsDevice::CreateDefaultD3D12Device()
+	{
+		// TODO(Tiago): Handle the result from the creation to check if it created the device successfully
+		HRESULT result = D3D12CreateDevice(nullptr, this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device));
 	}
 
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const
