@@ -12,10 +12,12 @@ wchar_t* FormatMessage(HRESULT res)
 
 #ifndef NDEBUG
 #define DXCall(x)\
-	HRESULT res = x;\
-	if(res < 0)\
+	HRESULT result_code = x;\
+	if(result_code < 0)\
 	{\
-		ERROR_LOG(FormatMessage(res)); \
+		wchar_t* error_message = FormatMessage(result_code);\
+		ERROR_LOG(error_message); \
+		free(error_message);\
 		__debugbreak();\
 		exit(-1);\
 	}
