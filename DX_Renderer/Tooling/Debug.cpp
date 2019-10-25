@@ -25,6 +25,7 @@ namespace DXR
 		debugInterface->EnableDebugLayer();
 #endif
 	}
+
 	void Debug::CreateLogTerminal()
 	{
 #ifndef NDEBUG

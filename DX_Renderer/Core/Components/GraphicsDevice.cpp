@@ -17,7 +17,7 @@ namespace DXR
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
-		::CreateDXGIFactory(IID_PPV_ARGS(&this->m_dxgi_factory));
+		DXCall(::CreateDXGIFactory(IID_PPV_ARGS(&this->m_dxgi_factory)));
 	}
 
 	void GraphicsDevice::CreateDefaultD3D12Device()
