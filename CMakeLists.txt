@@ -5,8 +5,12 @@ project(DX_Renderer VERSION 0.0.1)
 set(warnings "/W4 /WX /EHsc")
 
 file(GLOB_RECURSE  SRCS
-        "DX_Renderer/Core/*.cpp"
-        "DX_Renderer/Core/*.hpp")
+        "DX_Renderer/*.cpp"
+        "DX_Renderer/*.hpp")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_definitions(DEBUG=1)
+endif()
 
 add_executable(${CMAKE_PROJECT_NAME} WIN32 DX_Renderer/main.cpp ${SRCS})
 

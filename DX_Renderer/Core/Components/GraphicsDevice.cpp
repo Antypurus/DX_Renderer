@@ -42,7 +42,7 @@ namespace DXR
 			adapter_list.emplace_back(current_adapter);
 
 			{
-				// to prevent leaks we must release the adapter interface when we no longer need;
+				// to prevent leaks we must release the adapter interface when we no longer need it
 				current_adapter->Release();
 				current_adapter = nullptr;
 			}
