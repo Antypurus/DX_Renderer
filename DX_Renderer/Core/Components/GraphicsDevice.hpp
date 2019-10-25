@@ -15,7 +15,7 @@ namespace DXR
 	public:
 		
 	private:
-		D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL_11_0;
+		D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL_11_1;
 		
 		WRL::ComPtr<IDXGIFactory> m_dxgi_factory;
 		WRL::ComPtr <ID3D12Device> m_device;

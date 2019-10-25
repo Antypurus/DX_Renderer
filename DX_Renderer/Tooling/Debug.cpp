@@ -1,8 +1,16 @@
 #include "Debug.hpp"
 #include <d3d12sdklayers.h>
+#include <stdio.h>
 
 namespace DXR
 {
+	Debug Debug::DebugInterface = {};
+
+	void Debug::Log(std::string message)
+	{
+		printf(message.c_str());
+	}
+
 	Debug::Debug()
 	{
 		this->CreateLogTerminal();
@@ -11,7 +19,7 @@ namespace DXR
 
 	void Debug::EnableD3D12DebugLayer()
 	{
-#ifdef DEBUG
+#ifndef NDEBUG
 		WRL::ComPtr<ID3D12Debug> debugInterface;
 		D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface));
 		debugInterface->EnableDebugLayer();
@@ -19,11 +27,11 @@ namespace DXR
 	}
 	void Debug::CreateLogTerminal()
 	{
-#if DEBUG
+#ifndef NDEBUG
 		AllocConsole();
-		freopen("CONIN$", "r", stdin);
-		freopen("CONOUT$", "w", stdout);
-		freopen("CONOUT$", "w", stderr);
+		FILE* input = freopen("CONIN$", "r", stdin);
+		FILE* output = freopen("CONOUT$", "w", stdout);
+		FILE* error = freopen("CONOUT$", "w", stderr);
 #endif
 	}
 }

@@ -8,9 +8,7 @@ file(GLOB_RECURSE  SRCS
         "DX_Renderer/*.cpp"
         "DX_Renderer/*.hpp")
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE DEBUG=1)
-endif()
+add_compile_definitions(WIN32_LEAN_AND_MEAN)
 
 add_executable(${CMAKE_PROJECT_NAME} WIN32 DX_Renderer/main.cpp ${SRCS})
 

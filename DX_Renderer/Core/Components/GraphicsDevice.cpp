@@ -1,4 +1,5 @@
 #include "GraphicsDevice.hpp"
+#include "../../Tooling/Validate.hpp"
 
 namespace DXR
 {
@@ -21,15 +22,13 @@ namespace DXR
 
 	void GraphicsDevice::CreateDefaultD3D12Device()
 	{
-		// TODO(Tiago): Handle the result from the creation to check if it created the device successfully
-		HRESULT result = D3D12CreateDevice(nullptr, this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device));
+		DXCall(D3D12CreateDevice(nullptr, this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
 	}
 
 	void GraphicsDevice::CreateD3D12Device(UINT8 deviceIndex)
 	{
 		auto adapter_list = this->GetGraphicsAdapterList();
-		// TODO(Tiago): Handle the result from the creation to check if it created the device successfully
-		HRESULT result = D3D12CreateDevice(adapter_list[deviceIndex].Get(),this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device));
+		DXCall(D3D12CreateDevice(adapter_list[deviceIndex].Get(),this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
 	}
 
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const
