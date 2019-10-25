@@ -1,5 +1,6 @@
 #include "GraphicsDevice.hpp"
 #include "../../Tooling/Validate.hpp"
+#include "Fence.hpp"
 
 namespace DXR
 {
@@ -13,6 +14,16 @@ namespace DXR
 	{
 		this->CreateDXGIFactory();
 		this->CreateD3D12Device(DeviceIndex);
+	}
+
+	ID3D12Device* GraphicsDevice::operator->()
+	{
+		return this->m_device.Get();
+	}
+
+	Fence GraphicsDevice::CreateFence(UINT64 initialValue)
+	{
+		return Fence(initialValue,*this);
 	}
 
 	void GraphicsDevice::CreateDXGIFactory()
