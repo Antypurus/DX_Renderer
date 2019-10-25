@@ -19,7 +19,6 @@ wchar_t* FormatMessage(HRESULT res)
 		ERROR_LOG(error_message); \
 		free(error_message);\
 		__debugbreak();\
-		exit(-1);\
 	}
 #else
 #define DXCall(x) x;
