@@ -6,11 +6,6 @@ namespace DXR
 {
 	Debug Debug::DebugInterface = {};
 
-	void Debug::Log(std::string message)
-	{
-		printf(message.c_str());
-	}
-
 	Debug::Debug()
 	{
 		this->CreateLogTerminal();

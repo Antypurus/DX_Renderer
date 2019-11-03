@@ -11,16 +11,25 @@ namespace DXR
 	
 	struct Fence;
 
+	struct DescriptorSizes
+	{
+		UINT64 RTV;
+		UINT64 CBV_SRV_UAV;
+		UINT64 DSV;
+		UINT64 Sampler;
+	};
+
 	struct GraphicsDevice
 	{
 	// public and private data fields
 	public:
-		
 	private:
 		D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL_11_0;
 		
 		WRL::ComPtr<IDXGIFactory> m_dxgi_factory;
 		WRL::ComPtr <ID3D12Device> m_device;
+
+		DescriptorSizes descriptorSizes;
 
 	// public and privte methods
 	public:
@@ -33,5 +42,7 @@ namespace DXR
 		void CreateDefaultD3D12Device();
 		void CreateD3D12Device(UINT8 deviceIndex);
 		std::vector<WRL::ComPtr<IDXGIAdapter>> GetGraphicsAdapterList() const;
+		void QueryAllDescriptorSizes();
+		UINT64 QueryDescriptoSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType);
 	};
 }
