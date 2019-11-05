@@ -23,6 +23,7 @@ namespace DXR
 	{
 	// public and private data fields
 	public:
+		std::vector<UINT8> supported_mssa_levels;
 	private:
 		D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL_11_0;
 		
@@ -37,12 +38,13 @@ namespace DXR
 		GraphicsDevice(UINT8 DeviceIndex);
 		ID3D12Device* operator->();
 		Fence CreateFence(UINT64 initialValue);
+		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
 	private:
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();
 		void CreateD3D12Device(UINT8 deviceIndex);
 		std::vector<WRL::ComPtr<IDXGIAdapter>> GetGraphicsAdapterList() const;
 		void QueryAllDescriptorSizes();
-		UINT64 QueryDescriptoSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType);
+		UINT64 QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType);
 	};
 }

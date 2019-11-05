@@ -12,6 +12,7 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandQueue queue{device};
 	DXR::GraphicsCommandList commandList{device};
+	device.CheckSupportedMSAALevels(DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	DXR::Window window{ hInstance,nCmdShow,{1280,720},"DX Renderer" };
 	while(window.ShouldContinue)

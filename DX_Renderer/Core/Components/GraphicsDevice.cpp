@@ -66,15 +66,35 @@ namespace DXR
 
 	void GraphicsDevice::QueryAllDescriptorSizes()
 	{
-		const UINT64 RTV_size = this->QueryDescriptoSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		const UINT64 CBV_SRV_UAV_size = this->QueryDescriptoSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		const UINT64 DSV_size = this->QueryDescriptoSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-		const UINT64 Sampler_size = this->QueryDescriptoSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+		const UINT64 RTV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		const UINT64 CBV_SRV_UAV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		const UINT64 DSV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+		const UINT64 Sampler_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 		this->descriptorSizes = {RTV_size,CBV_SRV_UAV_size,DSV_size,Sampler_size};
 	}
 
-	UINT64 GraphicsDevice::QueryDescriptoSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType)
+	UINT64 GraphicsDevice::QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType)
 	{
 		return this->m_device->GetDescriptorHandleIncrementSize(descriptorType);
+	}
+	
+	void GraphicsDevice::CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat)
+	{
+		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS quality_levels = {};
+		quality_levels.Format = backbufferFormat;
+		quality_levels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+		quality_levels.SampleCount = 1;
+		bool continueSupportCheck = true;
+		while(continueSupportCheck)
+		{
+			DXCall(this->m_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &quality_levels, sizeof(quality_levels)));
+			if(quality_levels.NumQualityLevels > 0)
+			{
+				this->supported_mssa_levels.emplace_back(quality_levels.SampleCount);
+				quality_levels.SampleCount *= 2;
+			} else {
+				continueSupportCheck = false;
+			}
+		}
 	}
 }
