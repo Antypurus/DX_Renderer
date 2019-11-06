@@ -13,7 +13,6 @@ namespace DXR
 	{
 	public:
 	private:
-		bool m_use_msaa = true;
 		bool m_windowed_mode = true;
 		const UINT8 m_swapchain_buffer_count = 2;
 		Resolution m_resolution;

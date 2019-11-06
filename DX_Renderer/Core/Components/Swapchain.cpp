@@ -33,14 +33,8 @@ namespace DXR
 
 		// description of the swapchain
 		DXGI_SWAP_CHAIN_DESC swapchain_description = {};
-		if(this->m_use_msaa)
-		{
-			swapchain_description.SampleDesc.Count = 1;//device.supported_mssa_levels[device.supported_mssa_levels.size() - 1];
-			swapchain_description.SampleDesc.Quality = 0;
-		} else {
-			swapchain_description.SampleDesc.Count = 1;
-			swapchain_description.SampleDesc.Quality = 0;
-		}
+		swapchain_description.SampleDesc.Count = 1;
+		swapchain_description.SampleDesc.Quality = 0;
 		swapchain_description.BufferDesc = swapchain_buffer_description;
 		swapchain_description.BufferCount = this->m_swapchain_buffer_count;
 		swapchain_description.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
