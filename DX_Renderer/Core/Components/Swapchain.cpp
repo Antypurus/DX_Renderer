@@ -35,7 +35,7 @@ namespace DXR
 		DXGI_SWAP_CHAIN_DESC swapchain_description = {};
 		if(this->m_use_msaa)
 		{
-			swapchain_description.SampleDesc.Count = device.supported_mssa_levels[device.supported_mssa_levels.size() - 1];
+			swapchain_description.SampleDesc.Count = 1;//device.supported_mssa_levels[device.supported_mssa_levels.size() - 1];
 			swapchain_description.SampleDesc.Quality = 0;
 		} else {
 			swapchain_description.SampleDesc.Count = 1;
@@ -45,7 +45,7 @@ namespace DXR
 		swapchain_description.BufferCount = this->m_swapchain_buffer_count;
 		swapchain_description.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapchain_description.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-		swapchain_description.Windowed = this->m_windowed_mode;// ? 1 : 0;// convert from C++ bool to a WinAPI BOOL
+		swapchain_description.Windowed = this->m_windowed_mode ? 1 : 0;// convert from C++ bool to a WinAPI BOOL
 		swapchain_description.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapchain_description.OutputWindow = window.GetWindowHandle();
 

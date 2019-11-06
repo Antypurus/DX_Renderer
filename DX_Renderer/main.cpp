@@ -11,7 +11,7 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
 	DXR::Window window{hInstance,nCmdShow,{1280,720},"DX Renderer"};
 
-	DXR::GraphicsDevice device;
+	DXR::GraphicsDevice device{1};
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList{device};
 	DXR::Swapchain swapchain{device,window,60};

@@ -93,6 +93,7 @@ namespace DXR
 	
 	void GraphicsDevice::CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat)
 	{
+		this->supported_mssa_levels.clear();
 		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS quality_levels = {};
 		quality_levels.Format = backbufferFormat;
 		quality_levels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
