@@ -53,6 +53,7 @@ namespace DXR
 		void UpdateWindow();
 		void RegisterWindowEventCallback(UINT message,const WindowEventMessageCallback& callback);
 		void HandleMessage(UINT Message, HWND windowHandle, WPARAM WParam, LPARAM LParam);
+		Resolution GetResolution() const;
 	};
 
 	internal Window* current_window = nullptr;

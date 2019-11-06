@@ -74,6 +74,11 @@ namespace DXR
 		}
 	}
 
+	Resolution Window::GetResolution() const
+	{
+		return this->m_window_resolution;
+	}
+
 	Window::Window(HINSTANCE Instance, int CmdShow, Resolution Resolution, const std::string& WindowTittle)
 		:m_instance(Instance), m_cmd_show(CmdShow), m_window_tittle(WindowTittle), m_window_resolution(Resolution)
 	{
