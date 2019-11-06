@@ -4,6 +4,9 @@
 #include <wrl.h>
 #include <vector>
 #include <d3d12.h>
+#include <memory>
+
+#include "Command Queue/CommandQueue.hpp"
 
 namespace DXR
 {
@@ -26,19 +29,19 @@ namespace DXR
 		std::vector<UINT8> supported_mssa_levels;
 	private:
 		D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL_11_0;
-		
 		WRL::ComPtr<IDXGIFactory> m_dxgi_factory;
 		WRL::ComPtr <ID3D12Device> m_device;
-
 		DescriptorSizes descriptorSizes;
-
+		CommandQueue* m_graphics_command_queue;
 	// public and privte methods
 	public:
 		GraphicsDevice();
 		GraphicsDevice(UINT8 DeviceIndex);
 		ID3D12Device* operator->();
+		IDXGIFactory* GetDXGIFactory();
 		Fence CreateFence(UINT64 initialValue);
 		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
+		CommandQueue* GetGraphicsCommandQueue();
 	private:
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();
@@ -46,5 +49,6 @@ namespace DXR
 		std::vector<WRL::ComPtr<IDXGIAdapter>> GetGraphicsAdapterList() const;
 		void QueryAllDescriptorSizes();
 		UINT64 QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType);
+		inline void CreateGraphicsCommandQueue();
 	};
 }

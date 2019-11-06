@@ -26,5 +26,6 @@ namespace DXR
 		CommandQueue(CommandQueueType type):Type(type) {};
 		virtual ~CommandQueue(){};
 		ID3D12CommandQueue* operator->();
+		ID3D12CommandQueue* GetCommandQueueRawPtr();
 	};
 }

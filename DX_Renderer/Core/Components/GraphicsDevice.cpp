@@ -1,6 +1,7 @@
 #include "GraphicsDevice.hpp"
 #include "../../Tooling/Validate.hpp"
 #include "Fence.hpp"
+#include "Command Queue/GraphicsCommandQueue.hpp"
 
 namespace DXR
 {
@@ -9,6 +10,7 @@ namespace DXR
 		this->CreateDXGIFactory();
 		this->CreateDefaultD3D12Device();
 		this->QueryAllDescriptorSizes();
+		this->CreateGraphicsCommandQueue();
 	}
 
 	GraphicsDevice::GraphicsDevice(UINT8 DeviceIndex)
@@ -16,11 +18,17 @@ namespace DXR
 		this->CreateDXGIFactory();
 		this->CreateD3D12Device(DeviceIndex);
 		this->QueryAllDescriptorSizes();
+		this->CreateGraphicsCommandQueue();
 	}
 
 	ID3D12Device* GraphicsDevice::operator->()
 	{
 		return this->m_device.Get();
+	}
+
+	IDXGIFactory* GraphicsDevice::GetDXGIFactory()
+	{
+		return this->m_dxgi_factory.Get();
 	}
 
 	Fence GraphicsDevice::CreateFence(UINT64 initialValue)
@@ -77,6 +85,11 @@ namespace DXR
 	{
 		return this->m_device->GetDescriptorHandleIncrementSize(descriptorType);
 	}
+
+	inline void GraphicsDevice::CreateGraphicsCommandQueue()
+	{
+		this->m_graphics_command_queue = new GraphicsCommandQueue(*this);
+	}
 	
 	void GraphicsDevice::CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat)
 	{
@@ -96,5 +109,10 @@ namespace DXR
 				continueSupportCheck = false;
 			}
 		}
+	}
+
+	CommandQueue* GraphicsDevice::GetGraphicsCommandQueue()
+	{
+		return this->m_graphics_command_queue;
 	}
 }

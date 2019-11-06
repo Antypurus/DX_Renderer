@@ -6,4 +6,9 @@ namespace DXR
 	{
 		return this->m_command_queue.Get();
 	}
+
+	ID3D12CommandQueue* CommandQueue::GetCommandQueueRawPtr()
+	{
+		return this->m_command_queue.Get();
+	}
 }
