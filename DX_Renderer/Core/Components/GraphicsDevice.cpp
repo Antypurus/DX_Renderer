@@ -23,12 +23,12 @@ namespace DXR
 		this->CreateGraphicsCommandQueue();
 	}
 
-	ID3D12Device* GraphicsDevice::operator->()
+	ID3D12Device* GraphicsDevice::operator->() const
 	{
 		return this->m_device.Get();
 	}
 
-	IDXGIFactory* GraphicsDevice::GetDXGIFactory()
+	IDXGIFactory* GraphicsDevice::GetDXGIFactory() const
 	{
 		return this->m_dxgi_factory.Get();
 	}
@@ -87,14 +87,14 @@ namespace DXR
 
 	void GraphicsDevice::QueryAllDescriptorSizes()
 	{
-		const UINT64 RTV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		const UINT64 CBV_SRV_UAV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		const UINT64 DSV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-		const UINT64 Sampler_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+		const UINT64 RTV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		const UINT64 CBV_SRV_UAV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		const UINT64 DSV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+		const UINT64 Sampler_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 		this->descriptorSizes = {RTV_size,CBV_SRV_UAV_size,DSV_size,Sampler_size};
 	}
 
-	UINT64 GraphicsDevice::QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType)
+	UINT64 GraphicsDevice::QueryDescriptorSize(enum D3D12_DESCRIPTOR_HEAP_TYPE descriptorType) const
 	{
 		return this->m_device->GetDescriptorHandleIncrementSize(descriptorType);
 	}

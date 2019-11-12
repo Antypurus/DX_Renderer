@@ -11,4 +11,8 @@ namespace DXR
 	{
 		return this->m_command_queue.Get();
 	}
+
+	CommandQueue::CommandQueue(CommandQueueType type): Type(type), m_command_queue_type()
+	{
+	}
 }

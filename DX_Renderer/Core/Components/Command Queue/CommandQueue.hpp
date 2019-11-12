@@ -27,7 +27,7 @@ namespace DXR
 		ID3D12CommandQueue* operator->();
 		ID3D12CommandQueue* GetCommandQueueRawPtr();
 	protected:
-		CommandQueue(CommandQueueType type): Type(type), m_command_queue_type(){};
+		CommandQueue(CommandQueueType type);;
 		
 	};
 }
