@@ -8,16 +8,17 @@ namespace DXR
 {
 	using namespace Microsoft;
 
-	class GraphicsCommandList
+	struct GraphicsCommandList
 	{
 	public:
+		friend GraphicsDevice;
 	private:
 		WRL::ComPtr<ID3D12CommandAllocator> m_command_allocator;
 		WRL::ComPtr<ID3D12GraphicsCommandList> m_command_list;
 	public:
-		GraphicsCommandList(GraphicsDevice& device);
 		ID3D12GraphicsCommandList* operator->();
 	private:
+		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);
 		inline void CreateCommandList(GraphicsDevice& device);
 	};

@@ -10,9 +10,12 @@
 
 namespace DXR
 {
+	struct Window;
 	using namespace Microsoft;
 	
 	struct Fence;
+	struct GraphicsCommandList;
+	struct Swapchain;
 
 	struct DescriptorSizes
 	{
@@ -39,9 +42,11 @@ namespace DXR
 		GraphicsDevice(UINT8 DeviceIndex);
 		ID3D12Device* operator->();
 		IDXGIFactory* GetDXGIFactory();
-		Fence CreateFence(UINT64 initialValue);
 		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
 		CommandQueue* GetGraphicsCommandQueue();
+		Fence CreateFence(UINT64 initialValue);
+		GraphicsCommandList CreateGraphicsCommandList();
+		Swapchain CreateSwapchain(Window& window, UINT refreshRate);
 	private:
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();

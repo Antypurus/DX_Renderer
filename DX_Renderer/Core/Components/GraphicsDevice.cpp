@@ -2,6 +2,8 @@
 #include "../../Tooling/Validate.hpp"
 #include "Fence.hpp"
 #include "Command Queue/GraphicsCommandQueue.hpp"
+#include "Command List/GraphicsCommandList.hpp"
+#include "Swapchain.hpp"
 
 namespace DXR
 {
@@ -35,6 +37,17 @@ namespace DXR
 	{
 		return Fence(initialValue, *this);
 	}
+
+	GraphicsCommandList GraphicsDevice::CreateGraphicsCommandList()
+	{
+		return GraphicsCommandList(*this);
+	}
+
+	Swapchain GraphicsDevice::CreateSwapchain(Window& window, UINT refreshRate)
+	{
+		return Swapchain(*this,window,refreshRate);
+	}
+
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
@@ -90,7 +103,7 @@ namespace DXR
 	{
 		this->m_graphics_command_queue = new GraphicsCommandQueue(*this);
 	}
-	
+
 	void GraphicsDevice::CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat)
 	{
 		this->supported_mssa_levels.clear();

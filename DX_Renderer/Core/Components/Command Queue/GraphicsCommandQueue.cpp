@@ -4,8 +4,7 @@
 
 namespace DXR
 {
-	GraphicsCommandQueue::GraphicsCommandQueue(GraphicsDevice& device)
-		:CommandQueue(CommandQueueType::Direct)
+	GraphicsCommandQueue::GraphicsCommandQueue(GraphicsDevice& device):CommandQueue(CommandQueueType::Direct)
 	{
 		this->m_command_queue_type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		this->CreateCommandQueue(device);

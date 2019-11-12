@@ -23,9 +23,11 @@ namespace DXR
 		D3D12_COMMAND_LIST_TYPE m_command_queue_type;
 		WRL::ComPtr<ID3D12CommandQueue> m_command_queue;
 	public:
-		CommandQueue(CommandQueueType type):Type(type) {};
 		virtual ~CommandQueue(){};
 		ID3D12CommandQueue* operator->();
 		ID3D12CommandQueue* GetCommandQueueRawPtr();
+	protected:
+		CommandQueue(CommandQueueType type): Type(type), m_command_queue_type(){};
+		
 	};
 }

@@ -8,8 +8,9 @@ namespace DXR
 	struct GraphicsCommandQueue: public CommandQueue
 	{
 	public:
-		GraphicsCommandQueue(GraphicsDevice& device);
+		friend GraphicsDevice;
 	private:
+		GraphicsCommandQueue(GraphicsDevice& device);
 		inline void CreateCommandQueue(GraphicsDevice& device);
 	};
 }

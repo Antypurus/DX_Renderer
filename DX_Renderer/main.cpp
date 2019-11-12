@@ -2,7 +2,6 @@
 #include "Core/Windows Abstractions/Window.hpp"
 #include "Core/Components/GraphicsDevice.hpp"
 #include "Core/Components/Fence.hpp"
-#include "Core/Components/Command Queue/GraphicsCommandQueue.hpp"
 #include "Core/Components/Command List/GraphicsCommandList.hpp"
 #include "Core/Components/Swapchain.hpp"
 
@@ -13,8 +12,8 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	DXR::GraphicsDevice device;
 	DXR::Fence fence = device.CreateFence(0);
-	DXR::GraphicsCommandList commandList{device};
-	DXR::Swapchain swapchain{device,window,60};
+	DXR::GraphicsCommandList commandList =  device.CreateGraphicsCommandList();
+	DXR::Swapchain swapchain = device.CreateSwapchain(window,60);
 
 	while(window.ShouldContinue)
 	{
