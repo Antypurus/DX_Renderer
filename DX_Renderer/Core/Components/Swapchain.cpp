@@ -3,6 +3,11 @@
 
 namespace DXR
 {
+	IDXGISwapChain* Swapchain::operator->()
+	{
+		return this->m_swapchain.Get();
+	}
+
 	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate)
 		:m_resolution(window.GetResolution()), m_refresh_rate(refreshRate)
 	{

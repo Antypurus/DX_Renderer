@@ -4,6 +4,7 @@
 #include "Core/Components/Fence.hpp"
 #include "Core/Components/Command List/GraphicsCommandList.hpp"
 #include "Core/Components/Swapchain.hpp"
+#include "Tooling/Log.hpp"
 
 int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
@@ -17,6 +18,8 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	while(window.ShouldContinue)
 	{
+		DXR::INFO_LOG(L"UPDATE\n");
+		swapchain->Present(0,0);
 		window.UpdateWindow();
 	}
 	return 0;
