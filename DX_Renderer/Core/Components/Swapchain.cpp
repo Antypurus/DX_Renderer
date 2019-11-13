@@ -14,7 +14,6 @@ namespace DXR
 	{
 		device.CheckSupportedMSAALevels(this->m_backbuffer_format);
 		this->m_RTV_descriptor_heap = device.CreateRenderTargetViewDescriptorHeap(this->m_swapchain_buffer_count);
-		this->m_DSV_descriptor_heap = device.CreateDepthStencilBufferDescriptorHeap(1);
 		this->CreateSwapChain(device, window);
 		this->CreateRenderTargetViews(device);
 	}
@@ -24,7 +23,6 @@ namespace DXR
 	{
 		device.CheckSupportedMSAALevels(this->m_backbuffer_format);
 		this->m_RTV_descriptor_heap = device.CreateRenderTargetViewDescriptorHeap(this->m_swapchain_buffer_count);
-		this->m_DSV_descriptor_heap = device.CreateDepthStencilBufferDescriptorHeap(1);
 		this->CreateSwapChain(device, window);
 		this->CreateRenderTargetViews(device);
 	}
@@ -58,7 +56,7 @@ namespace DXR
 		DXCall(device.GetDXGIFactory()->CreateSwapChain(device.GetGraphicsCommandQueue()->GetCommandQueueRawPtr(), &swapchain_description, this->m_swapchain.GetAddressOf()));
 	}
 
-	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device)
+	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device) const
 	{
 		for(size_t i=0;i<this->m_swapchain_buffer_count;++i)
 		{
