@@ -1,5 +1,6 @@
 #include "Swapchain.hpp"
 #include "../../Tooling/Validate.hpp"
+#include "GraphicsDevice.hpp"
 
 namespace DXR
 {
@@ -12,14 +13,20 @@ namespace DXR
 		:m_resolution(window.GetResolution()), m_refresh_rate(refreshRate)
 	{
 		device.CheckSupportedMSAALevels(this->m_backbuffer_format);
+		this->m_RTV_descriptor_heap = device.CreateRenderTargetViewDescriptorHeap(this->m_swapchain_buffer_count);
+		this->m_DSV_descriptor_heap = device.CreateDepthStencilBufferDescriptorHeap(1);
 		this->CreateSwapChain(device, window);
+		this->CreateRenderTargetViews(device);
 	}
 
 	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, DXGI_FORMAT backbufferFormat)
 		: m_resolution(window.GetResolution()), m_refresh_rate(refreshRate), m_backbuffer_format(backbufferFormat)
 	{
 		device.CheckSupportedMSAALevels(this->m_backbuffer_format);
+		this->m_RTV_descriptor_heap = device.CreateRenderTargetViewDescriptorHeap(this->m_swapchain_buffer_count);
+		this->m_DSV_descriptor_heap = device.CreateDepthStencilBufferDescriptorHeap(1);
 		this->CreateSwapChain(device, window);
+		this->CreateRenderTargetViews(device);
 	}
 
 	inline void Swapchain::CreateSwapChain(GraphicsDevice& device, Window& window)
@@ -49,5 +56,14 @@ namespace DXR
 		swapchain_description.OutputWindow = window.GetWindowHandle();
 
 		DXCall(device.GetDXGIFactory()->CreateSwapChain(device.GetGraphicsCommandQueue()->GetCommandQueueRawPtr(), &swapchain_description, this->m_swapchain.GetAddressOf()));
+	}
+
+	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device)
+	{
+		for(size_t i=0;i<this->m_swapchain_buffer_count;++i)
+		{
+			WRL::ComPtr<ID3D12Resource> backbuffer;
+			DXCall(this->m_swapchain->GetBuffer(i,IID_PPV_ARGS(&backbuffer)));
+		}
 	}
 }

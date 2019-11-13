@@ -15,20 +15,23 @@ namespace DXR
 		RenderTargetView,
 		DepthStencilBuffer,
 		ConstantBufferView,
-		Sampler
+		Sampler,
+		None
 	};
 	
 	struct DescriptorHeap
 	{
 	public:
 		friend GraphicsDevice;
-		const DescriptorType ContainedDescriptorType;
-		const UINT DescriptorCount;
 	private:
-		UINT64 m_descriptor_handle_increment_size;
+		DescriptorType ContainedDescriptorType = DescriptorType::None;
+		UINT DescriptorCount = 0;
+		UINT64 m_descriptor_handle_increment_size = 0;
 		D3D12_DESCRIPTOR_HEAP_TYPE m_heap_type;
 		WRL::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;
 	public:
+		DescriptorHeap(){}
+		void operator=(const DescriptorHeap& other);
 		D3D12_CPU_DESCRIPTOR_HANDLE operator[](const size_t index) const;
 	private:
 		DescriptorHeap(GraphicsDevice& device, UINT8 descriptorCount, DescriptorType type);
