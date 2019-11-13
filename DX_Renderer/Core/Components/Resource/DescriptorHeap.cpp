@@ -10,7 +10,7 @@ namespace DXR
 		this->DescriptorCount = other.DescriptorCount;
 		this->m_descriptor_handle_increment_size = other.m_descriptor_handle_increment_size;
 		this->m_descriptor_heap.Reset();
-		this->m_descriptor_heap = other.m_descriptor_heap;
+		other.m_descriptor_heap.CopyTo(&this->m_descriptor_heap);
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::operator[](const size_t index) const
