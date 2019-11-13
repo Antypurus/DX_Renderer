@@ -76,4 +76,24 @@ namespace DXR
 	{
 		this->m_depth_stencil_buffer_resource = std::make_unique<DepthStencilBuffer>(device, commandList, this->m_DSV_descriptor_heap, this->m_resolution);
 	}
+
+	void Swapchain::SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset, UINT yOffset)
+	{
+		D3D12_VIEWPORT viewport = {};
+		viewport.Width = resolution.Width;
+		viewport.Height = resolution.Height;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1;
+		viewport.TopLeftX = xOffset;
+		viewport.TopLeftY = yOffset;
+
+		commandList->RSSetViewports(1, &viewport);
+	}
+
+	void Swapchain::Present(GraphicsCommandList& commandList)
+	{
+		INFO_LOG(L"Swapchain Update\n");
+		this->m_swapchain->Present(0, 0);
+		this->m_current_backbuffer = this->m_backbuffer_format == 1 ? 0 : 1;
+	}
 }

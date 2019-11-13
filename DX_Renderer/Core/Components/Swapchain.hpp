@@ -28,8 +28,11 @@ namespace DXR
 		DescriptorHeap m_RTV_descriptor_heap;
 		DescriptorHeap m_DSV_descriptor_heap;
 		std::unique_ptr<DepthStencilBuffer> m_depth_stencil_buffer_resource;
+		UINT8 m_current_backbuffer = 0;
 	public:
 		IDXGISwapChain* operator->();
+		void SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset = 0, UINT yOffset = 0);
+		void Present(GraphicsCommandList& commandList);
 	private:
 		Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList);
 		Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList, DXGI_FORMAT backbufferFormat);
