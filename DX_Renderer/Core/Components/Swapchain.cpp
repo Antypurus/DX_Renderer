@@ -64,6 +64,7 @@ namespace DXR
 		{
 			WRL::ComPtr<ID3D12Resource> backbuffer;
 			DXCall(this->m_swapchain->GetBuffer(i,IID_PPV_ARGS(&backbuffer)));
+			device->CreateRenderTargetView(backbuffer.Get(),nullptr,this->m_RTV_descriptor_heap[i]);
 		}
 	}
 }
