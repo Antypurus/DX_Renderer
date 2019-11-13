@@ -23,9 +23,9 @@ namespace DXR
 	public:
 		friend GraphicsDevice;
 		const DescriptorType ContainedDescriptorType;
-		const UINT8 DescriptorCount;
+		const UINT DescriptorCount;
 	private:
-		UINT m_descriptor_handle_increment_size;
+		UINT64 m_descriptor_handle_increment_size;
 		D3D12_DESCRIPTOR_HEAP_TYPE m_heap_type;
 		WRL::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;
 	public:
