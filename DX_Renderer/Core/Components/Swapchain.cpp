@@ -1,6 +1,7 @@
 #include "Swapchain.hpp"
 #include "../../Tooling/Validate.hpp"
 #include "GraphicsDevice.hpp"
+#include "Command List/GraphicsCommandList.hpp"
 
 namespace DXR
 {
@@ -9,22 +10,27 @@ namespace DXR
 		return this->m_swapchain.Get();
 	}
 
-	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate)
+	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList)
 		:m_resolution(window.GetResolution()), m_refresh_rate(refreshRate)
 	{
-		device.CheckSupportedMSAALevels(this->m_backbuffer_format);
-		this->m_RTV_descriptor_heap = device.CreateRenderTargetViewDescriptorHeap(this->m_swapchain_buffer_count);
-		this->CreateSwapChain(device, window);
-		this->CreateRenderTargetViews(device);
+		this->Create(device, window, commandList);
 	}
 
-	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, DXGI_FORMAT backbufferFormat)
+	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList, DXGI_FORMAT backbufferFormat)
 		: m_resolution(window.GetResolution()), m_refresh_rate(refreshRate), m_backbuffer_format(backbufferFormat)
+	{
+		this->Create(device, window, commandList);
+	}
+
+	void Swapchain::Create(GraphicsDevice& device, Window& window,
+		GraphicsCommandList& commandList)
 	{
 		device.CheckSupportedMSAALevels(this->m_backbuffer_format);
 		this->m_RTV_descriptor_heap = device.CreateRenderTargetViewDescriptorHeap(this->m_swapchain_buffer_count);
+		this->m_DSV_descriptor_heap = device.CreateDepthStencilBufferDescriptorHeap(1);
 		this->CreateSwapChain(device, window);
 		this->CreateRenderTargetViews(device);
+		this->CreateDepthStencilBufferView(device, commandList);
 	}
 
 	inline void Swapchain::CreateSwapChain(GraphicsDevice& device, Window& window)
@@ -58,11 +64,16 @@ namespace DXR
 
 	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device) const
 	{
-		for(size_t i=0;i<this->m_swapchain_buffer_count;++i)
+		for(UINT i = 0;i < this->m_swapchain_buffer_count;++i)
 		{
 			WRL::ComPtr<ID3D12Resource> backbuffer;
-			DXCall(this->m_swapchain->GetBuffer(i,IID_PPV_ARGS(&backbuffer)));
-			device->CreateRenderTargetView(backbuffer.Get(),nullptr,this->m_RTV_descriptor_heap[i]);
+			DXCall(this->m_swapchain->GetBuffer(i, IID_PPV_ARGS(&backbuffer)));
+			device->CreateRenderTargetView(backbuffer.Get(), nullptr, this->m_RTV_descriptor_heap[i]);
 		}
+	}
+
+	void Swapchain::CreateDepthStencilBufferView(GraphicsDevice& device, GraphicsCommandList& commandList)
+	{
+		this->m_depth_stencil_buffer_resource = std::make_unique<DepthStencilBuffer>(device, commandList, this->m_DSV_descriptor_heap, this->m_resolution);
 	}
 }

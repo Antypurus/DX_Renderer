@@ -15,7 +15,7 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	DXR::GraphicsDevice device;
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList =  device.CreateGraphicsCommandList();
-	DXR::Swapchain swapchain = device.CreateSwapchain(window,60);
+	DXR::Swapchain swapchain = device.CreateSwapchain(window,60,commandList);
 	
 	while(window.ShouldContinue)
 	{

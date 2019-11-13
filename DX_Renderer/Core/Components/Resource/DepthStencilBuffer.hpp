@@ -10,7 +10,7 @@ namespace DXR
 	struct GraphicsCommandList;
 	struct DescriptorHeap;
 	
-	class DepthStencilBuffer : public Resource
+	struct DepthStencilBuffer : public Resource
 	{
 	public:
 		const DXGI_FORMAT DepthStencilBufferFormat = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT_S8X24_UINT;

@@ -43,7 +43,7 @@ namespace DXR
 		D3D12_CLEAR_VALUE clear_value = {};
 		clear_value.Format = this->DepthStencilBufferFormat;
 		clear_value.DepthStencil.Depth = 1.0f;
-		clear_value.DepthStencil.Stencil = 0.0f;
+		clear_value.DepthStencil.Stencil = 0;
 		
 		return clear_value;
 	}

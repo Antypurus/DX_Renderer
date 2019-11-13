@@ -11,7 +11,7 @@ namespace DXR
 {
 	struct Window;
 	using namespace Microsoft;
-	
+
 	struct Fence;
 	struct GraphicsCommandList;
 	struct Swapchain;
@@ -27,7 +27,7 @@ namespace DXR
 
 	struct GraphicsDevice
 	{
-	// public and private data fields
+		// public and private data fields
 	public:
 		std::vector<UINT8> supported_mssa_levels;
 	private:
@@ -36,7 +36,7 @@ namespace DXR
 		WRL::ComPtr <ID3D12Device> m_device;
 		DescriptorSizes descriptorSizes{};
 		CommandQueue* m_graphics_command_queue{};
-	// public and privte methods
+		// public and privte methods
 	public:
 		GraphicsDevice();
 		GraphicsDevice(UINT8 DeviceIndex);
@@ -47,7 +47,7 @@ namespace DXR
 		CommandQueue* GetGraphicsCommandQueue();
 		Fence CreateFence(UINT64 initialValue);
 		GraphicsCommandList CreateGraphicsCommandList();
-		Swapchain CreateSwapchain(Window& window, UINT refreshRate);
+		Swapchain CreateSwapchain(Window& window, UINT refreshRate, GraphicsCommandList& commandList);
 		DescriptorHeap CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount);
 		DescriptorHeap CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount);
 	private:

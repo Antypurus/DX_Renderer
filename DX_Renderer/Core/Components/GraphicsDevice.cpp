@@ -49,19 +49,19 @@ namespace DXR
 		return GraphicsCommandList(*this);
 	}
 
-	Swapchain GraphicsDevice::CreateSwapchain(Window& window, UINT refreshRate)
+	Swapchain GraphicsDevice::CreateSwapchain(Window& window, UINT refreshRate, GraphicsCommandList& commandList)
 	{
-		return Swapchain(*this,window,refreshRate);
+		return Swapchain(*this, window, refreshRate, commandList);
 	}
 
 	DescriptorHeap GraphicsDevice::CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount)
 	{
-		return DescriptorHeap(*this,descriptorCount,DescriptorType::RenderTargetView);
+		return DescriptorHeap(*this, descriptorCount, DescriptorType::RenderTargetView);
 	}
 
 	DescriptorHeap GraphicsDevice::CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount)
 	{
-		return DescriptorHeap(*this,descriptorCount,DescriptorType::DepthStencilBuffer);
+		return DescriptorHeap(*this, descriptorCount, DescriptorType::DepthStencilBuffer);
 	}
 
 
