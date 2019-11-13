@@ -41,6 +41,7 @@ namespace DXR
 		GraphicsDevice(UINT8 DeviceIndex);
 		ID3D12Device* operator->() const;
 		IDXGIFactory* GetDXGIFactory() const;
+		DescriptorSizes GetDescriptorSizes()const;
 		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
 		CommandQueue* GetGraphicsCommandQueue();
 		Fence CreateFence(UINT64 initialValue);

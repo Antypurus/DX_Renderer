@@ -33,6 +33,11 @@ namespace DXR
 		return this->m_dxgi_factory.Get();
 	}
 
+	DescriptorSizes GraphicsDevice::GetDescriptorSizes() const
+	{
+		return this->descriptorSizes;
+	}
+
 	Fence GraphicsDevice::CreateFence(UINT64 initialValue)
 	{
 		return Fence(initialValue, *this);
