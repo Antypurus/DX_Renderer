@@ -49,6 +49,7 @@ namespace DXR
 		GraphicsCommandList CreateGraphicsCommandList();
 		Swapchain CreateSwapchain(Window& window, UINT refreshRate);
 		DescriptorHeap CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount);
+		DescriptorHeap CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount);
 	private:
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();

@@ -59,6 +59,11 @@ namespace DXR
 		return DescriptorHeap(*this,descriptorCount,DescriptorType::RenderTargetView);
 	}
 
+	DescriptorHeap GraphicsDevice::CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount)
+	{
+		return DescriptorHeap(*this,descriptorCount,DescriptorType::DepthStencilBuffer);
+	}
+
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
