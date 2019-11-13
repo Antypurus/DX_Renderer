@@ -15,6 +15,7 @@ namespace DXR
 	struct Fence;
 	struct GraphicsCommandList;
 	struct Swapchain;
+	struct DescriptorHeap;
 
 	struct DescriptorSizes
 	{
@@ -47,6 +48,7 @@ namespace DXR
 		Fence CreateFence(UINT64 initialValue);
 		GraphicsCommandList CreateGraphicsCommandList();
 		Swapchain CreateSwapchain(Window& window, UINT refreshRate);
+		DescriptorHeap CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount);
 	private:
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();

@@ -4,6 +4,7 @@
 #include "Core/Components/Fence.hpp"
 #include "Core/Components/Command List/GraphicsCommandList.hpp"
 #include "Core/Components/Swapchain.hpp"
+#include "Core/Components/Resource/DescriptorHeap.hpp"
 #include "Tooling/Log.hpp"
 
 int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -15,11 +16,11 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList =  device.CreateGraphicsCommandList();
 	DXR::Swapchain swapchain = device.CreateSwapchain(window,60);
+	//DXR::DescriptorHeap heap = device.CreateRenderTargetViewDescriptorHeap(2);
 
 	while(window.ShouldContinue)
 	{
-		DXR::INFO_LOG(L"UPDATE\n");
-		swapchain->Present(0,0);
+		//swapchain->Present(0,0);
 		window.UpdateWindow();
 	}
 	return 0;

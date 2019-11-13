@@ -4,6 +4,7 @@
 #include "Command Queue/GraphicsCommandQueue.hpp"
 #include "Command List/GraphicsCommandList.hpp"
 #include "Swapchain.hpp"
+#include "Resource/DescriptorHeap.hpp"
 
 namespace DXR
 {
@@ -51,6 +52,11 @@ namespace DXR
 	Swapchain GraphicsDevice::CreateSwapchain(Window& window, UINT refreshRate)
 	{
 		return Swapchain(*this,window,refreshRate);
+	}
+
+	DescriptorHeap GraphicsDevice::CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount)
+	{
+		return DescriptorHeap(*this,descriptorCount,DescriptorType::RenderTargetView);
 	}
 
 
