@@ -92,9 +92,7 @@ namespace DXR
 
 	void Swapchain::Present(GraphicsCommandList& commandList)
 	{
-		//INFO_LOG(L"Attempting To Present\n");
 		DXCall(this->m_swapchain->Present(0, 0));
-		//INFO_LOG(L"Done Presenting\n");
 		this->m_current_backbuffer = this->m_backbuffer_format == 1 ? 0 : 1;
 	}
 }
