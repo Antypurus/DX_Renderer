@@ -1,5 +1,4 @@
 #pragma once
-#include "Debug.hpp"
 
 namespace DXR
 {
@@ -10,9 +9,9 @@ namespace DXR
 
 #define __FILENAME__ (wcsrchr(__FILEW__, '\\') ? wcsrchr(__FILEW__, '\\') + 1 : __FILEW__)
 
-#define ERROR_LOG(Message) LogError(__FILENAME__,__LINE__,Message)
-#define WARNING_LOG(Message) LogWarning(__FILENAME__,__LINE__,Message)
-#define SUCCESS_LOG(Message) LogSuccess(__FILENAME__,__LINE__,Message)
-#define INFO_LOG(Message) LogInfo(__FILENAME__,__LINE__,Message)
+#define ERROR_LOG(Message) DXR::LogError(__FILENAME__,__LINE__,Message)
+#define WARNING_LOG(Message) DXR::LogWarning(__FILENAME__,__LINE__,Message)
+#define SUCCESS_LOG(Message) DXR::LogSuccess(__FILENAME__,__LINE__,Message)
+#define INFO_LOG(Message) DXR::LogInfo(__FILENAME__,__LINE__,Message)
 #define LOG(Message) wprintf_s(Message)
 }

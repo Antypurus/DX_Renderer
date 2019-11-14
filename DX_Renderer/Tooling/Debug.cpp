@@ -5,6 +5,7 @@
 namespace DXR
 {
 	Debug Debug::DebugInterface = {};
+	HANDLE Debug::ConsoleHandle = {};
 
 	Debug::Debug()
 	{
@@ -28,6 +29,7 @@ namespace DXR
 		FILE* input = freopen("CONIN$", "r", stdin);
 		FILE* output = freopen("CONOUT$", "w", stdout);
 		FILE* error = freopen("CONOUT$", "w", stderr);
+		Debug::ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
 	}
 }

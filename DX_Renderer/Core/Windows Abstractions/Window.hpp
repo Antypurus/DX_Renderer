@@ -41,12 +41,13 @@ namespace DXR
 		Resolution m_window_resolution = {};
 
 		std::unordered_multimap<UINT, WindowEventMessageCallback> m_registered_window_event_callbacks;
-		
+	
 		// public and private methods
 	public:
 		static Window* GetCurrentWindowHandle();
 		
 		Window(HINSTANCE Instance,int CmdShow,Resolution Resolution,const std::string& WindowTittle);
+		~Window() = default;
 		HWND GetWindowHandle();
 		HINSTANCE GetInstance();
 		const std::string& GetWindowTittle();

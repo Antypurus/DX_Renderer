@@ -1,23 +1,25 @@
 #include "Window.hpp"
+#include "../../Tooling/Log.hpp"
 
 namespace DXR
 {
 	LRESULT WindowMessageCallbackProcedure(HWND WindowHandle, UINT Message, WPARAM WParam, LPARAM LParam)
 	{
-		switch (Message)
+		switch(Message)
 		{
-		case WM_CLOSE:
-			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-			DestroyWindow(WindowHandle);
-			break;
-		case WM_DESTROY:
-			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-			PostQuitMessage(0);
-			break;
-		default:
-			if(current_window)
+			case WM_CLOSE:
 				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-			return DefWindowProc(WindowHandle, Message, WParam, LParam);
+				DestroyWindow(WindowHandle);
+				current_window->ShouldContinue = false;
+				break;
+			case WM_DESTROY:
+				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
+				PostQuitMessage(0);
+				break;
+			default:
+				if(current_window)
+					current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
+				return DefWindowProc(WindowHandle, Message, WParam, LParam);
 		}
 		return 0;
 	}
@@ -50,13 +52,9 @@ namespace DXR
 	void Window::UpdateWindow()
 	{
 		MSG message;
-		const BOOL updateStatus = GetMessage(&message, this->m_window_handle, 0, 0);
+		const BOOL updateStatus = PeekMessage(&message, this->m_window_handle, 0, 0, PM_REMOVE);
 		TranslateMessage(&message);
 		DispatchMessage(&message);
-		if(updateStatus == 0 || updateStatus == -1)
-		{
-			this->ShouldContinue = false;
-		}
 	}
 
 	void Window::RegisterWindowEventCallback(UINT message, const WindowEventMessageCallback& callback)
@@ -107,17 +105,17 @@ namespace DXR
 
 		// create the window
 		this->m_window_handle = CreateWindowEx(
-			WS_EX_CLIENTEDGE, 
+			WS_EX_CLIENTEDGE,
 			this->m_window_tittle.c_str(),
-			this->m_window_tittle.c_str(), 
-			WS_OVERLAPPEDWINDOW, 
+			this->m_window_tittle.c_str(),
+			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT, CW_USEDEFAULT,
-			this->m_window_resolution.Width, this->m_window_resolution.Height, 
-			nullptr, 
+			this->m_window_resolution.Width, this->m_window_resolution.Height,
 			nullptr,
-			this->m_instance, 
+			nullptr,
+			this->m_instance,
 			nullptr);
-		
+
 		//validate window creation
 		if(this->m_window_handle == nullptr)
 		{
@@ -131,4 +129,5 @@ namespace DXR
 
 		current_window = this;
 	}
+
 }

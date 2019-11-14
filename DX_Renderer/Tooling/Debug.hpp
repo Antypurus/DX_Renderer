@@ -12,6 +12,7 @@ namespace DXR
 	{
 	public:
 		static Debug DebugInterface;
+		static HANDLE ConsoleHandle;
 	private:
 		Debug();
 		void EnableD3D12DebugLayer();
