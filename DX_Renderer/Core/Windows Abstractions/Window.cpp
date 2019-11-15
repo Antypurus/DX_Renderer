@@ -8,11 +8,13 @@ namespace DXR
 		switch(Message)
 		{
 			case WM_CLOSE:
+				INFO_LOG(L"Receibed WM_CLOSE Window Message\n");
 				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
 				DestroyWindow(WindowHandle);
 				current_window->ShouldContinue = false;
 				break;
 			case WM_DESTROY:
+				INFO_LOG(L"Receibed WM_DESTROY Window Message\n");
 				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
 				PostQuitMessage(0);
 				break;
@@ -59,6 +61,7 @@ namespace DXR
 
 	void Window::RegisterWindowEventCallback(UINT message, const WindowEventMessageCallback& callback)
 	{
+		INFO_LOG(L"Registering Window Message Event Callback Function\n");
 		this->m_registered_window_event_callbacks.emplace(message, callback);
 	}
 
@@ -80,6 +83,7 @@ namespace DXR
 	Window::Window(HINSTANCE Instance, int CmdShow, Resolution Resolution, const std::string& WindowTittle)
 		:m_instance(Instance), m_cmd_show(CmdShow), m_window_tittle(WindowTittle), m_window_resolution(Resolution)
 	{
+		INFO_LOG(L"Starting Windows Creation Procces\n");
 		// create the window class
 		WNDCLASSEX windowClass;
 		windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -95,13 +99,16 @@ namespace DXR
 		windowClass.lpszClassName = this->m_window_tittle.c_str();
 		windowClass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
 
+		INFO_LOG(L"Registering Window Class\n");
 		// register the window class
 		if(!RegisterClassEx(&windowClass))
 		{
+			ERROR_LOG(L"Failed To Register Window Class\n");
 			this->ShouldContinue = false;
 			MessageBox(nullptr, "Window Class Registration Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
 			throw std::exception("Failed to create window class");
 		}
+		SUCCESS_LOG(L"Window Class Registered\n");
 
 		// create the window
 		this->m_window_handle = CreateWindowEx(
@@ -116,18 +123,22 @@ namespace DXR
 			this->m_instance,
 			nullptr);
 
+		INFO_LOG(L"Creating Win32 Window\n");
 		//validate window creation
 		if(this->m_window_handle == nullptr)
 		{
+			ERROR_LOG(L"Failed To Create Win32 Window\n");
 			this->ShouldContinue = false;
 			MessageBox(NULL, "Window Creation Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
 			throw std::exception("Failed to Create Window!");
 		}
+		SUCCESS_LOG(L"Win32 Windows Created\n");
 
 		ShowWindow(this->m_window_handle, this->m_cmd_show);
 		::UpdateWindow(this->m_window_handle);
 
 		current_window = this;
+		SUCCESS_LOG(L"Window Creation Completed\n");
 	}
 
 }
