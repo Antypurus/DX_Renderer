@@ -7,9 +7,9 @@
 #include "Tooling/Log.hpp"
 #include <thread>
 
-void MainRenderThread(DXR::Window& window)
+void MainDirectXThread(DXR::Window& window)
 {
-
+	SUCCESS_LOG(L"Main DirectX12 Thread Started\n");
 	DXR::GraphicsDevice device;
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
@@ -27,13 +27,13 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 {
 	DXR::Window window{hInstance,nCmdShow,{1280,720},"DX Renderer"};
 
-	std::thread main_render_thread(MainRenderThread,std::ref(window));
+	std::thread main_dx12_thread(MainDirectXThread,std::ref(window));
 
 	while(window.ShouldContinue)
 	{
 		window.UpdateWindow();
 	}
 
-	main_render_thread.join();
+	main_dx12_thread.join();
 	return 0;
 }

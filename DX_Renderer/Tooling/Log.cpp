@@ -12,7 +12,7 @@ namespace DXR
 	{
 		HANDLE hConsole = Debug::ConsoleHandle;
 		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-		wprintf_s(L"[ERROR]@%s:%d::%s", file, line, message);
+		wprintf_s(L"[ERROR]@%s:%d=>%s", file, line, message);
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	}
 
@@ -20,7 +20,7 @@ namespace DXR
 	{
 		HANDLE hConsole = Debug::ConsoleHandle;
 		SetConsoleTextAttribute(hConsole, FOREGROUND_RED|FOREGROUND_GREEN);
-		wprintf_s(L"[WARNING]@%s:%d::%s", file, line, message);
+		wprintf_s(L"[WARNING]@%s:%d=>%s", file, line, message);
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	}
 
@@ -28,7 +28,7 @@ namespace DXR
 	{
 		HANDLE hConsole = Debug::ConsoleHandle;
 		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-		wprintf_s(L"[SUCCESS]@%s:%d::%s", file, line, message);
+		wprintf_s(L"[SUCCESS]@%s:%d=>%s", file, line, message);
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	}
 
@@ -36,7 +36,7 @@ namespace DXR
 	{
 		HANDLE hConsole = Debug::ConsoleHandle;
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN);
-		wprintf_s(L"[INFO]@%s:%d::%s", file, line, message);
+		wprintf_s(L"[INFO]@%s:%d=>%s", file, line, message);
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 	}
 }
