@@ -67,18 +67,24 @@ namespace DXR
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
+		INFO_LOG(L"Creating DXGI Factory\n");
 		DXCall(::CreateDXGIFactory(IID_PPV_ARGS(&this->m_dxgi_factory)));
+		SUCCESS_LOG(L"DXGI Factory Created\n");
 	}
 
 	void GraphicsDevice::CreateDefaultD3D12Device()
 	{
+		INFO_LOG(L"Creating Default D3D12 Device\n");
 		DXCall(D3D12CreateDevice(nullptr, this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
+		SUCCESS_LOG(L"Default D3D12 Device Created\n");
 	}
 
 	void GraphicsDevice::CreateD3D12Device(UINT8 deviceIndex)
 	{
 		auto adapter_list = this->GetGraphicsAdapterList();
+		INFO_LOG(L"Creating D3D12 Device\n");
 		DXCall(D3D12CreateDevice(adapter_list[deviceIndex].Get(), this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
+		SUCCESS_LOG(L"D3D12 Device Created\n");
 	}
 
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const

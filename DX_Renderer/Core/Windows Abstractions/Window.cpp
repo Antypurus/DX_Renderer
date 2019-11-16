@@ -54,7 +54,7 @@ namespace DXR
 	void Window::UpdateWindow()
 	{
 		MSG message;
-		const BOOL updateStatus = PeekMessage(&message, this->m_window_handle, 0, 0, PM_REMOVE);
+		const BOOL updateStatus = GetMessage(&message, this->m_window_handle, 0, 0);
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
