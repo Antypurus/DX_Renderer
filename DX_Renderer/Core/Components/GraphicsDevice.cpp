@@ -89,6 +89,7 @@ namespace DXR
 
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const
 	{
+		INFO_LOG(L"Fetching Complete Adapter List\n");
 		std::vector<WRL::ComPtr<IDXGIAdapter>> adapter_list;
 		UINT8 adapter_index = 0;
 		IDXGIAdapter* current_adapter = nullptr;
@@ -104,16 +105,19 @@ namespace DXR
 
 			++adapter_index;
 		}
+		INFO_LOG(L"Finished Fetching Complete Adapter List\n");
 		return adapter_list;
 	}
 
 	void GraphicsDevice::QueryAllDescriptorSizes()
 	{
+		INFO_LOG(L"Fetching Descriptor Handle Increment Sizes\n");
 		const UINT64 RTV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		const UINT64 CBV_SRV_UAV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		const UINT64 DSV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 		const UINT64 Sampler_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 		this->descriptorSizes = {RTV_size,CBV_SRV_UAV_size,DSV_size,Sampler_size};
+		SUCCESS_LOG(L"Finished Fetching Descriptor Handle Increment Sizes\n");
 	}
 
 	UINT64 GraphicsDevice::QueryDescriptorSize(enum D3D12_DESCRIPTOR_HEAP_TYPE descriptorType) const
@@ -128,6 +132,7 @@ namespace DXR
 
 	void GraphicsDevice::CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat)
 	{
+		INFO_LOG(L"Fetching Supported MSAA Levels\n");
 		this->supported_mssa_levels.clear();
 		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS quality_levels = {};
 		quality_levels.Format = backbufferFormat;
@@ -145,6 +150,7 @@ namespace DXR
 				continueSupportCheck = false;
 			}
 		}
+		SUCCESS_LOG(L"Finished Fetching Supported MSAA Quality Levels\n");
 	}
 
 	CommandQueue* GraphicsDevice::GetGraphicsCommandQueue()
