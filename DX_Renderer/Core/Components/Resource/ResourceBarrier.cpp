@@ -1,6 +1,7 @@
 #include "ResourceBarrier.hpp"
 
 #include "../Command List/GraphicsCommandList.hpp"
+#include "../../../Tooling/Log.hpp"
 
 namespace DXR
 {
@@ -24,5 +25,6 @@ namespace DXR
 	void ResourceBarrier::ExecuteResourceBarrier(GraphicsCommandList& commandList) const
 	{
 		commandList->ResourceBarrier(1,&this->m_resource_barrier);
+		INFO_LOG(L"Queued Resource Barrier Into Command Queue\n");
 	}
 }
