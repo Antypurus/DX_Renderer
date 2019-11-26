@@ -23,11 +23,14 @@ namespace DXR
 	class Shader
 	{
 	public:
-	private:
+		virtual ~Shader() = default;
+	protected:
 		WRL::ComPtr<ID3DBlob> m_shader_code;
 		ShaderType m_shader_type =  ShaderType::None;
 	public:
-		static Shader Compile(const std::string& filename);
-	private:
+	protected:
+		virtual Shader* CompileFromFile(const std::wstring& filename,const std::wstring& entryPoint) = 0;
+		virtual Shader* Compile(const std::wstring& shaderCode, const std::wstring& entryPoint) = 0;
+		Shader(ShaderType shaderType);
 	};
 }

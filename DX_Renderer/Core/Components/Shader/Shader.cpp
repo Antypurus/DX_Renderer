@@ -3,5 +3,8 @@
 
 namespace DXR
 {
-	
+	Shader::Shader(ShaderType shaderType)
+	{
+		this->m_shader_type = shaderType;
+	}
 }
