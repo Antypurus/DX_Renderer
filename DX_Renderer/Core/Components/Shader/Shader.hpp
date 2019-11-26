@@ -29,8 +29,8 @@ namespace DXR
 		ShaderType m_shader_type =  ShaderType::None;
 	public:
 	protected:
-		virtual Shader* CompileFromFile(const std::wstring& filename,const std::wstring& entryPoint) = 0;
-		virtual Shader* Compile(const std::wstring& shaderCode, const std::wstring& entryPoint) = 0;
+		virtual ID3DBlob* CompileFromFile(const std::wstring& filename,const std::string& entryPoint) = 0;
+		virtual ID3DBlob* Compile(const std::string& shaderCode, const std::string& entryPoint) = 0;
 		Shader(ShaderType shaderType);
 	};
 }

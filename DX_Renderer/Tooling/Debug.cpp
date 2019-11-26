@@ -19,6 +19,7 @@ namespace DXR
 		WRL::ComPtr<ID3D12Debug> debugInterface;
 		D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface));
 		debugInterface->EnableDebugLayer();
+		_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );//TODO: move this to its own function
 #endif
 	}
 
