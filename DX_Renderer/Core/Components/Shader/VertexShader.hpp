@@ -3,18 +3,20 @@
 
 namespace DXR
 {
+
+#define SHADER_TYPE_NAME "vs_5_1"
 	
 	class VertexShader: public Shader
 	{
 	public:
 	private:
 	public:
-		static VertexShader CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint);
-		static VertexShader CompileShadert(const std::wstring& shaderCode, const std::wstring& entryPoint);
+		static VertexShader CompileShaderFromFile(const std::wstring& filename, const std::string& entryPoint);
+		static VertexShader CompileShader(const std::string& shaderCode, const std::string& entryPoint);
 	protected:
 		VertexShader();
-		ID3DBlob* CompileFromFile(const std::wstring& filename, const std::string& entryPoint) override;
-		ID3DBlob* Compile(const std::string& shaderCode, const std::string& entryPoint) override;
+		void CompileFromFile(const std::wstring& filename, const std::string& entryPoint) override;
+		void Compile(const std::string& shaderCode, const std::string& entryPoint) override;
 	};
 	
 }

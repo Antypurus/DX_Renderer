@@ -7,40 +7,67 @@ namespace DXR
 {
 	VertexShader::VertexShader() :Shader(ShaderType::VertexShader) {}
 
-	VertexShader VertexShader::CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint)
+	VertexShader VertexShader::CompileShaderFromFile(const std::wstring& filename, const std::string& entryPoint)
 	{
+		VertexShader shader;
+		shader.CompileFromFile(filename, entryPoint);
+		return shader;
 	}
 
-	VertexShader VertexShader::CompileShadert(const std::wstring& shaderCode, const std::wstring& entryPoint)
+	VertexShader VertexShader::CompileShader(const std::string& shaderCode, const std::string& entryPoint)
 	{
+		VertexShader shader;
+		shader.Compile(shaderCode, entryPoint);
+		return shader;
 	}
 
-	ID3DBlob* VertexShader::CompileFromFile(const std::wstring& filename, const std::string& entryPoint)
+	void VertexShader::CompileFromFile(const std::wstring& filename, const std::string& entryPoint)
 	{
 		ID3DBlob* shader_code;
 		ID3DBlob* error_msg;
 		UINT compilation_flags = 0;
-		
+
 #ifndef NDEBUG
 		compilation_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
-		
-		D3DCompileFromFile(filename.c_str(), nullptr, nullptr, entryPoint.c_str(), "vs_5_1", compilation_flags, 0, &shader_code, &error_msg);
+
+		D3DCompileFromFile(filename.c_str(), nullptr, nullptr, entryPoint.c_str(), SHADER_TYPE_NAME, compilation_flags, 0, &shader_code, &error_msg);
 
 		// validate compilation errors
-		if(error_msg!=nullptr)
+		if(error_msg != nullptr)
 		{
 			ERROR_LOG(String::ConvertChartToWideChar((char*)error_msg->GetBufferPointer()).get());
 			error_msg->Release();
-			MessageBox(NULL,"Failed To Compile Vertex Shader","Error",MB_ICONEXCLAMATION | MB_OK);
+			MessageBox(NULL, "Failed To Compile Vertex Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
 			throw std::exception("Failed To Compile Vertex Shader");
 		}
 
-		return shader_code;
+		this->m_shader_code.Reset();
+		this->m_shader_code = WRL::ComPtr<ID3DBlob>(shader_code);
 	}
 
-	ID3DBlob* VertexShader::Compile(const std::string& shaderCode, const std::string& entryPoint)
+	void VertexShader::Compile(const std::string& shaderCode, const std::string& entryPoint)
 	{
-		return nullptr;
+		ID3DBlob* shader_code;
+		ID3DBlob* error_msg;
+		UINT compilation_flags = 0;
+
+#ifndef NDEBUG
+		compilation_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+		D3DCompile(shaderCode.c_str(), shaderCode.length() + 1, nullptr, nullptr, nullptr, entryPoint.c_str(), SHADER_TYPE_NAME, compilation_flags, 0, &shader_code, &error_msg);
+
+		// validate compilation errors
+		if(error_msg != nullptr)
+		{
+			ERROR_LOG(String::ConvertChartToWideChar((char*)error_msg->GetBufferPointer()).get());
+			error_msg->Release();
+			MessageBox(NULL, "Failed To Compile Vertex Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
+			throw std::exception("Failed To Compile Vertex Shader");
+		}
+
+		this->m_shader_code.Reset();
+		this->m_shader_code = WRL::ComPtr<ID3DBlob>(shader_code);
 	}
 }
