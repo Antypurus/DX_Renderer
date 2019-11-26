@@ -17,6 +17,7 @@ namespace DXR
 		WRL::ComPtr<ID3D12GraphicsCommandList> m_command_list;
 	public:
 		ID3D12GraphicsCommandList* operator->();
+		ID3D12GraphicsCommandList* GetRAWInterface() const;
 	private:
 		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);
