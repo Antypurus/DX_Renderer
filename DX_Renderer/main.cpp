@@ -15,6 +15,9 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 
+	commandList->Close();
+	device.GetGraphicsCommandQueue()->Flush(fence);
+	
 	while(window.ShouldContinue)
 	{
 		swapchain.Present(commandList);

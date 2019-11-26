@@ -5,6 +5,7 @@
 
 namespace DXR
 {
+	struct CommandQueue;
 	using namespace Microsoft;
 
 	struct GraphicsDevice;
@@ -19,6 +20,10 @@ namespace DXR
 		WRL::ComPtr<ID3D12Fence> m_fence;
 	public:
 		Fence(UINT64 initialValue,GraphicsDevice& device);
+		void Advance();
+		void Signal(CommandQueue& queue) const;
+		UINT64 GetCompletedValue() const;
+		void WaitForFence() const;
 	private:
 	};
 }
