@@ -15,8 +15,6 @@ namespace DXR
 		static VertexShader CompileShader(const std::string& shaderCode, const std::string& entryPoint);
 	protected:
 		VertexShader();
-		void CompileFromFile(const std::wstring& filename, const std::string& entryPoint) override;
-		void Compile(const std::string& shaderCode, const std::string& entryPoint) override;
 	};
 	
 }
