@@ -11,9 +11,9 @@ namespace DXR
 		ID3DBlob* error_msg;
 		UINT compilation_flags = 0;
 
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		compilation_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
+	#endif
 
 		D3DCompileFromFile(filename.c_str(), nullptr, nullptr, entryPoint.c_str(), this->m_shader_type_name.c_str(), compilation_flags, 0, &shader_code, &error_msg);
 
@@ -36,9 +36,9 @@ namespace DXR
 		ID3DBlob* error_msg;
 		UINT compilation_flags = 0;
 
-#ifndef NDEBUG
+	#ifndef NDEBUG
 		compilation_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
+	#endif
 
 		D3DCompile(shaderCode.c_str(), shaderCode.length() + 1, nullptr, nullptr, nullptr, entryPoint.c_str(), this->m_shader_type_name.c_str(), compilation_flags, 0, &shader_code, &error_msg);
 
@@ -62,27 +62,33 @@ namespace DXR
 		{
 			case ShaderType::VertexShader:
 			{
-
+				this->m_shader_type_name = VERTEX_SHADER;
+				break;
 			}
-			case ShaderType::VertexShader:
+			case ShaderType::HullShader:
 			{
-
+				this->m_shader_type_name = HULL_SHADER;
+				break;
 			}
-			case ShaderType::VertexShader:
+			case ShaderType::DomainShader:
 			{
-
+				this->m_shader_type_name = DOMAIN_SHADER;
+				break;
 			}
-			case ShaderType::VertexShader:
+			case ShaderType::GeometryShader:
 			{
-
+				this->m_shader_type_name = GEOMETRY_SHADER;
+				break;
 			}
-			case ShaderType::VertexShader:
+			case ShaderType::PixelShader:
 			{
-
+				this->m_shader_type_name = PIXEL_SHADER;
+				break;
 			}
-			case ShaderType::VertexShader:
+			case ShaderType::ComputerShader:
 			{
-
+				this->m_shader_type_name = COMPUTE_SHADER;
+				break;
 			}
 			default:
 				break;
