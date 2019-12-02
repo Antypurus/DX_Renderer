@@ -20,7 +20,7 @@ namespace DXR
 		// validate compilation errors
 		if(error_msg != nullptr)
 		{
-			ERROR_LOG(String::ConvertChartToWideChar((char*)error_msg->GetBufferPointer()).get());
+			ERROR_LOG(String::ConvertChartToWideChar((const char*)error_msg->GetBufferPointer()).get());
 			error_msg->Release();
 			MessageBox(NULL, "Failed To Compile Vertex Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
 			throw std::exception("Failed To Compile Vertex Shader");
@@ -47,8 +47,8 @@ namespace DXR
 		{
 			ERROR_LOG(String::ConvertChartToWideChar((char*)error_msg->GetBufferPointer()).get());
 			error_msg->Release();
-			MessageBox(NULL, "Failed To Compile Vertex Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
-			throw std::exception("Failed To Compile Vertex Shader");
+			MessageBox(NULL, "Failed To Compile Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
+			throw std::exception("Failed To Compile Shader");
 		}
 
 		this->m_shader_code.Reset();

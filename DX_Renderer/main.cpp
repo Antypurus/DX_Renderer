@@ -6,6 +6,7 @@
 #include "Core/Components/Swapchain.hpp"
 #include "Tooling/Log.hpp"
 #include <thread>
+#include "Core/Components/Shader/VertexShader.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -34,6 +35,8 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	std::thread main_dx12_thread(MainDirectXThread,std::ref(window));
 
+	DXR::VertexShader shader = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl","main");
+	
 	while(window.ShouldContinue)
 	{
 		window.UpdateWindow();
