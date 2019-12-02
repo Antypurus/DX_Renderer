@@ -1,7 +1,6 @@
 #include "Shader.hpp"
 #include <d3dcompiler.h>
 #include "../../../Tooling/Log.hpp"
-#include "../../../Tooling/String.hpp"
 
 namespace DXR
 {
@@ -20,11 +19,11 @@ namespace DXR
 		// validate compilation errors
 		if(error_msg != nullptr)
 		{
-			//ERROR_LOG(String::ConvertChartToWideChar((char*)error_msg->GetBufferPointer()).get());
-			printf("%s\n",(char*)error_msg->GetBufferPointer());
+			ERROR_LOG((char*)error_msg->GetBufferPointer());
 			error_msg->Release();
 			MessageBox(NULL, "Failed To Compile Vertex Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
-			throw std::exception("Failed To Compile Vertex Shader");
+			//throw std::exception("Failed To Compile Vertex Shader");
+			exit(-1);
 		}
 
 		this->m_shader_code.Reset();
@@ -46,7 +45,7 @@ namespace DXR
 		// validate compilation errors
 		if(error_msg != nullptr)
 		{
-			ERROR_LOG(String::ConvertChartToWideChar((char*)error_msg->GetBufferPointer()).get());
+			ERROR_LOG((char*)error_msg->GetBufferPointer());
 			error_msg->Release();
 			MessageBox(NULL, "Failed To Compile Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
 			throw std::exception("Failed To Compile Shader");

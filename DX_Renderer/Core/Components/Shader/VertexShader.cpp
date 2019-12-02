@@ -1,7 +1,4 @@
 #include "VertexShader.hpp"
-#include <d3dcompiler.h>
-#include "../../../Tooling/Log.hpp"
-#include "../../../Tooling/String.hpp"
 
 namespace DXR
 {

@@ -3,9 +3,13 @@
 namespace DXR
 {
 	void LogError(wchar_t* file, unsigned int line, wchar_t* message);
+	void LogError(wchar_t* file, unsigned int line, char* message);
 	void LogWarning(wchar_t* file, unsigned int line, wchar_t* message);
+	void LogWarning(wchar_t* file, unsigned int line, char* message);
 	void LogSuccess(wchar_t* file, unsigned int line, wchar_t* message);
+	void LogSuccess(wchar_t* file, unsigned int line, char* message);
 	void LogInfo(wchar_t* file, unsigned int line, wchar_t* message);
+	void LogInfo(wchar_t* file, unsigned int line, char* message);
 
 #define __FILENAME__ (wcsrchr(__FILEW__, '\\') ? wcsrchr(__FILEW__, '\\') + 1 : __FILEW__)
 
