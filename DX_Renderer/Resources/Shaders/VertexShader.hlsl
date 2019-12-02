@@ -1,12 +1,12 @@
 
-struct VS_INPUT
+struct VS_OUTPUT
 {
-    float3 vPos   : POSITION;
-    float3 vColor : COLOR0;
+	float4 pos:POSITION;
 };
 
-float3 main(VS_INPUT input) // main is the default function name
+VS_OUTPUT main() // main is the default function name
 {
-    float3 Output = float3(0.0f,0.0f,0.0f);
+	VS_OUTPUT Output; 
+	Output.pos = float4(0.0f,0.0f,0.0f);
     return Output;
 }
