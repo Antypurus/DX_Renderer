@@ -11,6 +11,7 @@
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started\n");
+	
 	DXR::GraphicsDevice device;
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
@@ -35,8 +36,6 @@ int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	std::thread main_dx12_thread(MainDirectXThread,std::ref(window));
 
-	DXR::VertexShader shader = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl","main");
-	
 	while(window.ShouldContinue)
 	{
 		window.UpdateWindow();

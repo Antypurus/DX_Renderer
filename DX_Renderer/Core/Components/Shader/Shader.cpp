@@ -1,6 +1,7 @@
 #include "Shader.hpp"
 #include <d3dcompiler.h>
 #include "../../../Tooling/Log.hpp"
+#include "../../../Tooling/Validate.hpp"
 
 namespace DXR
 {
@@ -14,16 +15,15 @@ namespace DXR
 		compilation_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 	#endif
 
-		D3DCompileFromFile(filename.c_str(), nullptr, nullptr, entryPoint.c_str(), this->m_shader_type_name.c_str(), compilation_flags, 0, &shader_code, &error_msg);
+		DXCall(D3DCompileFromFile(filename.c_str(), nullptr, nullptr, entryPoint.c_str(), this->m_shader_type_name.c_str(), compilation_flags, 0, &shader_code, &error_msg));
 
 		// validate compilation errors
 		if(error_msg != nullptr)
 		{
 			ERROR_LOG((char*)error_msg->GetBufferPointer());
 			error_msg->Release();
-			MessageBox(NULL, "Failed To Compile Vertex Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
-			//throw std::exception("Failed To Compile Vertex Shader");
-			exit(-1);
+			MessageBox(NULL, "Failed To Compile Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
+			throw std::exception("Failed To Compile Shader");
 		}
 
 		this->m_shader_code.Reset();
@@ -40,7 +40,7 @@ namespace DXR
 		compilation_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 	#endif
 
-		D3DCompile(shaderCode.c_str(), shaderCode.length() + 1, nullptr, nullptr, nullptr, entryPoint.c_str(), this->m_shader_type_name.c_str(), compilation_flags, 0, &shader_code, &error_msg);
+		DXCall(D3DCompile(shaderCode.c_str(), shaderCode.length() + 1, nullptr, nullptr, nullptr, entryPoint.c_str(), this->m_shader_type_name.c_str(), compilation_flags, 0, &shader_code, &error_msg));
 
 		// validate compilation errors
 		if(error_msg != nullptr)
