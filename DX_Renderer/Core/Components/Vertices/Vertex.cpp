@@ -12,16 +12,18 @@ namespace DXR
 		return this->m_coordinates;
 	}
 
-	D3D12_INPUT_ELEMENT_DESC Vertex::GenerateInputElementDescription()
+	std::vector<D3D12_INPUT_ELEMENT_DESC> Vertex::GenerateInputElementDescription()
 	{
-		D3D12_INPUT_ELEMENT_DESC element_description = {};
-		element_description.SemanticName = "POSITION";
-		element_description.SemanticIndex = 0;
-		element_description.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		element_description.InputSlot = 0;
-		element_description.AlignedByteOffset = 0;
-		element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-		element_description.InstanceDataStepRate = 0;
-		return element_description;
+		D3D12_INPUT_ELEMENT_DESC position_element_description = {};
+		position_element_description.SemanticName = "POSITION";
+		position_element_description.SemanticIndex = 0;
+		position_element_description.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		position_element_description.InputSlot = 0;
+		position_element_description.AlignedByteOffset = 0;
+		position_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+		position_element_description.InstanceDataStepRate = 0;
+
+		std::vector<D3D12_INPUT_ELEMENT_DESC> input_elements_descriptions = {position_element_description};
+		return input_elements_descriptions;
 	}
 }

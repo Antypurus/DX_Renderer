@@ -1,6 +1,7 @@
 #pragma once
 
 #include<d3d12.h>
+#include<vector>
 
 namespace DXR
 {
@@ -22,7 +23,7 @@ namespace DXR
 	public:
 		Vertex(Coordinates coordinates);
 		const Coordinates& GetCoordinates();
-		virtual D3D12_INPUT_ELEMENT_DESC GenerateInputElementDescription();
+		virtual std::vector<D3D12_INPUT_ELEMENT_DESC> GenerateInputElementDescription();
 	protected:
 	};
 
