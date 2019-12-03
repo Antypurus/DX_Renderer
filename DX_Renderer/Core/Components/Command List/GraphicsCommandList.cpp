@@ -21,15 +21,15 @@ namespace DXR
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
 	{
-		INFO_LOG(L"Creating Command Allocator\n");
+		INFO_LOG(L"Creating Command Allocator");
 		DXCall(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&this->m_command_allocator)));
-		SUCCESS_LOG(L"Command Allocator Created\n");
+		SUCCESS_LOG(L"Command Allocator Created");
 	}
 
 	inline void GraphicsCommandList::CreateCommandList(GraphicsDevice& device)
 	{
-		INFO_LOG(L"Creating Graphics Command List\n");
+		INFO_LOG(L"Creating Graphics Command List");
 		DXCall(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, this->m_command_allocator.Get(),nullptr,IID_PPV_ARGS(&this->m_command_list)));
-		SUCCESS_LOG(L"Graphics Command List Created\n");
+		SUCCESS_LOG(L"Graphics Command List Created");
 	}
 }

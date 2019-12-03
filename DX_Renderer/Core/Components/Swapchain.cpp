@@ -36,7 +36,7 @@ namespace DXR
 	inline void Swapchain::CreateSwapChain(GraphicsDevice& device, Window& window)
 	{
 		this->m_swapchain.Reset();
-		INFO_LOG(L"Swapchain ComPtr references reset\n");
+		INFO_LOG(L"Swapchain ComPtr references reset");
 
 		// description of the swapchain buffers
 		DXGI_MODE_DESC swapchain_buffer_description = {};
@@ -60,20 +60,20 @@ namespace DXR
 		swapchain_description.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapchain_description.OutputWindow = window.GetWindowHandle();
 
-		INFO_LOG(L"Creating Swapchain\n");
+		INFO_LOG(L"Creating Swapchain");
 		DXCall(device.GetDXGIFactory()->CreateSwapChain(device.GetGraphicsCommandQueue()->GetCommandQueueRawPtr(), &swapchain_description, this->m_swapchain.GetAddressOf()));
-		SUCCESS_LOG(L"Swapchain Created\n");
+		SUCCESS_LOG(L"Swapchain Created");
 	}
 
 	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device) const
 	{
 		for(UINT i = 0;i < this->m_swapchain_buffer_count;++i)
 		{
-			INFO_LOG(L"Creating Backbuffer Render Target View\n");
+			INFO_LOG(L"Creating Backbuffer Render Target View");
 			WRL::ComPtr<ID3D12Resource> backbuffer;
 			DXCall(this->m_swapchain->GetBuffer(i, IID_PPV_ARGS(&backbuffer)));
 			device->CreateRenderTargetView(backbuffer.Get(), nullptr, this->m_RTV_descriptor_heap[i]);
-			SUCCESS_LOG(L"Backbuffer Render Target View Created\n");
+			SUCCESS_LOG(L"Backbuffer Render Target View Created");
 		}
 	}
 
@@ -93,7 +93,7 @@ namespace DXR
 		viewport.TopLeftY = yOffset;
 
 		commandList->RSSetViewports(1, &viewport);
-		INFO_LOG(L"Set Viewport In Command List\n");
+		INFO_LOG(L"Set Viewport In Command List");
 	}
 
 	void Swapchain::Present(GraphicsCommandList& commandList)

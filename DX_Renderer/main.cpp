@@ -10,7 +10,7 @@
 
 void MainDirectXThread(DXR::Window& window)
 {
-	SUCCESS_LOG(L"Main DirectX12 Thread Started\n");
+	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 	
 	DXR::GraphicsDevice device;
 	DXR::Fence fence = device.CreateFence(0);

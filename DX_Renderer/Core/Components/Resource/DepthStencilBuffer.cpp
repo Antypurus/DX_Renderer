@@ -15,14 +15,14 @@ namespace DXR
 		D3D12_CLEAR_VALUE optimized_clear_value = this->DepthStencilBuffer::CreateOptimizedClearValue();
 		D3D12_HEAP_PROPERTIES heap_description = this->DepthStencilBuffer::CreateResourceHeapDescription();
 
-		INFO_LOG(L"Creating Depth Stencil Buffer GPU Resource And Corresponding CPU Descriptor\n");
+		INFO_LOG(L"Creating Depth Stencil Buffer GPU Resource And Corresponding CPU Descriptor");
 		DXCall(device->CreateCommittedResource(&heap_description,D3D12_HEAP_FLAG_NONE,&resource_description,D3D12_RESOURCE_STATE_COMMON,&optimized_clear_value,IID_PPV_ARGS(&this->m_resource)));
 		device->CreateDepthStencilView(this->m_resource.Get(),nullptr,(*this->m_descriptor_heap)[0]);
-		SUCCESS_LOG(L"Depth Stencil Buffer GPU Resource And CPU Descriptor Created\n");
+		SUCCESS_LOG(L"Depth Stencil Buffer GPU Resource And CPU Descriptor Created");
 
 		const ResourceBarrier resource_barrier = {*this->m_resource.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_DEPTH_WRITE};
 		resource_barrier.ExecuteResourceBarrier(commandList);
-		INFO_LOG(L"Queued Resource Barrier Into Command List For Execution\n");
+		INFO_LOG(L"Queued Resource Barrier Into Command List For Execution");
 	}
 
 	D3D12_RESOURCE_DESC DepthStencilBuffer::CreateResourceDescription()
