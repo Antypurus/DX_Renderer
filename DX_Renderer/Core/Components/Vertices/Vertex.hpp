@@ -1,25 +1,29 @@
 #pragma once
-#include <cstdint>
+
+#include<d3d12.h>
 
 namespace DXR
 {
 
 	typedef long long int int64;
 
-	struct Coordinate
+	struct Coordinates
 	{
 		int64 x_coord;
 		int64 y_coord;
 		int64 z_coord;
 	};
-	
+
 	struct Vertex
 	{
-	private:
-		Coordinate m_coordinates;
 	public:
-	private:
+	protected:
+		Coordinates m_coordinates;
 	public:
+		Vertex(Coordinates coordinates);
+		const Coordinates& GetCoordinates();
+		virtual D3D12_INPUT_ELEMENT_DESC GenerateInputElementDescription();
+	protected:
 	};
 
 }
