@@ -13,9 +13,18 @@ namespace DXR
 
 #define __FILENAME__ (wcsrchr(__FILEW__, '\\') ? wcsrchr(__FILEW__, '\\') + 1 : __FILEW__)
 
+#ifndef NDEBUG
 #define ERROR_LOG(Message) DXR::LogError(__FILENAME__,__LINE__,Message)
 #define WARNING_LOG(Message) DXR::LogWarning(__FILENAME__,__LINE__,Message)
 #define SUCCESS_LOG(Message) DXR::LogSuccess(__FILENAME__,__LINE__,Message)
 #define INFO_LOG(Message) DXR::LogInfo(__FILENAME__,__LINE__,Message)
 #define LOG(Message) wprintf_s(Message)
+#else
+#define ERROR_LOG(Message)
+#define WARNING_LOG(Message)
+#define SUCCESS_LOG(Message)
+#define INFO_LOG(Message)
+#define LOG(Message)
+#endif
+
 }
