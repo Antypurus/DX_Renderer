@@ -6,7 +6,6 @@
 #include "Core/Components/Swapchain.hpp"
 #include "Tooling/Log.hpp"
 #include <thread>
-#include "Core/Components/Shader/VertexShader.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
