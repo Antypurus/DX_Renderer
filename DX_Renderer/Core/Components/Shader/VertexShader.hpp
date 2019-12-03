@@ -2,11 +2,8 @@
 #include "Shader.hpp"
 
 namespace DXR
-{
-
-#define SHADER_TYPE_NAME "vs_5_1"
-	
-	class VertexShader: public Shader
+{	
+	struct VertexShader: public Shader
 	{
 	public:
 	private:

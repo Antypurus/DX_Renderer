@@ -3,7 +3,7 @@
 
 namespace DXR
 {
-	class PixelShader: public Shader
+	struct PixelShader: public Shader
 	{
 	public:
 	private:

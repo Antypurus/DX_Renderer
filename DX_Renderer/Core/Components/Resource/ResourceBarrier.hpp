@@ -7,7 +7,7 @@ namespace DXR
 
 	struct GraphicsCommandList;
 	
-	class ResourceBarrier
+	struct ResourceBarrier
 	{
 	public:
 	private:

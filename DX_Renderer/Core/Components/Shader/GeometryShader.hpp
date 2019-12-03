@@ -3,7 +3,7 @@
 
 namespace DXR
 {
-	class GeometryShader: public Shader
+	struct GeometryShader: public Shader
 	{
 	public:
 	private:

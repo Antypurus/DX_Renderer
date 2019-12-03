@@ -27,7 +27,7 @@ namespace DXR
 		ComputerShader = 5
 	};
 
-	class Shader
+	struct Shader
 	{
 	public:
 		virtual ~Shader() = default;
