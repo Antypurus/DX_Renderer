@@ -20,20 +20,32 @@ namespace DXR
 
 	void GPUUploadBuffer::CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer)
 	{
+		commandList->CopyBufferRegion(buffer.GetResource(), 0, this->m_resource.Get(), 0, this->m_element_count * this->m_element_size);
+		INFO_LOG(L"Queued Data Transder From GPU Upload Buffer To GPU Default Buffer");
 	}
 
 	void GPUUploadBuffer::UploadDataFromCPUBuffer(void* Data) const
 	{
+		INFO_LOG(L"Started Uploading CPU Data To GPU Upoad Buffer");
+
 		D3D12_RANGE read_range = {};
 		read_range.Begin = 0;
 		read_range.End = ((size_t)((this->m_element_size) * this->m_element_count));
 
 		void* proxy_data = nullptr;
 
-		//TODO: Might me able to improve this
+		INFO_LOG(L"Mapping GPU Upload Buffer Data Address To CPU Data Address");
 		DXCall(this->m_resource->Map(0, &read_range, &proxy_data));
-		memcpy(proxy_data,Data,this->m_element_count * this->m_element_size);
-		this->m_resource->Unmap(0,&read_range);
+		SUCCESS_LOG(L"GPU Upload Buffer Data Address Mapped To CPU Data Address");
+
+		INFO_LOG(L"Writting Data To GPU Upload Buffer");
+		memmove(proxy_data, Data, this->m_element_count * this->m_element_size);
+		SUCCESS_LOG(L"GPU Upload Buffer Data Written");
+
+		this->m_resource->Unmap(0, &read_range);
+		INFO_LOG(L"Unmapped GPU Upload Buffer Data Adress From CPU Data Address");
+
+		SUCCESS_LOG(L"CPU Data Uploaded To GPU Upload Buffer")
 	}
 
 	void GPUUploadBuffer::CreateResource(GraphicsDevice& device)

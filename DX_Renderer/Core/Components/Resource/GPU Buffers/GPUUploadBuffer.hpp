@@ -16,8 +16,8 @@ namespace DXR
 	public:
 		GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data);
 		void CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer);
+		void UploadDataFromCPUBuffer(void* Data) const;
 	protected:
-		void UploadDataFromCPUBuffer(void* Data);
 		void CreateResource(GraphicsDevice& device);
 		D3D12_RESOURCE_DESC CreateResourceDescription() override;
 		D3D12_CLEAR_VALUE CreateOptimizedClearValue() override;

@@ -20,6 +20,7 @@ namespace DXR
 		D3D12_HEAP_PROPERTIES m_resource_heap_description = {};
 	public:
 		ID3D12Resource* operator->() const;
+		ID3D12Resource* GetResource() const;
 		virtual ~Resource() = default;
 	protected:
 		Resource(DescriptorHeap& heap);
