@@ -1,10 +1,13 @@
 #include "GPUUploadBuffer.hpp"
 #include "../../GraphicsDevice.hpp"
 #include "../../../../Tooling/Validate.hpp"
+#include "../../Command List/GraphicsCommandList.hpp"
+#include "GPUDefaultBuffer.hpp"
+#include <d3d12.h>
 
 namespace DXR
 {
-	GPUUploadBuffer::GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize)
+	GPUUploadBuffer::GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data)
 		:m_element_count(elementCount), m_element_size(elementSize)
 	{
 		this->m_resource_description = this->GPUUploadBuffer::CreateResourceDescription();
@@ -12,6 +15,25 @@ namespace DXR
 		this->m_resource_heap_description = this->GPUUploadBuffer::CreateResourceHeapDescription();
 
 		this->CreateResource(device);
+		this->UploadDataFromCPUBuffer(Data);
+	}
+
+	void GPUUploadBuffer::CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer)
+	{
+	}
+
+	void GPUUploadBuffer::UploadDataFromCPUBuffer(void* Data)
+	{
+		D3D12_RANGE read_range = {};
+		read_range.Begin = 0;
+		read_range.End = ((size_t)((this->m_element_size) * this->m_element_count));
+
+		void* proxy_data = nullptr;
+
+		//TODO: Might me able to improve this
+		DXCall(this->m_resource->Map(0, &read_range, &proxy_data));
+		memcpy(proxy_data,Data,this->m_element_count * this->m_element_size);
+		this->m_resource->Unmap(0,&read_range);
 	}
 
 	void GPUUploadBuffer::CreateResource(GraphicsDevice& device)

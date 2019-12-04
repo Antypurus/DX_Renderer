@@ -5,17 +5,11 @@
 namespace DXR
 {
 	wchar_t* FormatMessage(HRESULT res);
+	void ValidateDX12Call(HRESULT res,wchar_t* filename, size_t line);
 
 #ifndef NDEBUG
 #define DXCall(x)\
-	HRESULT result_code = x;\
-	if(result_code < 0)\
-	{\
-		wchar_t* error_message = FormatMessage(result_code);\
-		ERROR_LOG(error_message); \
-		free(error_message);\
-		__debugbreak();\
-	}
+	ValidateDX12Call(x,__FILENAME__,__LINE__);
 #else
 #define DXCall(x) x;
 #endif

@@ -13,12 +13,13 @@ void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 
-	DXR::GraphicsDevice device;
+	DXR::GraphicsDevice device(1);
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 
-	DXR::GPUUploadBuffer upload(device, 5, 256);
+	float data[4] = {1,2,3,4};
+	DXR::GPUUploadBuffer upload(device, 4, sizeof(float),data);
 	DXR::GPUDefaultBuffer buffer(device, commandList, 5, 256);
 
 	commandList->Close();
