@@ -6,6 +6,7 @@
 #include "Core/Components/Swapchain.hpp"
 #include "Tooling/Log.hpp"
 #include <thread>
+#include "Core/Components/Resource/GPU Buffers/GPUDefaultBuffer.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -17,6 +18,8 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 
 	commandList->Close();
+
+	DXR::GPUDefaultBuffer buffer(device,commandList,5,256);
 	
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
 	(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1,commandLists);

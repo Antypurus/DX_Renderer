@@ -6,9 +6,6 @@
 
 namespace DXR
 {
-	struct ResourceBarrier;
-
-	//TODO(Tiago): Add Logging
 	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize)
 	{
 		this->m_element_count = elementCount;
@@ -21,9 +18,9 @@ namespace DXR
 		this->CreateResource(device,commandList);
 	}
 
-	//TODO(Tiago): Add Logging
 	void GPUDefaultBuffer::CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
+		INFO_LOG(L"Creating GPU Buffer Resource");
 		DXCall(device->CreateCommittedResource(
 			&this->m_resource_heap_description,
 			D3D12_HEAP_FLAG_NONE,
@@ -31,12 +28,14 @@ namespace DXR
 			D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
 			IID_PPV_ARGS(&this->m_resource)));
+		SUCCESS_LOG(L"GPU Buffer Resource Created");
 
 		ResourceBarrier resource_barrier = {
 			*this->m_resource.Get(),
 			D3D12_RESOURCE_STATE_COMMON,
 			D3D12_RESOURCE_STATE_GENERIC_READ};
 		resource_barrier.ExecuteResourceBarrier(commandList);
+		INFO_LOG(L"Queued GPU Resource State Transition From Common To Generic Read");
 	}
 
 	D3D12_RESOURCE_DESC GPUDefaultBuffer::CreateResourceDescription()
@@ -46,13 +45,13 @@ namespace DXR
 		resource_description.SampleDesc.Quality = 0;
 		resource_description.Alignment = 0;
 		resource_description.MipLevels = 1;
-		resource_description.DepthOrArraySize = this->m_element_count;
+		resource_description.DepthOrArraySize = 1;
 		resource_description.Width = this->m_element_count * this->m_element_size;
 		resource_description.Height = 1;
 		resource_description.Flags = D3D12_RESOURCE_FLAG_NONE;
 		resource_description.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 		resource_description.Format = DXGI_FORMAT_UNKNOWN;
-		resource_description.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+		resource_description.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		return resource_description;
 	}
 
