@@ -8,5 +8,8 @@ namespace DXR
 	}
 
 	Resource::Resource(DescriptorHeap& heap) :m_descriptor_heap(&heap){}
-	
+
+	Resource::Resource()
+	{
+	}
 }

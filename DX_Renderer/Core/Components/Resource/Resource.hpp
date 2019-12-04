@@ -23,6 +23,7 @@ namespace DXR
 		virtual ~Resource() = default;
 	protected:
 		Resource(DescriptorHeap& heap);
+		Resource();
 		virtual D3D12_RESOURCE_DESC CreateResourceDescription() = 0;
 		virtual D3D12_CLEAR_VALUE CreateOptimizedClearValue() = 0;
 		virtual D3D12_HEAP_PROPERTIES CreateResourceHeapDescription() = 0;
