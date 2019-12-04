@@ -7,13 +7,11 @@
 namespace DXR
 {
 	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize)
+		:m_element_count(elementCount),m_element_size(elementSize)
 	{
-		this->m_element_count = elementCount;
-		this->m_element_size = elementSize;
-
-		this->m_resource_description = this->CreateResourceDescription();
+		this->m_resource_description = this->GPUDefaultBuffer::CreateResourceDescription();
 		this->m_optimized_clear_value = {};
-		this->m_resource_heap_description = this->CreateResourceHeapDescription();
+		this->m_resource_heap_description = this->GPUDefaultBuffer::CreateResourceHeapDescription();
 
 		this->CreateResource(device,commandList);
 	}
@@ -30,10 +28,10 @@ namespace DXR
 			IID_PPV_ARGS(&this->m_resource)));
 		SUCCESS_LOG(L"GPU Buffer Resource Created");
 
-		ResourceBarrier resource_barrier = {
+		const ResourceBarrier resource_barrier = {
 			*this->m_resource.Get(),
 			D3D12_RESOURCE_STATE_COMMON,
-			D3D12_RESOURCE_STATE_GENERIC_READ};
+			D3D12_RESOURCE_STATE_COPY_DEST};
 		resource_barrier.ExecuteResourceBarrier(commandList);
 		INFO_LOG(L"Queued GPU Resource State Transition From Common To Generic Read");
 	}
