@@ -22,7 +22,7 @@ namespace DXR
 	{
 	}
 
-	void GPUUploadBuffer::UploadDataFromCPUBuffer(void* Data)
+	void GPUUploadBuffer::UploadDataFromCPUBuffer(void* Data) const
 	{
 		D3D12_RANGE read_range = {};
 		read_range.Begin = 0;
