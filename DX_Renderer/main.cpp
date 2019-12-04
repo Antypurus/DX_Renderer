@@ -21,6 +21,7 @@ void MainDirectXThread(DXR::Window& window)
 	float data[4] = {1,2,3,4};
 	DXR::GPUUploadBuffer upload(device, 4, sizeof(float),data);
 	DXR::GPUDefaultBuffer buffer(device, commandList, 5, 256);
+	upload.CopyDataToGPUBuffer(commandList,buffer);
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};

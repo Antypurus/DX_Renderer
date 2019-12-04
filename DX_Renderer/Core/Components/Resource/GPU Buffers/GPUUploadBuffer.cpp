@@ -21,12 +21,12 @@ namespace DXR
 	void GPUUploadBuffer::CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer)
 	{
 		commandList->CopyBufferRegion(buffer.GetResource(), 0, this->m_resource.Get(), 0, this->m_element_count * this->m_element_size);
-		INFO_LOG(L"Queued Data Transder From GPU Upload Buffer To GPU Default Buffer");
+		INFO_LOG(L"Queued Data Transfer From GPU Upload Buffer To GPU Default Buffer");
 	}
 
 	void GPUUploadBuffer::UploadDataFromCPUBuffer(void* Data) const
 	{
-		INFO_LOG(L"Started Uploading CPU Data To GPU Upoad Buffer");
+		INFO_LOG(L"Started Uploading CPU Data To GPU Upload Buffer");
 
 		D3D12_RANGE read_range = {};
 		read_range.Begin = 0;
@@ -45,7 +45,7 @@ namespace DXR
 		this->m_resource->Unmap(0, &read_range);
 		INFO_LOG(L"Unmapped GPU Upload Buffer Data Adress From CPU Data Address");
 
-		SUCCESS_LOG(L"CPU Data Uploaded To GPU Upload Buffer")
+		SUCCESS_LOG(L"CPU Data Uploaded To GPU Upload Buffer");
 	}
 
 	void GPUUploadBuffer::CreateResource(GraphicsDevice& device)
