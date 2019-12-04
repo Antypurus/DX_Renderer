@@ -6,8 +6,7 @@
 #include "Core/Components/Swapchain.hpp"
 #include "Tooling/Log.hpp"
 #include <thread>
-#include "Core/Components/Resource/GPU Buffers/GPUDefaultBuffer.hpp"
-#include "Core/Components/Resource/GPU Buffers/GPUUploadBuffer.hpp"
+#include "Core/Components/Vertices/VertexBuffer.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -18,10 +17,11 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 
-	float data[4] = {1,2,3,4};
-	DXR::GPUUploadBuffer upload(device, 4, sizeof(float),data);
-	DXR::GPUDefaultBuffer buffer(device, commandList, 5, 256);
-	upload.CopyDataToGPUBuffer(commandList,buffer);
+	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
+										{
+													{{1,2,3}},
+													{{1,2,3}}
+												});
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};

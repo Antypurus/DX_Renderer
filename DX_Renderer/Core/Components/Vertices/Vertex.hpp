@@ -2,28 +2,25 @@
 
 #include<d3d12.h>
 #include<vector>
+#include<DirectXMath.h>
 
 namespace DXR
 {
 
-	typedef long long int int64;
-
-	struct Coordinates
-	{
-		int64 x_coord;
-		int64 y_coord;
-		int64 z_coord;
-	};
-
+	using namespace DirectX;
+	
 	struct Vertex
 	{
 	public:
 	protected:
-		Coordinates m_coordinates;
+		XMFLOAT3 m_position = {0,0,0};
 	public:
-		Vertex(Coordinates coordinates);
-		const Coordinates& GetCoordinates();
+		Vertex() = default;
+		Vertex(XMFLOAT3 position);
+		const XMFLOAT3& GetPosition() const;
 		virtual std::vector<D3D12_INPUT_ELEMENT_DESC> GenerateInputElementDescription();
+		virtual UINT64 GetElementSize() const;
+		virtual void operator=(Vertex other);
 	protected:
 	};
 

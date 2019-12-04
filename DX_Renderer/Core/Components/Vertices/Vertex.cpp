@@ -2,14 +2,14 @@
 
 namespace DXR
 {
-	Vertex::Vertex(Coordinates coordinates)
+	Vertex::Vertex(XMFLOAT3 position)
 	{
-		this->m_coordinates = coordinates;
+		this->m_position = position;
 	}
 
-	const Coordinates& Vertex::GetCoordinates()
+	const XMFLOAT3& Vertex::GetPosition() const
 	{
-		return this->m_coordinates;
+		return this->m_position;
 	}
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> Vertex::GenerateInputElementDescription()
@@ -25,5 +25,15 @@ namespace DXR
 
 		std::vector<D3D12_INPUT_ELEMENT_DESC> input_elements_descriptions = {position_element_description};
 		return input_elements_descriptions;
+	}
+
+	UINT64 Vertex::GetElementSize() const
+	{
+		return sizeof(m_position);
+	}
+
+	void Vertex::operator=(Vertex other)
+	{
+		other.m_position = this->m_position;
 	}
 }
