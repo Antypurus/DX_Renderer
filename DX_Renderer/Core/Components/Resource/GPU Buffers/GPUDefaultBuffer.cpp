@@ -1,11 +1,42 @@
 #include "GPUDefaultBuffer.hpp"
+#include "../../GraphicsDevice.hpp"
+#include "../../Command List/GraphicsCommandList.hpp"
+#include "../../../../Tooling/Validate.hpp"
+#include "../ResourceBarrier.hpp"
 
 namespace DXR
 {
-	GPUDefaultBuffer::GPUDefaultBuffer(UINT64 elementCount, UINT64 elementSize)
+	struct ResourceBarrier;
+
+	//TODO(Tiago): Add Logging
+	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize)
 	{
 		this->m_element_count = elementCount;
 		this->m_element_size = elementSize;
+
+		this->m_resource_description = this->CreateResourceDescription();
+		this->m_optimized_clear_value = {};
+		this->m_resource_heap_description = this->CreateResourceHeapDescription();
+
+		this->CreateResource(device,commandList);
+	}
+
+	//TODO(Tiago): Add Logging
+	void GPUDefaultBuffer::CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList)
+	{
+		DXCall(device->CreateCommittedResource(
+			&this->m_resource_heap_description,
+			D3D12_HEAP_FLAG_NONE,
+			&this->m_resource_description,
+			D3D12_RESOURCE_STATE_COMMON,
+			nullptr,
+			IID_PPV_ARGS(&this->m_resource)));
+
+		ResourceBarrier resource_barrier = {
+			*this->m_resource.Get(),
+			D3D12_RESOURCE_STATE_COMMON,
+			D3D12_RESOURCE_STATE_GENERIC_READ};
+		resource_barrier.ExecuteResourceBarrier(commandList);
 	}
 
 	D3D12_RESOURCE_DESC GPUDefaultBuffer::CreateResourceDescription()
