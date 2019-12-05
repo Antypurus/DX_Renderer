@@ -18,7 +18,7 @@ namespace DXR
 		std::unique_ptr<GPUUploadBuffer> m_upload_buffer;
 		std::vector<VertexStruct> m_vertices;
 	public:
-		VertexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, std::vector<VertexStruct> vertices) :m_vertices(vertices)
+		VertexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList,const std::vector<VertexStruct>& vertices) :m_vertices(vertices)
 		{
 			static_assert(std::is_base_of<Vertex, VertexStruct>::value, "Provided Struct Must Be Derived From Vertex");
 
