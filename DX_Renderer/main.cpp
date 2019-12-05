@@ -7,6 +7,7 @@
 #include "Tooling/Log.hpp"
 #include <thread>
 #include "Core/Components/Vertices/VertexBuffer.hpp"
+#include "Core/Components/Vertices/IndexBuffer.h"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -22,6 +23,7 @@ void MainDirectXThread(DXR::Window& window)
 													{{1,2,3}},
 													{{1,2,3}}
 												});
+	DXR::IndexBuffer index_buffer(device,commandList,{1,2,3});
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};

@@ -7,7 +7,7 @@ namespace DXR
 	struct GraphicsCommandList;
 	struct GraphicsDevice;
 
-	class GPUUploadBuffer :public Resource
+	struct GPUUploadBuffer :public Resource
 	{
 	public:
 	private:
