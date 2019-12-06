@@ -7,7 +7,7 @@
 #include "Tooling/Log.hpp"
 #include <thread>
 #include "Core/Components/Vertices/VertexBuffer.hpp"
-#include "Core/Components/Vertices/IndexBuffer.h"
+#include "Core/Components/Vertices/IndexBuffer.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {

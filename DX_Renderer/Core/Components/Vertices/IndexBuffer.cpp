@@ -1,4 +1,4 @@
-﻿#include "IndexBuffer.h"
+﻿#include "IndexBuffer.hpp"
 #include "../Resource/GPU Buffers/GPUDefaultBuffer.hpp"
 #include "../Resource/GPU Buffers/GPUUploadBuffer.hpp"
 #include "../GraphicsDevice.hpp"

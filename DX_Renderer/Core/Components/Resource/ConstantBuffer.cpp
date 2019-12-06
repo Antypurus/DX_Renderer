@@ -5,6 +5,7 @@ namespace DXR
 	D3D12_RESOURCE_DESC ConstantBuffer::CreateResourceDescription()
 	{
 		D3D12_RESOURCE_DESC resource_description = {};
+		resource_description.Alignment = 0;
 
 		return resource_description;
 	}
