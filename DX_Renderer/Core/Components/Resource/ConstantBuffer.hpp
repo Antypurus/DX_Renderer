@@ -36,18 +36,20 @@ namespace DXR
 			D3D12_CONSTANT_BUFFER_VIEW_DESC constant_buffer_description = {};
 			constant_buffer_description.BufferLocation = this->m_resource->GetGPUVirtualAddress();
 			constant_buffer_description.SizeInBytes = this->CalculateBufferSize();
-			
+
 			device->CreateConstantBufferView(&constant_buffer_description, this->m_descriptor_heap[0]);
+			INFO_LOG(L"Created Constant Buffer Descriptor");
 		}
 		
 		void CreateConstantBufferResource(GraphicsDevice& device)
 		{
 			INFO_LOG(L"Creating Constant Buffer GPU Resource");
 			DXCall(device->CreateCommittedResource(
-				&this->m_descriptor_heap,
+				&this->m_resource_heap_description,
 				D3D12_HEAP_FLAG_NONE,
 				&this->m_resource_description,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
+				nullptr,
 				IID_PPV_ARGS(&this->m_resource)));
 			SUCCESS_LOG(L"Constant Buffer GPU Resource Created");
 		}
@@ -90,7 +92,7 @@ namespace DXR
 		UINT64 CalculateBufferSize()
 		{
 			const UINT64 data_buffer_size = this->m_data.size() * sizeof(T);
-			return ceil(data_buffer_size / ConstantBufferSizeMultiplier) * ConstantBufferSizeMultiplier;
+			return ceil(data_buffer_size / (double)ConstantBufferSizeMultiplier) * ConstantBufferSizeMultiplier;
 		}
 	};
 

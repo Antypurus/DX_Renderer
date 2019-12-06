@@ -8,6 +8,7 @@
 #include <thread>
 #include "Core/Components/Vertices/VertexBuffer.hpp"
 #include "Core/Components/Vertices/IndexBuffer.hpp"
+#include "Core/Components/Resource/ConstantBuffer.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -19,11 +20,17 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
-										{
-													{{1,2,3}},
-													{{1,2,3}}
-												});
-	DXR::IndexBuffer index_buffer(device,commandList,{1,2,3});
+												 {
+															 {{1,2,3}},
+															 {{1,2,3}}
+												 });
+	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
+	DXR::ConstantBuffer<DirectX::XMFLOAT4X4> constant_buffer(device, {
+		{	1,2,3,4,
+			1,2,3,4,
+			1,2,3,4,
+			1,2,3,4}
+															 });
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
