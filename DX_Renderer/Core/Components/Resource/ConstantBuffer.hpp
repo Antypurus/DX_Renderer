@@ -18,18 +18,19 @@ namespace DXR
 		DescriptorHeap m_descriptor_heap;
 		std::vector<T> m_data;
 	public:
-		ConstantBuffer(GraphicsDevice& device, const std::vector<T> data):m_data(data)
+		ConstantBuffer(GraphicsDevice& device, const std::vector<T> data) :m_data(data)
 		{
 			this->m_descriptor_heap = device.CreateConstantBufferDescriptorHeap(1);
-			
+
 			this->m_resource_description = this->ConstantBuffer<T>::CreateResourceDescription();
 			this->m_optimized_clear_value = {};
 			this->m_resource_heap_description = this->ConstantBuffer<T>::CreateResourceHeapDescription();
 
 			this->CreateConstantBufferResource(device);
+			this->UploadData();
 			this->CreateConstantBufferDescriptor(device);
 		}
-		
+
 	protected:
 		void CreateConstantBufferDescriptor(GraphicsDevice& device)
 		{
@@ -40,7 +41,25 @@ namespace DXR
 			device->CreateConstantBufferView(&constant_buffer_description, this->m_descriptor_heap[0]);
 			INFO_LOG(L"Created Constant Buffer Descriptor");
 		}
-		
+
+		//TODO(Tiago): Logging & Optimizing Initial Data Copy
+		void UploadData()
+		{
+			T* data_array = new T[this->m_data.size()];
+			for(size_t i = 0;i < this->m_data.size();++i)
+			{
+				data_array[i] = this->m_data[i];
+			}
+
+			void* proxy_data = nullptr;
+
+			DXCall(this->m_resource->Map(0, nullptr, &proxy_data));
+			memmove(proxy_data, data_array, this->m_data.size() * sizeof(T));
+			this->m_resource->Unmap(0, nullptr);
+
+			delete[] data_array;
+		}
+
 		void CreateConstantBufferResource(GraphicsDevice& device)
 		{
 			INFO_LOG(L"Creating Constant Buffer GPU Resource");
@@ -53,7 +72,7 @@ namespace DXR
 				IID_PPV_ARGS(&this->m_resource)));
 			SUCCESS_LOG(L"Constant Buffer GPU Resource Created");
 		}
-		
+
 		D3D12_RESOURCE_DESC CreateResourceDescription() override
 		{
 			D3D12_RESOURCE_DESC resource_description = {};
