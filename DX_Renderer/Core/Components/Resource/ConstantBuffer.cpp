@@ -11,9 +11,13 @@ namespace DXR
 
 	D3D12_CLEAR_VALUE ConstantBuffer::CreateOptimizedClearValue()
 	{
+		return {};
 	}
 
 	D3D12_HEAP_PROPERTIES ConstantBuffer::CreateResourceHeapDescription()
 	{
+		D3D12_HEAP_PROPERTIES heap_properties = {};
+		
+		return heap_properties;
 	}
 }
