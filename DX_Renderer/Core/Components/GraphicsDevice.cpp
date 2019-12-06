@@ -64,6 +64,12 @@ namespace DXR
 		return DescriptorHeap(*this, descriptorCount, DescriptorType::DepthStencilBuffer);
 	}
 
+	DescriptorHeap GraphicsDevice::CreateConstantBufferDescriptorHeap(const UINT descriptorCount,
+																	  D3D12_DESCRIPTOR_HEAP_FLAGS flags)
+	{
+		return DescriptorHeap(*this, descriptorCount, DescriptorType::ConstantBufferView, flags);
+	}
+
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
@@ -146,7 +152,8 @@ namespace DXR
 			{
 				this->supported_mssa_levels.emplace_back(quality_levels.SampleCount);
 				quality_levels.SampleCount *= 2;
-			} else {
+			} else
+			{
 				continueSupportCheck = false;
 			}
 		}

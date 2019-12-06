@@ -26,7 +26,7 @@ namespace DXR
 		return {NULL};
 	}
 
-	DescriptorHeap::DescriptorHeap(GraphicsDevice& device, UINT8 descriptorCount, DescriptorType type)
+	DescriptorHeap::DescriptorHeap(GraphicsDevice& device, UINT8 descriptorCount, DescriptorType type, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
 		:ContainedDescriptorType(type), DescriptorCount(descriptorCount)
 	{
 		const DescriptorSizes descriptor_sizes = device.GetDescriptorSizes();
@@ -63,13 +63,13 @@ namespace DXR
 			default:
 				break;
 		}
-		this->CreateDescriptorHeap(device);
+		this->CreateDescriptorHeap(device, flags);
 	}
 
-	void DescriptorHeap::CreateDescriptorHeap(GraphicsDevice& device)
+	void DescriptorHeap::CreateDescriptorHeap(GraphicsDevice& device, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC heap_description = {};
-		heap_description.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		heap_description.Flags = flags;
 		heap_description.NodeMask = 0;
 		heap_description.NumDescriptors = this->DescriptorCount;
 		heap_description.Type = this->m_heap_type;

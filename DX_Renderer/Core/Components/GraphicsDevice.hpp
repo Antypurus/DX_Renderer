@@ -50,6 +50,7 @@ namespace DXR
 		Swapchain CreateSwapchain(Window& window, UINT refreshRate, GraphicsCommandList& commandList);
 		DescriptorHeap CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount);
 		DescriptorHeap CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount);
+		DescriptorHeap CreateConstantBufferDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 	private:
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();
