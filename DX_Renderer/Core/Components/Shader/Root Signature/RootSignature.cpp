@@ -71,4 +71,8 @@ namespace DXR
 										   IID_PPV_ARGS(&this->m_root_signature)));
 	}
 
+	ID3D12RootSignature* RootSignature::GetRootSignature() const
+	{
+		return this->m_root_signature.Get();
+	}
 }

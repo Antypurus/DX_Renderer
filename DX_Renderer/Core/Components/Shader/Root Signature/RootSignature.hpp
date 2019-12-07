@@ -28,6 +28,7 @@ namespace DXR
 		void AddDescriptorRootParameter(DescriptorRootParameter& rootParameter);
 		void AddDescriptorTableRootParameter(DescriptorTableRootParameter& rootParameter);
 		void CreateRootSignature(GraphicsDevice& device);
+		
 	private:
 	};
 }
