@@ -10,17 +10,17 @@ namespace DXR
 
 	void RootSignature::AddConstantRootParameter(ConstantRootParameter& rootParameter)
 	{
-		this->m_constant_root_parameters.emplace_back(rootParameter);
+		this->m_constant_root_parameters.push_back(rootParameter);
 	}
 
 	void RootSignature::AddDescriptorRootParameter(DescriptorRootParameter& rootParameter)
 	{
-		this->m_descriptor_table_root_parameters.emplace_back(rootParameter);
+		this->m_descriptor_root_parameters.push_back(rootParameter);
 	}
 
 	void RootSignature::AddDescriptorTableRootParameter(DescriptorTableRootParameter& rootParameter)
 	{
-		this->m_descriptor_root_parameters.emplace_back(rootParameter);
+		this->m_descriptor_table_root_parameters.push_back(rootParameter);
 	}
 
 	void RootSignature::CreateRootSignature(GraphicsDevice& device)

@@ -4,7 +4,7 @@
 namespace DXR
 {
 
-	enum class DescriptorType
+	enum RootParameterDescriptorType
 	{
 		CBV,
 		UAV,
@@ -17,7 +17,7 @@ namespace DXR
 	private:
 		UINT m_register_slot;
 	public:
-		DescriptorRootParameter(DescriptorType Type, UINT registerSlot,D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL);
+		DescriptorRootParameter(RootParameterDescriptorType Type, UINT registerSlot,D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL);
 	protected:
 		D3D12_ROOT_PARAMETER GenerateRootParameter() override;
 	};

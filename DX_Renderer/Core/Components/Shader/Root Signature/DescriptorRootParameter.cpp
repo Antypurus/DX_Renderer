@@ -2,23 +2,23 @@
 
 namespace DXR
 {
-	DescriptorRootParameter::DescriptorRootParameter(DescriptorType Type, UINT registerSlot,
+	DescriptorRootParameter::DescriptorRootParameter(RootParameterDescriptorType Type, UINT registerSlot,
 													 D3D12_SHADER_VISIBILITY visibility)
 		:RootParameter(RootParameterType::RootDescriptor, visibility), m_register_slot(registerSlot)
 	{
 		switch(Type)
 		{
-			case DXR::DescriptorType::CBV:
+			case DXR::RootParameterDescriptorType::CBV:
 			{
 				this->m_parameter_type = D3D12_ROOT_PARAMETER_TYPE_CBV;
 				break;
 			}
-			case DXR::DescriptorType::UAV:
+			case DXR::RootParameterDescriptorType::UAV:
 			{
 				this->m_parameter_type = D3D12_ROOT_PARAMETER_TYPE_UAV;
 				break;
 			}
-			case DXR::DescriptorType::SRV:
+			case DXR::RootParameterDescriptorType::SRV:
 			{
 				this->m_parameter_type = D3D12_ROOT_PARAMETER_TYPE_SRV;
 				break;
