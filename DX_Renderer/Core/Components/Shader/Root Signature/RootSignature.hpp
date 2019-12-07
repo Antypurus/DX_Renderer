@@ -5,15 +5,17 @@
 
 namespace DXR
 {
+	struct GraphicsDevice;
 
 	using namespace Microsoft;
 	
 	struct RootSignature
-	{
+	{ 
 	public:
 	private:
 		WRL::ComPtr<ID3D12RootSignature> m_root_signature;
 	public:
+		RootSignature(GraphicsDevice& device);
 	private:
 	};
 }
