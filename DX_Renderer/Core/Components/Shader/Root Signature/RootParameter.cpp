@@ -2,6 +2,11 @@
 
 namespace DXR
 {
+	D3D12_ROOT_PARAMETER RootParameter::GetRootParameter()
+	{
+		return this->GenerateRootParameter();
+	}
+
 	RootParameter::RootParameter(RootParameterType rootParameterType, D3D12_SHADER_VISIBILITY visibility)
 		:m_root_parameter_type(rootParameterType), m_shader_visibility(visibility)
 	{
