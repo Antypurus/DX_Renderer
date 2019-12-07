@@ -22,6 +22,7 @@ namespace DXR
 	public:
 	protected:
 		RootParameter(RootParameterType rootParameterType, D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL);
+		virtual D3D12_ROOT_PARAMETER GenerateRootParameter() = 0;
 	};
 
 }
