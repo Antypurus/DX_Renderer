@@ -2,7 +2,8 @@
 
 namespace DXR
 {
-	DescriptorTableRootParameter::DescriptorTableRootParameter() :RootParameter(RootParameterType::DescriptorTable)
+	DescriptorTableRootParameter::DescriptorTableRootParameter(D3D12_SHADER_VISIBILITY visibility)
+		:RootParameter(RootParameterType::DescriptorTable, visibility)
 	{
 	}
 
@@ -54,7 +55,28 @@ namespace DXR
 		this->m_table_entries.emplace_back(table_entry);
 	}
 
+	D3D12_ROOT_DESCRIPTOR_TABLE DescriptorTableRootParameter::GenerateDescriptorTable()
+	{
+		D3D12_DESCRIPTOR_RANGE* descriptor_table_entries = new D3D12_DESCRIPTOR_RANGE[this->m_table_entries.size()];
+		for(size_t i = 0;i < this->m_table_entries.size();++i)
+		{
+			descriptor_table_entries[i] = this->m_table_entries[i];
+		}
+
+		D3D12_ROOT_DESCRIPTOR_TABLE descriptor_table = {};
+		descriptor_table.NumDescriptorRanges = this->m_table_entries.size();
+		descriptor_table.pDescriptorRanges = descriptor_table_entries;
+
+		return descriptor_table;
+	}
+
 	D3D12_ROOT_PARAMETER DescriptorTableRootParameter::GenerateRootParameter()
 	{
+		D3D12_ROOT_PARAMETER root_parameter = {};
+		root_parameter.DescriptorTable = this->GenerateDescriptorTable();
+		root_parameter.ParameterType = this->m_parameter_type;
+		root_parameter.ShaderVisibility = this->m_shader_visibility;
+
+		return root_parameter;
 	}
 }

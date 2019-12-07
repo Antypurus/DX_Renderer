@@ -15,6 +15,7 @@ namespace DXR
 	struct RootParameter
 	{
 	public:
+		virtual ~RootParameter() = default;
 	protected:
 		RootParameterType m_root_parameter_type;
 		D3D12_SHADER_VISIBILITY m_shader_visibility;
