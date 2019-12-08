@@ -3,13 +3,16 @@ cbuffer cbPerObject : register(b0)
 	float4x4 gWorldViewProj;
 };
 
-void VS(float3 iPosL : POSITION,
-		out float4 oPosH : SV_POSITION,
-		out float4 oColor : COLOR)
+struct VS_OUTPUT
 {
-	// Transform to homogeneous clip space.
-	oPosH = mul(float4(iPosL, 1.0f), gWorldViewProj);
+	float4 position:POSITION;
+};
 
-	// Just pass vertex color into the pixel shader.
-	oColor = float4(1.0f.0.0f,0.0f,0.0f);
+VS_OUTPUT main(float4 vPos:POSITION)
+{
+	VS_OUTPUT output;
+
+	output.position = mul(vPos,gWorldViewProj);
+
+	return output;
 }

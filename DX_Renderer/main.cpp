@@ -42,8 +42,8 @@ void MainDirectXThread(DXR::Window& window)
 	root_signature.AddConstantRootParameter(constant_root_parameter);
 	root_signature.CreateRootSignature(device);
 
-	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"", "Entry");
-	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"", "Entry");
+	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "main");
+	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/PixelShader.hlsl", "main");
 
 	DXR::PipelineStateObject pso = {
 		device,
