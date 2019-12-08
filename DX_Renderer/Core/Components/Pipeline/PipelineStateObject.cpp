@@ -35,6 +35,8 @@ namespace DXR
 		pso.NumRenderTargets = this->m_render_target_count;
 		pso.PrimitiveTopologyType = this->m_primitive_type;
 		pso.pRootSignature = this->m_root_signature.GetRootSignature();
+		pso.RTVFormats[0] = this->m_backbuffer_format;
+		pso.RasterizerState = this->m_rasterizer.GetRasterizerDescription();
 
 		pso.VS = this->m_vertex_shader;
 		pso.HS = this->m_hull_shader;
