@@ -17,4 +17,24 @@ namespace DXR
 
 		return stencil_op;
 	}
+
+	DepthStencil DepthStencil::Default()
+	{
+		return DepthStencil();
+	}
+	
+	D3D12_DEPTH_STENCIL_DESC DepthStencil::GetDepthStencilDescription()
+	{
+		D3D12_DEPTH_STENCIL_DESC depth_stencil = {};
+		depth_stencil.BackFace = this->m_back_face;
+		depth_stencil.FrontFace = this->m_front_face;
+		depth_stencil.DepthEnable = this->m_depth_enabled;
+		depth_stencil.DepthWriteMask = this->m_depth_write_mask;
+		depth_stencil.DepthFunc = this->m_depth_function;
+		depth_stencil.StencilEnable = this->m_stencil_enabled;
+		depth_stencil.StencilReadMask = this->m_stencil_read_mask;
+		depth_stencil.StencilWriteMask = this->m_stencil_write_mask;
+
+		return depth_stencil;
+	}
 }
