@@ -69,11 +69,21 @@ void MainDirectXThread(DXR::Window& window)
 
 		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		commandList->SetDescriptorHeaps(_countof(heaps),heaps);
-		commandList->SetGraphicsRootDescriptorTable(0,constant_buffer.GetDescriptorHeap().Get(0));
+		commandList->SetGraphicsRootDescriptorTable(0,constant_buffer.GetDescriptorHeap()->Get(0));
 
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
+		commandList->IASetVertexBuffers(0,1,&vertex_buffer.GetVertexBufferDescriptor());
+		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
+		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		commandList->DrawIndexedInstanced(3,1,0,0,0);
+
+		commandList->Close();
+		(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
 
 		swapchain.Present(commandList);
+
+		device.GetGraphicsCommandQueue()->Flush(fence);
 	}
 
 }
