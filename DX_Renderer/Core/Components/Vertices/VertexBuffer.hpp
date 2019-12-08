@@ -1,4 +1,5 @@
 #pragma once
+#include <d3d12.h>
 #include "../Command List/GraphicsCommandList.hpp"
 #include "../GraphicsDevice.hpp"
 #include "../Resource/GPU Buffers/GPUDefaultBuffer.hpp"
@@ -18,10 +19,14 @@ namespace DXR
 		std::unique_ptr<GPUUploadBuffer> m_upload_buffer;
 		std::vector<VertexStruct> m_vertices;
 		D3D12_VERTEX_BUFFER_VIEW m_vertex_buffer_descriptor;
+		D3D12_INPUT_LAYOUT_DESC m_input_layout;
+		std::vector<D3D12_INPUT_ELEMENT_DESC> m_input_elements;
 	public:
 		VertexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, const std::vector<VertexStruct>& vertices) :m_vertices(vertices)
 		{
 			static_assert(std::is_base_of<Vertex, VertexStruct>::value, "Provided Struct Must Be Derived From Vertex");
+
+			this->GenerateInputLayoutDescription();
 
 			INFO_LOG(L"Creating Vertex Buffer");
 			this->CreateVertexBuffer(device, commandList);
@@ -35,7 +40,25 @@ namespace DXR
 		{
 			return this->m_vertex_buffer_descriptor;
 		}
+
+		D3D12_INPUT_LAYOUT_DESC GetInputLayout()
+		{
+			return this->m_input_layout;
+		}
+
 	private:
+
+		void GenerateInputLayoutDescription()
+		{
+			this->m_input_elements = this->m_vertices[0].GenerateInputElementDescription();
+
+			D3D12_INPUT_LAYOUT_DESC input_layout = {};
+			input_layout.NumElements = this->m_input_elements.size();
+			input_layout.pInputElementDescs = this->m_input_elements.data();
+
+			this->m_input_layout = input_layout;
+		}
+
 		void CreateUploadBuffer(GraphicsDevice& device)
 		{
 			auto vertices = new VertexStruct[this->m_vertices.size()];

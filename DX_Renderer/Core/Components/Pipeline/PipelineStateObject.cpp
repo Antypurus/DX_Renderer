@@ -16,10 +16,15 @@ namespace DXR
 		this->CreatePipelineStateObject(device);
 	}
 
+	ID3D12PipelineState* PipelineStateObject::GetPipelineStateObject()
+	{
+		return this->m_pso.Get();
+	}
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC PipelineStateObject::CreatePipelineStateObjectDescription()
 	{
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pso = {};
-		pso.BlendState = this->m_blend;
+		pso.BlendState = this->m_blend.GetBlendDescription();
 		pso.CachedPSO = this->m_cached_pso;
 		pso.DepthStencilState = this->m_depth_stencil.GetDepthStencilDescription();
 		pso.DSVFormat = this->m_depth_stencil_buffer_format;
@@ -36,13 +41,13 @@ namespace DXR
 		pso.DS = this->m_domain_shader;
 		pso.GS = this->m_geometry_shader;
 		pso.PS = this->m_pixel_shader;
-		
+
 		return pso;
 	}
 
 	void PipelineStateObject::CreatePipelineStateObject(GraphicsDevice& device)
 	{
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc = this->CreatePipelineStateObjectDescription();
-		DXCall(device->CreateGraphicsPipelineState(&pso_desc,IID_PPV_ARGS(&this->m_pso)));
+		DXCall(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&this->m_pso)));
 	}
 }

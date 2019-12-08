@@ -10,6 +10,9 @@
 #include "Core/Components/Vertices/IndexBuffer.hpp"
 #include "Core/Components/Resource/ConstantBuffer.hpp"
 #include "Core/Components/Shader/Root Signature/RootSignature.hpp"
+#include "Core/Components/Pipeline/PipelineStateObject.hpp"
+#include "Core/Components/Shader/VertexShader.hpp"
+#include "Core/Components/Shader/PixelShader.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -26,17 +29,29 @@ void MainDirectXThread(DXR::Window& window)
 															 {{1,2,3}}
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
-	DXR::ConstantBuffer<DirectX::XMFLOAT4X4> constant_buffer(device, {
-		{	1,2,3,4,
+	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, {
+		{
+			1,2,3,4,
 			1,2,3,4,
 			1,2,3,4,
 			1,2,3,4}
-															 });
+														   });
 
 	DXR::RootSignature root_signature;
-	DXR::ConstantRootParameter constant_root_parameter(0,1);
+	DXR::ConstantRootParameter constant_root_parameter(0, 1);
 	root_signature.AddConstantRootParameter(constant_root_parameter);
 	root_signature.CreateRootSignature(device);
+
+	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"", "Entry");
+	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"", "Entry");
+
+	DXR::PipelineStateObject pso = {
+		device,
+		vs.GetShaderBytecode(),
+		ps.GetShaderBytecode(),
+		root_signature,
+		vertex_buffer.GetInputLayout(),
+		swapchain.m_backbuffer_format,DXR::DepthStencilBuffer::DepthStencilBufferFormat};
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};

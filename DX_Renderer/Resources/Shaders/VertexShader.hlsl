@@ -1,12 +1,15 @@
-
-struct VS_OUTPUT
+cbuffer cbPerObject : register(b0)
 {
-	float4 pos:POSITION;
+	float4x4 gWorldViewProj;
 };
 
-VS_OUTPUT main() // main is the default function name
+void VS(float3 iPosL : POSITION,
+		out float4 oPosH : SV_POSITION,
+		out float4 oColor : COLOR)
 {
-	VS_OUTPUT Output; 
-	Output.pos = float4(0.0f,0.0f,0.0f,0.0f);
-    return Output;
+	// Transform to homogeneous clip space.
+	oPosH = mul(float4(iPosL, 1.0f), gWorldViewProj);
+
+	// Just pass vertex color into the pixel shader.
+	oColor = float4(1.0f.0.0f,0.0f,0.0f);
 }
