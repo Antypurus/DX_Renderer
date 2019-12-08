@@ -6,6 +6,7 @@
 #include "../Shader/Root Signature/RootSignature.hpp"
 #include "Blend.hpp"
 #include "DepthStencil.hpp"
+#include "../Shader/Shader.hpp"
 
 namespace DXR
 {
@@ -36,11 +37,11 @@ namespace DXR
 		D3D12_PIPELINE_STATE_FLAGS m_pso_flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
 		// shaders
-		D3D12_SHADER_BYTECODE m_vertex_shader = {0};
-		D3D12_SHADER_BYTECODE m_hull_shader = {0};
-		D3D12_SHADER_BYTECODE m_domain_shader = {0};
-		D3D12_SHADER_BYTECODE m_geometry_shader = {0};
-		D3D12_SHADER_BYTECODE m_pixel_shader = {0};
+		D3D12_SHADER_BYTECODE m_vertex_shader = Shader::NoShaderBytecode();
+		D3D12_SHADER_BYTECODE m_hull_shader = Shader::NoShaderBytecode();
+		D3D12_SHADER_BYTECODE m_domain_shader = Shader::NoShaderBytecode();
+		D3D12_SHADER_BYTECODE m_geometry_shader = Shader::NoShaderBytecode();
+		D3D12_SHADER_BYTECODE m_pixel_shader = Shader::NoShaderBytecode();
 	public:
 		PipelineStateObject(GraphicsDevice& device,
 							D3D12_SHADER_BYTECODE& vertexShader, D3D12_SHADER_BYTECODE& pixelShader,

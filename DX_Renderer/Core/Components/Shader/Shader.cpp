@@ -13,6 +13,14 @@ namespace DXR
 
 		return shader_bytecode;
 	}
+	D3D12_SHADER_BYTECODE Shader::NoShaderBytecode()
+	{
+		D3D12_SHADER_BYTECODE bytecode = {};
+		bytecode.BytecodeLength = 0;
+		bytecode.pShaderBytecode = nullptr;
+
+		return bytecode;
+	}
 	void Shader::CompileFromFile(const std::wstring& filename, const std::string& entryPoint)
 	{
 		ID3DBlob* shader_code;

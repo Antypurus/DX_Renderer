@@ -37,6 +37,7 @@ namespace DXR
 		std::string m_shader_type_name = "";
 	public:
 		D3D12_SHADER_BYTECODE GetShaderBytecode();
+		static D3D12_SHADER_BYTECODE NoShaderBytecode(); 
 	protected:
 		virtual void CompileFromFile(const std::wstring& filename, const std::string& entryPoint);
 		virtual void Compile(const std::string& shaderCode, const std::string& entryPoint);
