@@ -48,6 +48,25 @@ namespace DXR
 		SUCCESS_LOG(L"CPU Data Uploaded To GPU Upload Buffer");
 	}
 
+	std::unique_ptr<BYTE> GPUUploadBuffer::GetData()
+	{
+		void* proxy_data = nullptr;
+		INFO_LOG(L"Mapping GPU Upload Buffer Data Address To CPU Data Address");
+		DXCall(this->m_resource->Map(0,nullptr, &proxy_data));
+		SUCCESS_LOG(L"GPU Upload Buffer Data Address Mapped To CPU Data Address");
+
+		BYTE* data = new BYTE[this->m_element_count * this->m_element_size];
+
+		INFO_LOG(L"Writting Data To GPU Upload Buffer");
+		memmove(data, proxy_data, this->m_element_count * this->m_element_size);
+		SUCCESS_LOG(L"GPU Upload Buffer Data Written");
+		
+		this->m_resource->Unmap(0, nullptr);
+		INFO_LOG(L"Unmapped GPU Upload Buffer Data Adress From CPU Data Address");
+
+		return std::make_unique<BYTE>(*data);
+	}
+
 	void GPUUploadBuffer::CreateResource(GraphicsDevice& device)
 	{
 		INFO_LOG(L"Creating GPU Upload Buffer Resource");

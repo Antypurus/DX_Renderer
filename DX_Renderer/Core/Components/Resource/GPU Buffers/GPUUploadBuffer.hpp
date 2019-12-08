@@ -1,5 +1,6 @@
 #pragma once
 #include "../Resource.hpp"
+#include <memory>
 
 namespace DXR
 {
@@ -17,6 +18,7 @@ namespace DXR
 		GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data);
 		void CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer);
 		void UploadDataFromCPUBuffer(void* Data) const;
+		std::unique_ptr<BYTE> GetData();
 	protected:
 		void CreateResource(GraphicsDevice& device);
 		D3D12_RESOURCE_DESC CreateResourceDescription() override;

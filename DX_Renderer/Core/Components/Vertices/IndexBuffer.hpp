@@ -16,10 +16,10 @@ namespace DXR
 	private:
 		std::unique_ptr<GPUUploadBuffer> m_upload_buffer;
 		std::unique_ptr<GPUDefaultBuffer> m_index_buffer;
-		std::vector<uint32_t> m_indices;
+		std::vector<UINT> m_indices;
 		D3D12_INDEX_BUFFER_VIEW m_index_buffer_descriptor;
 	public:
-		IndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, const std::vector<uint32_t>& indices);
+		IndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, const std::vector<UINT>& indices);
 		D3D12_INDEX_BUFFER_VIEW GetIndexBufferDescriptor() const;
 	private:
 		void CreateIndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList);

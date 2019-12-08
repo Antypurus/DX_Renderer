@@ -12,7 +12,7 @@ VS_OUTPUT main(float4 vPos:POSITION)
 {
 	VS_OUTPUT output;
 
-	output.position = mul(vPos,gWorldViewProj);
+	output.position = mul(gWorldViewProj,vPos);
 
 	return output;
 }

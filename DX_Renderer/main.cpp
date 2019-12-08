@@ -24,9 +24,9 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 												 {
-															 {{0,1,1}},
-															 {{0.5,0,1}},
-															 {{-0.5,0,1}}
+															 {{0,1,10}},
+															 {{0.5,0,10}},
+															 {{-0.5,0,10}}
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, {1,3,2});
 
@@ -53,7 +53,7 @@ void MainDirectXThread(DXR::Window& window)
 	device.GetGraphicsCommandQueue()->Flush(fence);
 
 	using namespace DirectX;
-	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 3, 16 / 9, 0.1f, 500.0f)*XMMatrixLookAtLH({0,0,-1}, {0,0,0}, {0,1,0})*XMMatrixScaling(20,20,20);
+	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 2, 16.0f / 9.0f, 0.1f, 500.0f)*XMMatrixLookAtLH({0,0,0}, {0,0,10}, {0,1,0})*XMMatrixScaling(2000,2000,2000);
 	DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
 
 	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
@@ -72,10 +72,10 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
 
-		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 		commandList->IASetVertexBuffers(0, 1, &vertex_buffer.GetVertexBufferDescriptor());
 		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
 		commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
