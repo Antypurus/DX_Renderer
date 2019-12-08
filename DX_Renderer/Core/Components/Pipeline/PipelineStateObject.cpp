@@ -38,6 +38,7 @@ namespace DXR
 		pso.RTVFormats[0] = this->m_backbuffer_format;
 		pso.RasterizerState = this->m_rasterizer.GetRasterizerDescription();
 		pso.SampleDesc = this->m_mssa;
+		pso.StreamOutput = this->m_stream_output;
 
 		pso.VS = this->m_vertex_shader;
 		pso.HS = this->m_hull_shader;

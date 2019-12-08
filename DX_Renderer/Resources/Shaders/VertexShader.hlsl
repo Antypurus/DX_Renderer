@@ -5,7 +5,7 @@ cbuffer cbPerObject : register(b0)
 
 struct VS_OUTPUT
 {
-	float4 position:POSITION;
+	float4 position:SV_POSITION;
 };
 
 VS_OUTPUT main(float4 vPos:POSITION)

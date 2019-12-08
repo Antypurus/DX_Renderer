@@ -18,7 +18,7 @@ void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 
-	DXR::GraphicsDevice device(0);
+	DXR::GraphicsDevice device(1);
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
