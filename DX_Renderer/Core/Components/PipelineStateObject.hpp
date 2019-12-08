@@ -1,6 +1,11 @@
 ﻿#pragma once
 
-struct PipelineStateObject
+namespace DXR
 {
-	
-};
+
+	struct PipelineStateObject
+	{
+
+	};
+
+}

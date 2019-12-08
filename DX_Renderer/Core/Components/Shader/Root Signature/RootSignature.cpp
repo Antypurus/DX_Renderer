@@ -69,6 +69,8 @@ namespace DXR
 		DXCall(device->CreateRootSignature(0, serialized_root_signature->GetBufferPointer(),
 										   serialized_root_signature->GetBufferSize(),
 										   IID_PPV_ARGS(&this->m_root_signature)));
+
+		delete[] root_parameters;
 	}
 
 	ID3D12RootSignature* RootSignature::GetRootSignature() const
