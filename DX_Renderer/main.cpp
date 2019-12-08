@@ -79,7 +79,6 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
 
-		commandList->Close();
 		(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
 
 		swapchain.Present(commandList);
