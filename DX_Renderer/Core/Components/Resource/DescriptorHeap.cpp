@@ -26,6 +26,16 @@ namespace DXR
 		return {NULL};
 	}
 
+	D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::Get(const size_t index)
+	{
+		return {this->m_descriptor_heap->GetGPUDescriptorHandleForHeapStart().ptr + index * this->m_descriptor_handle_increment_size};
+	}
+
+	ID3D12DescriptorHeap* DescriptorHeap::GetRAWInterface()
+	{
+		return this->m_descriptor_heap.Get();
+	}
+
 	DescriptorHeap::DescriptorHeap(GraphicsDevice& device, UINT8 descriptorCount, DescriptorType type, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
 		:ContainedDescriptorType(type), DescriptorCount(descriptorCount)
 	{

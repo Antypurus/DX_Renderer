@@ -33,6 +33,8 @@ namespace DXR
 		DescriptorHeap(){}
 		void operator=(const DescriptorHeap& other);
 		D3D12_CPU_DESCRIPTOR_HANDLE operator[](const size_t index) const;
+		D3D12_GPU_DESCRIPTOR_HANDLE Get(const size_t index);
+		ID3D12DescriptorHeap* GetRAWInterface();
 	private:
 		DescriptorHeap(GraphicsDevice& device, UINT8 descriptorCount, DescriptorType type, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 		inline void CreateDescriptorHeap(GraphicsDevice& device, D3D12_DESCRIPTOR_HEAP_FLAGS flags);

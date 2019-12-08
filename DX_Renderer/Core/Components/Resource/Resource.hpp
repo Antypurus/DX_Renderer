@@ -14,7 +14,7 @@ namespace DXR
 	public:
 	protected:
 		WRL::ComPtr<ID3D12Resource> m_resource;
-		DescriptorHeap* m_descriptor_heap = nullptr;// Non owning pointer to resource descriptor heap
+		DescriptorHeap* m_descriptor_heap = nullptr;
 		D3D12_RESOURCE_DESC m_resource_description = {};
 		D3D12_CLEAR_VALUE m_optimized_clear_value = {};
 		D3D12_HEAP_PROPERTIES m_resource_heap_description = {};
@@ -22,6 +22,7 @@ namespace DXR
 		ID3D12Resource* operator->() const;
 		ID3D12Resource* GetResource() const;
 		virtual ~Resource() = default;
+		DescriptorHeap* GetDescriptorHeap();
 	protected:
 		Resource(DescriptorHeap& heap);
 		Resource();

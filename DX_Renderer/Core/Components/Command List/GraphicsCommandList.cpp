@@ -19,6 +19,11 @@ namespace DXR
 		return this->m_command_list.Get();
 	}
 
+	ID3D12CommandAllocator* GraphicsCommandList::GetCommandAllocator()
+	{
+		return this->m_command_allocator.Get();
+	}
+
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
 	{
 		INFO_LOG(L"Creating Command Allocator");

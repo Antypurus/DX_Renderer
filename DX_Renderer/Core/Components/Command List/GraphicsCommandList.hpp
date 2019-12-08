@@ -18,6 +18,7 @@ namespace DXR
 	public:
 		ID3D12GraphicsCommandList* operator->();
 		ID3D12GraphicsCommandList* GetRAWInterface() const;
+		ID3D12CommandAllocator* GetCommandAllocator();
 	private:
 		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);
