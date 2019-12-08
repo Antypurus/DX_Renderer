@@ -42,9 +42,12 @@ namespace DXR
 		D3D12_SHADER_BYTECODE m_geometry_shader = {0};
 		D3D12_SHADER_BYTECODE m_pixel_shader = {0};
 	public:
-
+		PipelineStateObject(D3D12_SHADER_BYTECODE& vertexShader,D3D12_SHADER_BYTECODE& pixelShader,
+							RootSignature& rootSignature, D3D12_INPUT_LAYOUT_DESC& inputLayout,
+							DXGI_FORMAT backbufferFormat, DXGI_FORMAT dsvFormat);
 	private:
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC CreatePipelineStateObjectDescription();
+		void CreatePipelineStateObject(GraphicsDevice& device);
 	};
 
 }
