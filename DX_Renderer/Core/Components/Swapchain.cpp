@@ -122,9 +122,6 @@ namespace DXR
 
 	void Swapchain::Present(GraphicsCommandList& commandList)
 	{
-		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].Get(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
-		barrier.ExecuteResourceBarrier(commandList);
-
 		DXCall(this->m_swapchain->Present(0, 0));
 		this->m_current_backbuffer = this->m_current_backbuffer == 1 ? 0 : 1;
 	}
@@ -142,5 +139,11 @@ namespace DXR
 	D3D12_CPU_DESCRIPTOR_HANDLE Swapchain::GetDepthStencilBufferDescriptor()
 	{
 		return this->m_DSV_descriptor_heap[0];
+	}
+
+	void Swapchain::PrepareBackbufferForPresentation(GraphicsCommandList& commandList)
+	{
+		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].Get(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
+		barrier.ExecuteResourceBarrier(commandList);
 	}
 }

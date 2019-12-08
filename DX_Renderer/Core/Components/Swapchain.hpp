@@ -41,6 +41,7 @@ namespace DXR
 		ID3D12Resource* GetCurrentBackbuffer();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferDescriptor();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilBufferDescriptor();
+		void PrepareBackbufferForPresentation(GraphicsCommandList& commandList);
 	private:
 		Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList);
 		Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList, DXGI_FORMAT backbufferFormat);

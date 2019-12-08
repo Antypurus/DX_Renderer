@@ -28,7 +28,7 @@ void MainDirectXThread(DXR::Window& window)
 															 {{0.5,0,1}},
 															 {{-0.5,0,1}}
 												 });
-	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
+	DXR::IndexBuffer index_buffer(device, commandList, {1,3,2});
 
 	DXR::RootSignature root_signature;
 	DXR::DescriptorTableRootParameter desc_table;
@@ -53,14 +53,14 @@ void MainDirectXThread(DXR::Window& window)
 	device.GetGraphicsCommandQueue()->Flush(fence);
 
 	using namespace DirectX;
-	XMMATRIX mvp = XMMatrixIdentity() * XMMatrixLookAtLH({0,0,-1}, {0,0,0}, {0,1,0}) * XMMatrixPerspectiveFovLH(XM_PI / 3, 16 / 9, 0.1f, 500.0f);
+	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 3, 16 / 9, 0.1f, 500.0f)*XMMatrixLookAtLH({0,0,-1}, {0,0,0}, {0,1,0})*XMMatrixScaling(20,20,20);
 	DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
 
+	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
 
 	FLOAT color[4] = {0,1,0,1};
 	while(window.ShouldContinue)
 	{
-		commandList->Reset(commandList.GetCommandAllocator(),pso.GetPipelineStateObject());
 		swapchain.Prepare(commandList);
 
 		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
@@ -78,8 +78,11 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
+		swapchain.PrepareBackbufferForPresentation(commandList);
 
+		commandList->Close();
 		(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
+		commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
 
 		swapchain.Present(commandList);
 
