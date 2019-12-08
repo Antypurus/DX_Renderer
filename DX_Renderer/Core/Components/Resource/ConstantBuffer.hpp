@@ -15,12 +15,13 @@ namespace DXR
 	public:
 		const UINT64 ConstantBufferSizeMultiplier = 256;
 	private:
-		DescriptorHeap m_descriptor_heap;
+		DescriptorHeap m_heap;
 		std::vector<T> m_data;
 	public:
 		ConstantBuffer(GraphicsDevice& device, const std::vector<T> data) :m_data(data)
 		{
-			this->m_descriptor_heap = device.CreateConstantBufferDescriptorHeap(1);
+			this->m_heap = device.CreateConstantBufferDescriptorHeap(1);
+			this->m_descriptor_heap = &this->m_heap;
 
 			this->m_resource_description = this->ConstantBuffer<T>::CreateResourceDescription();
 			this->m_optimized_clear_value = {};
@@ -38,7 +39,7 @@ namespace DXR
 			constant_buffer_description.BufferLocation = this->m_resource->GetGPUVirtualAddress();
 			constant_buffer_description.SizeInBytes = this->CalculateBufferSize();
 
-			device->CreateConstantBufferView(&constant_buffer_description, this->m_descriptor_heap[0]);
+			device->CreateConstantBufferView(&constant_buffer_description, (*this->m_descriptor_heap)[0]);
 			INFO_LOG(L"Created Constant Buffer Descriptor");
 		}
 
