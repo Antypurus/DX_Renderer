@@ -37,7 +37,7 @@ void MainDirectXThread(DXR::Window& window)
 	root_signature.CreateRootSignature(device);
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
-	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/PixelShader.hlsl", "PSMain");
+	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
 
 	DXR::PipelineStateObject pso = {
 		device,
@@ -66,19 +66,20 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
 		swapchain.Prepare(commandList);
-		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
+		//commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
+		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), FALSE, nullptr);
 		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
-		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+		//commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 		//ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		//commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->IASetVertexBuffers(0, 1, &vertex_buffer.GetVertexBufferDescriptor());
-		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
+		//commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		//commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawIndexedInstanced(1, 1, 0, 0, 0);
+		commandList->DrawInstanced(1, 1, 0, 0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();
