@@ -29,7 +29,7 @@ namespace DXR
 		return this->m_device.Get();
 	}
 
-	IDXGIFactory* GraphicsDevice::GetDXGIFactory() const
+	IDXGIFactory2* GraphicsDevice::GetDXGIFactory() const
 	{
 		return this->m_dxgi_factory.Get();
 	}

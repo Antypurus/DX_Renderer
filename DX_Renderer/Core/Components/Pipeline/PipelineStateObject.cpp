@@ -34,9 +34,9 @@ namespace DXR
 		pso.DepthStencilState.StencilEnable = FALSE;
 		pso.SampleMask = UINT_MAX;
 		pso.PrimitiveTopologyType = this->m_primitive_type;
-		pso.DSVFormat = this->m_depth_stencil_buffer_format;
+		//pso.DSVFormat = this->m_depth_stencil_buffer_format;
 		pso.NumRenderTargets = 1;
-		pso.RTVFormats[0] = this->m_backbuffer_format;
+		pso.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		pso.SampleDesc.Count = 1;
 
 		pso.VS = this->m_vertex_shader;

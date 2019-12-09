@@ -48,9 +48,6 @@ namespace DXR
 	}
 	void* Vertex::GetData()
 	{
-		//BYTE* data = new BYTE[sizeof(this->m_position)+sizeof(this->m_color)];
-		//memcpy(data,&this->m_position,sizeof(this->m_position));
-		//memcpy(data+sizeof(this->m_position),&this->m_color,sizeof(this->m_color));
-		return &this->m_position;
+		return this;
 	}
 }

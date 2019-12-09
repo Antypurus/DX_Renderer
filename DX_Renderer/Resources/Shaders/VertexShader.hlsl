@@ -28,7 +28,8 @@ struct PS_OUTPUT
 PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
-	output.color = float4(1.0f,0.0f,0.0f,1.0f);
+	
+	output.color = normalize(input.position);
 
 	return output;
 }

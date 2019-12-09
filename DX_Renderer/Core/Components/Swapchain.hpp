@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <wrl.h>
-#include <dxgi.h>
+#include <dxgi1_4.h>
 #include <memory>
 #include <d3d12.h>
 #include "../Windows Abstractions/Window.hpp"
@@ -26,14 +26,14 @@ namespace DXR
 		const UINT8 m_swapchain_buffer_count = 2;
 		Resolution m_resolution;
 		UINT16 m_refresh_rate;
-		WRL::ComPtr<IDXGISwapChain> m_swapchain;
+		WRL::ComPtr<IDXGISwapChain1> m_swapchain;
 		DescriptorHeap m_RTV_descriptor_heap;
 		DescriptorHeap m_DSV_descriptor_heap;
 		std::unique_ptr<DepthStencilBuffer> m_depth_stencil_buffer_resource;
 		UINT8 m_current_backbuffer = 0;
 		std::vector<WRL::ComPtr<ID3D12Resource>> m_backbuffers;
 	public:
-		IDXGISwapChain* operator->();
+		IDXGISwapChain1* operator->();
 		void SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset = 0, UINT yOffset = 0);
 		void SetScisorRect(GraphicsCommandList& commandList, Resolution& resolution);
 		void Prepare(GraphicsCommandList& commandList);

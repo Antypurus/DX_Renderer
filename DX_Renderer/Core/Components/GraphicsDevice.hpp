@@ -32,7 +32,7 @@ namespace DXR
 		std::vector<UINT8> supported_mssa_levels;
 	private:
 		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
-		WRL::ComPtr<IDXGIFactory> m_dxgi_factory;
+		WRL::ComPtr<IDXGIFactory2> m_dxgi_factory;
 		WRL::ComPtr <ID3D12Device> m_device;
 		DescriptorSizes descriptorSizes{};
 		CommandQueue* m_graphics_command_queue{};
@@ -41,7 +41,7 @@ namespace DXR
 		GraphicsDevice();
 		GraphicsDevice(UINT8 DeviceIndex);
 		ID3D12Device* operator->() const;
-		IDXGIFactory* GetDXGIFactory() const;
+		IDXGIFactory2* GetDXGIFactory() const;
 		DescriptorSizes GetDescriptorSizes()const;
 		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
 		CommandQueue* GetGraphicsCommandQueue();
