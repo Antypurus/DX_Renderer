@@ -49,14 +49,16 @@ namespace DXR
 
 		D3D12_ROOT_SIGNATURE_DESC root_signature = {};
 		root_signature.NumParameters = root_parameter_count;
-		root_signature.pParameters = root_parameters;
+		if(root_parameter_count == 0)
+		{
+			root_signature.pParameters = nullptr;
+		} else
+		{
+			root_signature.pParameters = root_parameters;
+		}
 		root_signature.NumStaticSamplers = 0;
 		root_signature.pStaticSamplers = nullptr;
-		root_signature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+		root_signature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		WRL::ComPtr<ID3DBlob> serialized_root_signature;
 		WRL::ComPtr<ID3DBlob> errors;

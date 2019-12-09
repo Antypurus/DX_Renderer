@@ -31,9 +31,9 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
 
 	DXR::RootSignature root_signature;
-	DXR::DescriptorTableRootParameter desc_table;
-	desc_table.AddCBVEntry(1);
-	root_signature.AddDescriptorTableRootParameter(desc_table);
+	//DXR::DescriptorTableRootParameter desc_table;
+	//desc_table.AddCBVEntry(1);
+	//root_signature.AddDescriptorTableRootParameter(desc_table);
 	root_signature.CreateRootSignature(device);
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
@@ -56,30 +56,29 @@ void MainDirectXThread(DXR::Window& window)
 	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 2, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,0}, {0,0,10}, {0,1,0}) * XMMatrixScaling(2000, 2000, 2000);
 	DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
 
+	commandList.GetCommandAllocator()->Reset();
 	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
 
 	FLOAT color[4] = {0,0,0,0};
 
 	while(window.ShouldContinue)
 	{
-		swapchain.Prepare(commandList);
-
-		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
-
-		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
-
-		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
-		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
+		swapchain.Prepare(commandList);
+		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
+		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
+		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
+		//ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
+		//commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+
+		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->IASetVertexBuffers(0, 1, &vertex_buffer.GetVertexBufferDescriptor());
 		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
-		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
+		//commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
+		commandList->DrawIndexedInstanced(1, 1, 0, 0, 0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();

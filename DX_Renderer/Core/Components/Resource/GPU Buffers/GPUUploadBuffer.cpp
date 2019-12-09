@@ -4,6 +4,7 @@
 #include "../../Command List/GraphicsCommandList.hpp"
 #include "GPUDefaultBuffer.hpp"
 #include <d3d12.h>
+#include "../ResourceBarrier.hpp"
 
 namespace DXR
 {
@@ -22,6 +23,13 @@ namespace DXR
 	{
 		commandList->CopyBufferRegion(buffer.GetResource(), 0, this->m_resource.Get(), 0, this->m_element_count * this->m_element_size);
 		INFO_LOG(L"Queued Data Transfer From GPU Upload Buffer To GPU Default Buffer");
+
+		const ResourceBarrier resource_barrier = {
+			*buffer.GetResource(),
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_GENERIC_READ};
+		resource_barrier.ExecuteResourceBarrier(commandList);
+		INFO_LOG(L"Queued GPU Resource State Transition From Common To Generic Read");
 	}
 
 	void GPUUploadBuffer::UploadDataFromCPUBuffer(void* Data) const
@@ -52,7 +60,7 @@ namespace DXR
 	{
 		void* proxy_data = nullptr;
 		INFO_LOG(L"Mapping GPU Upload Buffer Data Address To CPU Data Address");
-		DXCall(this->m_resource->Map(0,nullptr, &proxy_data));
+		DXCall(this->m_resource->Map(0, nullptr, &proxy_data));
 		SUCCESS_LOG(L"GPU Upload Buffer Data Address Mapped To CPU Data Address");
 
 		BYTE* data = new BYTE[this->m_element_count * this->m_element_size];
@@ -60,7 +68,7 @@ namespace DXR
 		INFO_LOG(L"Writting Data To GPU Upload Buffer");
 		memmove(data, proxy_data, this->m_element_count * this->m_element_size);
 		SUCCESS_LOG(L"GPU Upload Buffer Data Written");
-		
+
 		this->m_resource->Unmap(0, nullptr);
 		INFO_LOG(L"Unmapped GPU Upload Buffer Data Adress From CPU Data Address");
 

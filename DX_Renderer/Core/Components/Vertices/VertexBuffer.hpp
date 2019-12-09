@@ -86,7 +86,7 @@ namespace DXR
 		void CreateVertexBufferDescriptor()
 		{
 			D3D12_VERTEX_BUFFER_VIEW vertex_buffer_descriptor = {};
-			vertex_buffer_descriptor.BufferLocation = (*this->m_upload_buffer)->GetGPUVirtualAddress();
+			vertex_buffer_descriptor.BufferLocation = (*this->m_vertex_buffer)->GetGPUVirtualAddress();
 			vertex_buffer_descriptor.SizeInBytes = (UINT)this->m_vertices.size() * this->m_vertices[0].GetElementSize();
 			vertex_buffer_descriptor.StrideInBytes = this->m_vertices[0].GetElementSize();
 

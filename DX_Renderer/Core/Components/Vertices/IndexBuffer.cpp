@@ -47,7 +47,7 @@ namespace DXR
 	void IndexBuffer::CreateIndexBufferDescriptor()
 	{
 		D3D12_INDEX_BUFFER_VIEW index_buffer_descriptor = {};
-		index_buffer_descriptor.BufferLocation = (*this->m_upload_buffer)->GetGPUVirtualAddress();
+		index_buffer_descriptor.BufferLocation = (*this->m_index_buffer)->GetGPUVirtualAddress();
 		index_buffer_descriptor.Format = DXGI_FORMAT_R16_UINT;
 		index_buffer_descriptor.SizeInBytes = this->m_indices.size() * sizeof(UINT);
 
