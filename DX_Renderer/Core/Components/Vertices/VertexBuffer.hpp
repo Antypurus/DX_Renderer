@@ -68,11 +68,14 @@ namespace DXR
 			}
 			this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(device, this->m_vertices.size(), this->m_vertices[0].GetElementSize(), vertices);
 			delete[] vertices;
+
+			this->m_upload_buffer->GetResource()->SetName(L"Vertex Buffer Upload Buffer");
 		}
 
 		void CreateVertexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList)
 		{
 			this->m_vertex_buffer = std::make_unique<GPUDefaultBuffer>(device, commandList, this->m_vertices.size(), this->m_vertices[0].GetElementSize());
+			this->m_vertex_buffer->GetResource()->SetName(L"Vertex Buffer");
 		}
 
 		void UploadData(GraphicsCommandList& commandList)
