@@ -33,7 +33,7 @@ namespace DXR
 		DXGI_FORMAT m_depth_stencil_buffer_format; // passed in
 		DXGI_SAMPLE_DESC m_mssa = {1,0};
 		UINT m_node_mask = 0;
-		D3D12_CACHED_PIPELINE_STATE m_cached_pso = {0};
+		D3D12_CACHED_PIPELINE_STATE m_cached_pso = {nullptr,0};
 		D3D12_PIPELINE_STATE_FLAGS m_pso_flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
 		// shaders
