@@ -24,9 +24,9 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 												 {
-															 {{0.0f		,0.25f * (16.0f / 9.0f)		,0.0f}},
-															 {{0.25f	,-0.25f * (16.0f / 9.0f)	,0.0f}},
-															 {{-0.25f	,-0.25f * (16.0f / 9.0f)	,0.0f}}
+														{{0.0f		,0.25f * (16.0f / 9.0f)		,0.0f}},
+														{{0.25f	,-0.25f * (16.0f / 9.0f),0.0f}},
+														{{-0.25f	,-0.25f * (16.0f / 9.0f),0.0f}}
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
 
@@ -74,7 +74,7 @@ void MainDirectXThread(DXR::Window& window)
 		//ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		//commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
-		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->IASetVertexBuffers(0, 1, &vertex_buffer.GetVertexBufferDescriptor());
 		//commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		//commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
