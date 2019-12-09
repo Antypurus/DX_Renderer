@@ -48,7 +48,7 @@ namespace DXR
 	}
 	void* Vertex::GetData()
 	{
-		return this;
+		return &this->m_position;
 	}
 
 	D3D12_INPUT_LAYOUT_DESC Vertex::GetInputLayout()

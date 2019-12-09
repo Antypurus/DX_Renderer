@@ -45,19 +45,20 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 												 {
-														{{0.0f		,0.25f * (16.0f / 9.0f)		,0.0f}},
-														{{0.25f	,-0.25f * (16.0f / 9.0f),0.0f}},
-														{{-0.25f	,-0.25f * (16.0f / 9.0f),0.0f}}
+														{{0.0f,0.25f ,0.0f}},
+														{{0.25f,-0.25f,0.0f}},
+														{{-0.25f,-0.25f,0.0f}}
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
+
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
 	(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
 	device.GetGraphicsCommandQueue()->Flush(fence);
 
 	using namespace DirectX;
-	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 2, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,0}, {0,0,10}, {0,1,0}) * XMMatrixScaling(2000, 2000, 2000);
-	DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
+	//XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 2, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,0}, {0,0,10}, {0,1,0}) * XMMatrixScaling(2000, 2000, 2000);
+	//DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
 
 	commandList.GetCommandAllocator()->Reset();
 	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
@@ -66,7 +67,6 @@ void MainDirectXThread(DXR::Window& window)
 
 	while(window.ShouldContinue)
 	{
-
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
 		swapchain.Prepare(commandList);
 		//commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
@@ -82,7 +82,7 @@ void MainDirectXThread(DXR::Window& window)
 		//commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		//commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawInstanced(1, 1, 0, 0);
+		commandList->DrawInstanced(3, 1, 0, 0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();
