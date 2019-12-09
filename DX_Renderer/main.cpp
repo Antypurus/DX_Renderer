@@ -82,11 +82,13 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList->Close();
 		(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
-		commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
 
 		swapchain.Present(commandList);
 
 		device.GetGraphicsCommandQueue()->Flush(fence);
+
+		commandList.GetCommandAllocator()->Reset();
+		commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
 	}
 
 }
