@@ -20,7 +20,7 @@ namespace DXR
 	{
 	public:
 		friend GraphicsDevice;
-		const DXGI_FORMAT m_backbuffer_format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		static const DXGI_FORMAT m_backbuffer_format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
 	private:
 		bool m_windowed_mode = true;
 		const UINT8 m_swapchain_buffer_count = 2;

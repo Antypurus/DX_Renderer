@@ -16,19 +16,10 @@
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-
 	DXR::GraphicsDevice device(1);
-	DXR::Fence fence = device.CreateFence(0);
-	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
-	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 
-	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
-												 {
-														{{0.0f		,0.25f * (16.0f / 9.0f)		,0.0f}},
-														{{0.25f	,-0.25f * (16.0f / 9.0f),0.0f}},
-														{{-0.25f	,-0.25f * (16.0f / 9.0f),0.0f}}
-												 });
-	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
+	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
+	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
 
 	DXR::RootSignature root_signature;
 	//DXR::DescriptorTableRootParameter desc_table;
@@ -36,17 +27,29 @@ void MainDirectXThread(DXR::Window& window)
 	//root_signature.AddDescriptorTableRootParameter(desc_table);
 	root_signature.CreateRootSignature(device);
 
-	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
-	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
-
 	DXR::PipelineStateObject pso = {
 		device,
 		vs.GetShaderBytecode(),
 		ps.GetShaderBytecode(),
 		root_signature,
-		vertex_buffer.GetInputLayout(),
-		swapchain.m_backbuffer_format,DXR::DepthStencilBuffer::DepthStencilBufferFormat};
+		DXR::Vertex::GetInputLayout(),
+		DXR::Swapchain::m_backbuffer_format,
+		DXR::DepthStencilBuffer::DepthStencilBufferFormat};
 
+	DXR::Fence fence = device.CreateFence(0);
+	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
+
+	commandList.GetCommandAllocator()->Reset();
+	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
+
+	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
+	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
+												 {
+														{{0.0f		,0.25f * (16.0f / 9.0f)		,0.0f}},
+														{{0.25f	,-0.25f * (16.0f / 9.0f),0.0f}},
+														{{-0.25f	,-0.25f * (16.0f / 9.0f),0.0f}}
+												 });
+	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
 	(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);

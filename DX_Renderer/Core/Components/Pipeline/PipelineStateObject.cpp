@@ -49,5 +49,6 @@ namespace DXR
 	{
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc = this->CreatePipelineStateObjectDescription();
 		DXCall(device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&this->m_pso)));
+		delete[] pso_desc.InputLayout.pInputElementDescs;
 	}
 }

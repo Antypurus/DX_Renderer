@@ -18,7 +18,7 @@ namespace DXR
 	}
 
 	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList, DXGI_FORMAT backbufferFormat)
-		: m_resolution(window.GetResolution()), m_refresh_rate(refreshRate), m_backbuffer_format(backbufferFormat)
+		: m_resolution(window.GetResolution()), m_refresh_rate(refreshRate)
 	{
 		this->Create(device, window, commandList);
 	}

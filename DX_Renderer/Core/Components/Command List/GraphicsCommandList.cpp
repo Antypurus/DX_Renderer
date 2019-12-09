@@ -36,5 +36,6 @@ namespace DXR
 		INFO_LOG(L"Creating Graphics Command List");
 		DXCall(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, this->m_command_allocator.Get(),nullptr,IID_PPV_ARGS(&this->m_command_list)));
 		SUCCESS_LOG(L"Graphics Command List Created");
+		DXCall(this->m_command_list->Close());
 	}
 }

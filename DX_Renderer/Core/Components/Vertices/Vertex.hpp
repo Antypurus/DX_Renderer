@@ -23,6 +23,7 @@ namespace DXR
 		virtual UINT64 GetElementSize() const;
 		virtual void operator=(Vertex other);
 		virtual void* GetData();
+		static D3D12_INPUT_LAYOUT_DESC GetInputLayout();
 	protected:
 	};
 

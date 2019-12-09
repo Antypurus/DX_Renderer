@@ -38,7 +38,7 @@ namespace DXR
 
 		D3D12_RANGE read_range = {};
 		read_range.Begin = 0;
-		read_range.End = ((size_t)((this->m_element_size) * this->m_element_count));
+		read_range.End = 0;
 
 		void* proxy_data = nullptr;
 

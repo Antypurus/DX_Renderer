@@ -50,4 +50,24 @@ namespace DXR
 	{
 		return this;
 	}
+
+	D3D12_INPUT_LAYOUT_DESC Vertex::GetInputLayout()
+	{
+		D3D12_INPUT_ELEMENT_DESC position_element_description = {};
+		position_element_description.SemanticName = "POSITION";
+		position_element_description.SemanticIndex = 0;
+		position_element_description.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		position_element_description.InputSlot = 0;
+		position_element_description.AlignedByteOffset = 0;
+		position_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+		position_element_description.InstanceDataStepRate = 0;
+
+		D3D12_INPUT_ELEMENT_DESC* elements = new  D3D12_INPUT_ELEMENT_DESC[1];
+		elements[0] = position_element_description;
+		D3D12_INPUT_LAYOUT_DESC input_layout = {};
+		input_layout.NumElements = 1;
+		input_layout.pInputElementDescs = elements;
+
+		return input_layout;
+	}
 }
