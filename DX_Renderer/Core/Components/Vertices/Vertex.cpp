@@ -36,4 +36,8 @@ namespace DXR
 	{
 		other.m_position = this->m_position;
 	}
+	void* Vertex::GetData()
+	{
+		return &this->m_position;
+	}
 }

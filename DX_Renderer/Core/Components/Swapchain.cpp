@@ -62,7 +62,7 @@ namespace DXR
 		swapchain_description.OutputWindow = window.GetWindowHandle();
 
 		INFO_LOG(L"Creating Swapchain");
-		DXCall(device.GetDXGIFactory()->CreateSwapChain(device.GetGraphicsCommandQueue()->GetCommandQueueRawPtr(), &swapchain_description, this->m_swapchain.GetAddressOf()));
+		DXCall(device.GetDXGIFactory()->CreateSwapChain(device.GetGraphicsCommandQueue()->GetCommandQueueRawPtr(), &swapchain_description, &this->m_swapchain));
 		SUCCESS_LOG(L"Swapchain Created");
 	}
 
@@ -103,9 +103,9 @@ namespace DXR
 	{
 		D3D12_RECT rect = {};
 		rect.left = 0;
-		rect.bottom = 0;
-		rect.right = resolution.Width - 1;
-		rect.top = resolution.Height - 1;
+		rect.top = 0;
+		rect.right = resolution.Width;
+		rect.bottom = resolution.Height;
 
 		commandList->RSSetScissorRects(1, &rect);
 		INFO_LOG(L"Set Scisor Rect In Command List");
@@ -122,7 +122,7 @@ namespace DXR
 
 	void Swapchain::Present(GraphicsCommandList& commandList)
 	{
-		DXCall(this->m_swapchain->Present(1, 0));
+		DXCall(this->m_swapchain->Present(0, 0));
 		this->m_current_backbuffer = this->m_current_backbuffer == 1 ? 0 : 1;
 	}
 

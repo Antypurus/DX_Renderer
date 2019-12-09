@@ -13,7 +13,7 @@ namespace DXR
 	{
 	public:
 	protected:
-		XMFLOAT3 m_position = {0,0,0};
+		XMFLOAT3 m_position;
 	public:
 		Vertex() = default;
 		Vertex(XMFLOAT3 position);
@@ -21,6 +21,7 @@ namespace DXR
 		virtual std::vector<D3D12_INPUT_ELEMENT_DESC> GenerateInputElementDescription();
 		virtual UINT64 GetElementSize() const;
 		virtual void operator=(Vertex other);
+		virtual void* GetData();
 	protected:
 	};
 

@@ -61,10 +61,10 @@ namespace DXR
 
 		void CreateUploadBuffer(GraphicsDevice& device)
 		{
-			auto vertices = new VertexStruct[this->m_vertices.size()];
+			UINT8* vertices = new UINT8[this->m_vertices.size()*m_vertices[0].GetElementSize()];
 			for(size_t i = 0;i < this->m_vertices.size();++i)
 			{
-				vertices[i] = this->m_vertices[i];
+				memcpy(&vertices[i*m_vertices[i].GetElementSize()],this->m_vertices[i].GetData(),m_vertices[i].GetElementSize());
 			}
 			this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(device, this->m_vertices.size(), this->m_vertices[0].GetElementSize(), vertices);
 			delete[] vertices;
@@ -86,7 +86,7 @@ namespace DXR
 		void CreateVertexBufferDescriptor()
 		{
 			D3D12_VERTEX_BUFFER_VIEW vertex_buffer_descriptor = {};
-			vertex_buffer_descriptor.BufferLocation = (*this->m_vertex_buffer)->GetGPUVirtualAddress();
+			vertex_buffer_descriptor.BufferLocation = (*this->m_upload_buffer)->GetGPUVirtualAddress();
 			vertex_buffer_descriptor.SizeInBytes = (UINT)this->m_vertices.size() * this->m_vertices[0].GetElementSize();
 			vertex_buffer_descriptor.StrideInBytes = this->m_vertices[0].GetElementSize();
 
