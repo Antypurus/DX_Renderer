@@ -23,6 +23,7 @@ namespace DXR
 	void IndexBuffer::CreateIndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
 		this->m_index_buffer = std::make_unique<GPUDefaultBuffer>(device, commandList, this->m_indices.size(), sizeof(UINT));
+		this->m_index_buffer->GetResource()->SetName(L"Index Buffer");
 	}
 
 	void IndexBuffer::CreateUploadBuffer(GraphicsDevice& device)
@@ -34,6 +35,8 @@ namespace DXR
 		}
 		this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(device, this->m_indices.size(), sizeof(UINT), data);
 		delete[] data;
+
+		this->m_upload_buffer->GetResource()->SetName(L"Index Buffer Upload Buffer");
 	}
 
 	void IndexBuffer::UploadData(GraphicsCommandList& commandList)

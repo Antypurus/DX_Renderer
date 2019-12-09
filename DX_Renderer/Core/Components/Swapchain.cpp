@@ -122,7 +122,7 @@ namespace DXR
 
 	void Swapchain::Present(GraphicsCommandList& commandList)
 	{
-		DXCall(this->m_swapchain->Present(0, 0));
+		DXCall(this->m_swapchain->Present(1, 0));
 		this->m_current_backbuffer = this->m_current_backbuffer == 1 ? 0 : 1;
 	}
 

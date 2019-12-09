@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dxgi.h>
+#include <dxgi1_4.h>
 #include <wrl.h>
 #include <vector>
 #include <d3d12.h>

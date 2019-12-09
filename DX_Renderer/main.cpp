@@ -65,7 +65,7 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
 		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), true, &swapchain.GetDepthStencilBufferDescriptor());
+		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
 
 		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
@@ -77,7 +77,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
+		commandList->DrawIndexedInstanced(3, 1, 0, 0,0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();
