@@ -15,7 +15,6 @@ VS_OUTPUT VSMain(VS_INPUT input)
 	VS_OUTPUT output;
 
 	//output.position = mul(gWorldViewProj,vPos);
-	input.pos.x = input.pos.x - 1.0f;
 	output.position = float4(input.pos,1.0f);
 
 	return output;
