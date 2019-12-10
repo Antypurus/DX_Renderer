@@ -30,8 +30,6 @@ namespace DXR
 		pso.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		pso.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 		pso.DepthStencilState = {};
-		pso.DepthStencilState.DepthEnable = FALSE;
-		pso.DepthStencilState.StencilEnable = FALSE;
 		pso.SampleMask = UINT_MAX;
 		pso.PrimitiveTopologyType = this->m_primitive_type;
 		//pso.DSVFormat = this->m_depth_stencil_buffer_format;

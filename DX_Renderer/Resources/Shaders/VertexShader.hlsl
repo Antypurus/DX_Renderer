@@ -1,3 +1,8 @@
+cbuffer cbPerObject : register(b0)	
+{	
+	float4x4 gWorldViewProj;	
+};
+
 struct VS_OUTPUT
 {
 	float4 position:SV_POSITION;
@@ -14,7 +19,7 @@ VS_OUTPUT VSMain(VS_INPUT input)
 {
 	VS_OUTPUT output;
 
-	//output.position = mul(gWorldViewProj,vPos);
+	//output.position = mul(gWorldViewProj,float4(input.pos,1.0f));
 	output.position = float4(input.pos,1.0f);
 
 	return output;
