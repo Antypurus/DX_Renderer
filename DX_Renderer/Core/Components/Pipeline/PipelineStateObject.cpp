@@ -36,7 +36,7 @@ namespace DXR
 		pso.IBStripCutValue = this->m_index_buffer_strip_cut_value;
 		pso.InputLayout = this->m_input_layout;
 		pso.NodeMask = this->m_node_mask;
-		pso.NumRenderTargets = 1;//this->m_render_target_count;
+		pso.NumRenderTargets = this->m_render_target_count;
 		pso.RTVFormats[0] = this->m_backbuffer_format;
 		pso.SampleDesc = this->m_mssa;
 		pso.SampleMask = UINT_MAX;
