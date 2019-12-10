@@ -1,6 +1,6 @@
-cbuffer cbPerObject : register(b0)	
-{	
-	float4x4 gWorldViewProj;	
+cbuffer MVPBuffer : register(b0)
+{
+	float4x4 MVP;
 };
 
 struct VS_OUTPUT
@@ -19,8 +19,8 @@ VS_OUTPUT VSMain(VS_INPUT input)
 {
 	VS_OUTPUT output;
 
-	//output.position = mul(float4(input.pos,1.0f),gWorldViewProj);
-	output.position = float4(input.pos,1.0f);
+	output.position = mul(float4(input.pos, 1.0f),MVP);
+	//output.position = float4(input.pos,1.0f);
 
 	return output;
 }
@@ -33,8 +33,8 @@ struct PS_OUTPUT
 PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
-	
-	output.color = float4(1.0f,0.0f,0.0f,1.0f);
+
+	output.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	return output;
 }

@@ -45,11 +45,11 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 												 {
-														{{0.0f,0.25f ,0.0f}},
-														{{0.25f,-0.25f,0.0f}},
-														{{-0.25f,-0.25f,0.0f}}
+														{{0.0f,0.25f ,1.0f}},
+														{{0.25f,-0.25f,1.0f}},
+														{{-0.25f,-0.25f,1.0f}}
 												 });
-	DXR::IndexBuffer index_buffer(device, commandList, {1,2,3});
+	DXR::IndexBuffer index_buffer(device, commandList, {1,3,2});
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
@@ -57,7 +57,7 @@ void MainDirectXThread(DXR::Window& window)
 	device.GetGraphicsCommandQueue()->Flush(fence);
 
 	using namespace DirectX;
-	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 3.0f, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,10}, {0,0,1}, {0,1,0}) * XMMatrixScaling(2000, 2000, 2000);
+	XMMATRIX mvp = /*XMMatrixPerspectiveFovLH(XM_PI / 3.0f, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,0}, {0,0,-1.0f}, {0,1.0f,0}) * */XMMatrixScaling(2, 2, 1);
 	DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
 
 	commandList.GetCommandAllocator()->Reset();
@@ -69,11 +69,11 @@ void MainDirectXThread(DXR::Window& window)
 	{
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
 		swapchain.Prepare(commandList);
-		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
-		//commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), FALSE, nullptr);
+
 		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
 		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
+		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
 		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
