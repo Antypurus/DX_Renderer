@@ -19,7 +19,7 @@ namespace DXR
 		rasterizer.SlopeScaledDepthBias = this->m_slope_scaled_depth_bias;
 		rasterizer.DepthClipEnable = this->m_depth_clip_enabled;
 		rasterizer.ForcedSampleCount = this->m_forced_sample_count;
-		rasterizer.FrontCounterClockwise = TRUE;
+		rasterizer.FrontCounterClockwise = this->m_front_counter_clockwise;
 		rasterizer.MultisampleEnable = this->m_multisample_enabled;
 
 		return rasterizer;

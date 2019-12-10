@@ -18,6 +18,7 @@ namespace DXR
 		BOOL m_multisample_enabled = FALSE;
 		BOOL m_antialiased_lines_enabled = FALSE;
 		UINT m_forced_sample_count = 0;
+		BOOL m_front_counter_clockwise = FALSE;
 	public:
 		static Rasterizer Default();
 		D3D12_RASTERIZER_DESC GetRasterizerDescription();
