@@ -57,7 +57,7 @@ void MainDirectXThread(DXR::Window& window)
 	device.GetGraphicsCommandQueue()->Flush(fence);
 
 	using namespace DirectX;
-	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 3.0f, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,0}, {0,0,-1}, {0,1,0}) * XMMatrixScaling(2000, 2000, 2000);
+	XMMATRIX mvp = XMMatrixPerspectiveFovLH(XM_PI / 3.0f, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,10}, {0,0,1}, {0,1,0}) * XMMatrixScaling(2000, 2000, 2000);
 	DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
 
 	commandList.GetCommandAllocator()->Reset();

@@ -1,7 +1,6 @@
 ﻿#include "PipelineStateObject.hpp"
 #include "../GraphicsDevice.hpp"
 #include "../../../Tooling/Validate.hpp"
-#include "d3dx12.h"
 
 namespace DXR
 {
