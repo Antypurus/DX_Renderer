@@ -47,7 +47,7 @@ void MainDirectXThread(DXR::Window& window)
 												 {
 														{{0.0f, 0.5f, 0.0f}},
 														{{0.5f,  0.0f, 0.0f}},
-														{{-10.5f,  0.0f, 2.0f}},
+														{{-10.5f,  0.0f, 100.0f}},
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, {0, 1, 2});
 
@@ -56,9 +56,9 @@ void MainDirectXThread(DXR::Window& window)
 	(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
 	device.GetGraphicsCommandQueue()->Flush(fence);
 
-	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovRH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 100.0f);
-	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtRH({0.0f,0.0f,-10.0f,1.0f}, {0.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f,0.0f});
-	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(1,10,1);
+	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
+	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({0.0f,0.0f,-10.0f,1.0f}, {0.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f,0.0f});
+	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(1,1,1);
 
 	DirectX::XMMATRIX mvp = model * view * projection;
 	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, {mvp});
