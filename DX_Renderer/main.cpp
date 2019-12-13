@@ -45,25 +45,28 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 												 {
-														{{0.0f,0.25f ,1.0f}},
-														{{0.25f,-0.25f,1.0f}},
-														{{-0.25f,-0.25f,1.0f}}
+														{{0.0f, 0.5f, 0.0f}},
+														{{0.5f,  0.0f, 0.0f}},
+														{{-10.5f,  0.0f, 2.0f}},
 												 });
-	DXR::IndexBuffer index_buffer(device, commandList, {1,3,2});
+	DXR::IndexBuffer index_buffer(device, commandList, {0, 1, 2});
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
 	(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
 	device.GetGraphicsCommandQueue()->Flush(fence);
 
-	using namespace DirectX;
-	XMMATRIX mvp = /*XMMatrixPerspectiveFovLH(XM_PI / 3.0f, 16.0f / 9.0f, 0.1f, 500.0f) * XMMatrixLookAtLH({0,0,0}, {0,0,-1.0f}, {0,1.0f,0}) * */XMMatrixScaling(2, 2, 1);
-	DXR::ConstantBuffer<XMMATRIX> constant_buffer(device, {mvp});
+	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovRH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 100.0f);
+	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtRH({0.0f,0.0f,-10.0f,1.0f}, {0.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f,0.0f});
+	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(1,10,1);
+
+	DirectX::XMMATRIX mvp = model * view * projection;
+	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, {mvp});
 
 	commandList.GetCommandAllocator()->Reset();
 	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
 
-	FLOAT color[4] = {0,0,0,0};
+	FLOAT color[4] = { 0.4f, 0.6f, 0.9f, 1.0f};
 
 	while(window.ShouldContinue)
 	{
@@ -72,14 +75,13 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
 		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
 		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
 		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->IASetVertexBuffers(0, 1, &vertex_buffer.GetVertexBufferDescriptor());
-		//commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
+		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
 		commandList->DrawInstanced(3, 1, 0, 0);
