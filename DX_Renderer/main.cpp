@@ -47,7 +47,7 @@ void MainDirectXThread(DXR::Window& window)
 												 {
 														{{0.0f, 0.5f, 0.0f}},
 														{{0.5f,  0.0f, 0.0f}},
-														{{-10.5f,  0.0f, 100.0f}},
+														{{-0.5f,  0.0f, 0.0f}},
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, {0, 1, 2});
 
@@ -84,7 +84,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawInstanced(3, 1, 0, 0);
+		commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();
