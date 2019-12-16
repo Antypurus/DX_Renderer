@@ -29,7 +29,7 @@ namespace DXR
 		return this->m_device.Get();
 	}
 
-	IDXGIFactory* GraphicsDevice::GetDXGIFactory() const
+	IDXGIFactory2* GraphicsDevice::GetDXGIFactory() const
 	{
 		return this->m_dxgi_factory.Get();
 	}
@@ -64,32 +64,38 @@ namespace DXR
 		return DescriptorHeap(*this, descriptorCount, DescriptorType::DepthStencilBuffer);
 	}
 
+	DescriptorHeap GraphicsDevice::CreateConstantBufferDescriptorHeap(const UINT descriptorCount,
+																	  D3D12_DESCRIPTOR_HEAP_FLAGS flags)
+	{
+		return DescriptorHeap(*this, descriptorCount, DescriptorType::ConstantBufferView, flags);
+	}
+
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
-		INFO_LOG(L"Creating DXGI Factory\n");
+		INFO_LOG(L"Creating DXGI Factory");
 		DXCall(::CreateDXGIFactory(IID_PPV_ARGS(&this->m_dxgi_factory)));
-		SUCCESS_LOG(L"DXGI Factory Created\n");
+		SUCCESS_LOG(L"DXGI Factory Created");
 	}
 
 	void GraphicsDevice::CreateDefaultD3D12Device()
 	{
-		INFO_LOG(L"Creating Default D3D12 Device\n");
+		INFO_LOG(L"Creating Default D3D12 Device");
 		DXCall(D3D12CreateDevice(nullptr, this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
-		SUCCESS_LOG(L"Default D3D12 Device Created\n");
+		SUCCESS_LOG(L"Default D3D12 Device Created");
 	}
 
 	void GraphicsDevice::CreateD3D12Device(UINT8 deviceIndex)
 	{
 		auto adapter_list = this->GetGraphicsAdapterList();
-		INFO_LOG(L"Creating D3D12 Device\n");
+		INFO_LOG(L"Creating D3D12 Device");
 		DXCall(D3D12CreateDevice(adapter_list[deviceIndex].Get(), this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
-		SUCCESS_LOG(L"D3D12 Device Created\n");
+		SUCCESS_LOG(L"D3D12 Device Created");
 	}
 
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const
 	{
-		INFO_LOG(L"Fetching Complete Adapter List\n");
+		INFO_LOG(L"Fetching Complete Adapter List");
 		std::vector<WRL::ComPtr<IDXGIAdapter>> adapter_list;
 		UINT8 adapter_index = 0;
 		IDXGIAdapter* current_adapter = nullptr;
@@ -105,19 +111,19 @@ namespace DXR
 
 			++adapter_index;
 		}
-		INFO_LOG(L"Finished Fetching Complete Adapter List\n");
+		INFO_LOG(L"Finished Fetching Complete Adapter List");
 		return adapter_list;
 	}
 
 	void GraphicsDevice::QueryAllDescriptorSizes()
 	{
-		INFO_LOG(L"Fetching Descriptor Handle Increment Sizes\n");
+		INFO_LOG(L"Fetching Descriptor Handle Increment Sizes");
 		const UINT64 RTV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		const UINT64 CBV_SRV_UAV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		const UINT64 DSV_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 		const UINT64 Sampler_size = this->QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
 		this->descriptorSizes = {RTV_size,CBV_SRV_UAV_size,DSV_size,Sampler_size};
-		SUCCESS_LOG(L"Finished Fetching Descriptor Handle Increment Sizes\n");
+		SUCCESS_LOG(L"Finished Fetching Descriptor Handle Increment Sizes");
 	}
 
 	UINT64 GraphicsDevice::QueryDescriptorSize(enum D3D12_DESCRIPTOR_HEAP_TYPE descriptorType) const
@@ -132,7 +138,7 @@ namespace DXR
 
 	void GraphicsDevice::CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat)
 	{
-		INFO_LOG(L"Fetching Supported MSAA Levels\n");
+		INFO_LOG(L"Fetching Supported MSAA Levels");
 		this->supported_mssa_levels.clear();
 		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS quality_levels = {};
 		quality_levels.Format = backbufferFormat;
@@ -146,11 +152,12 @@ namespace DXR
 			{
 				this->supported_mssa_levels.emplace_back(quality_levels.SampleCount);
 				quality_levels.SampleCount *= 2;
-			} else {
+			} else
+			{
 				continueSupportCheck = false;
 			}
 		}
-		SUCCESS_LOG(L"Finished Fetching Supported MSAA Quality Levels\n");
+		SUCCESS_LOG(L"Finished Fetching Supported MSAA Quality Levels");
 	}
 
 	CommandQueue* GraphicsDevice::GetGraphicsCommandQueue()

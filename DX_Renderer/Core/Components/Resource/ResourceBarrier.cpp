@@ -25,6 +25,6 @@ namespace DXR
 	void ResourceBarrier::ExecuteResourceBarrier(GraphicsCommandList& commandList) const
 	{
 		commandList->ResourceBarrier(1,&this->m_resource_barrier);
-		INFO_LOG(L"Queued Resource Barrier Into Command Queue\n");
+		INFO_LOG(L"Queued Resource Barrier Into Command Queue");
 	}
 }
