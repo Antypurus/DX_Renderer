@@ -52,8 +52,8 @@ void MainDirectXThread(DXR::Window& window)
 													{{0.0f, 1.0f,  0.0f}},
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, 
-									{   0,1,2,
-										0,3,1,
+									{   0,2,1,
+										0,1,3,
 										0,4,2,
 										2,4,1,
 										1,4,3,
