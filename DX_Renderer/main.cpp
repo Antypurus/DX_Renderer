@@ -45,11 +45,20 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 												 {
-														{{0.0f, 0.5f, 0.0f}},
-														{{0.5f,  0.0f, 0.0f}},
-														{{-0.5f,  0.0f, 0.0f}},
+													{{-1.0f, -1.0f,  1.0f}},
+													{{1.0f, -1.0f,  0.0f}},
+													{{1.0f, -1.0f,  1.0f}},
+													{{-1.0f, -1.0f,  0.0f}},
+													{{0.5f, 1.0f,  0.5f}},
 												 });
-	DXR::IndexBuffer index_buffer(device, commandList, {0, 1, 2});
+	DXR::IndexBuffer index_buffer(device, commandList, 
+									{   0,1,2,
+										0,3,1,
+										0,4,2,
+										2,4,1,
+										1,4,3,
+										3,4,0
+								  });
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
@@ -58,7 +67,7 @@ void MainDirectXThread(DXR::Window& window)
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({0.0f,0.0f,-10.0f,1.0f}, {0.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f,0.0f});
-	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(1,1,1);
+	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(1, 1, 1);
 
 	DirectX::XMMATRIX mvp = model * view * projection;
 	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, {mvp});
@@ -66,10 +75,29 @@ void MainDirectXThread(DXR::Window& window)
 	commandList.GetCommandAllocator()->Reset();
 	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
 
-	FLOAT color[4] = { 0.4f, 0.6f, 0.9f, 1.0f};
+	FLOAT color[4] = {0.4f, 0.6f, 0.9f, 1.0f};
+
+	float scale_factor = 1;
+	float scale_step = 0.1f;
 
 	while(window.ShouldContinue)
 	{
+		/*
+		{
+			if(scale_factor >= 10.0f)
+			{
+				scale_step = -0.1f;
+			} else if(scale_factor <= 0.0f)
+			{
+				scale_step = 0.1f;
+			}
+			scale_factor += scale_step;
+			model = DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixRotationAxis({0,1,0}, scale_factor);
+			mvp = model * view * projection;
+		}
+		constant_buffer.UpdateData({mvp});
+		*/
+
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
 		swapchain.Prepare(commandList);
 
@@ -84,7 +112,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
+		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();

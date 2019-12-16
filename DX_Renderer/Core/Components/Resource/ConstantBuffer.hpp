@@ -32,6 +32,12 @@ namespace DXR
 			this->CreateConstantBufferDescriptor(device);
 		}
 
+		void UpdateData(const std::vector<T> data)
+		{
+			this->m_data = data;
+			this->UploadData();
+		}
+
 	protected:
 		void CreateConstantBufferDescriptor(GraphicsDevice& device)
 		{
