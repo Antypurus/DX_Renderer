@@ -23,10 +23,10 @@ namespace DXR
 	{
 	public:
 	private:
-		BOOL m_depth_enabled = FALSE;
+		BOOL m_depth_enabled = TRUE;
 		D3D12_DEPTH_WRITE_MASK m_depth_write_mask = D3D12_DEPTH_WRITE_MASK_ALL;
 		D3D12_COMPARISON_FUNC m_depth_function = D3D12_COMPARISON_FUNC_LESS;
-		BOOL m_stencil_enabled = FALSE;
+		BOOL m_stencil_enabled = TRUE;
 		UINT8 m_stencil_read_mask = D3D12_DEFAULT_STENCIL_READ_MASK;
 		UINT8 m_stencil_write_mask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
 		D3D12_DEPTH_STENCILOP_DESC m_front_face = StencilOperation::Default().GetStencilOperationDescription();

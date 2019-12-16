@@ -82,28 +82,12 @@ void MainDirectXThread(DXR::Window& window)
 
 	while(window.ShouldContinue)
 	{
-		/*
-		{
-			if(scale_factor >= 10.0f)
-			{
-				scale_step = -0.1f;
-			} else if(scale_factor <= 0.0f)
-			{
-				scale_step = 0.1f;
-			}
-			scale_factor += scale_step;
-			model = DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixRotationAxis({0,1,0}, scale_factor);
-			mvp = model * view * projection;
-		}
-		constant_buffer.UpdateData({mvp});
-		*/
-
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
 		swapchain.Prepare(commandList);
 
 		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
 		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), TRUE, &swapchain.GetDepthStencilBufferDescriptor());
+		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), FALSE, &swapchain.GetDepthStencilBufferDescriptor());
 		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
