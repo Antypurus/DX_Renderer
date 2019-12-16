@@ -46,10 +46,10 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 												 {
 													{{-1.0f, -1.0f,  1.0f}},
-													{{1.0f, -1.0f,  0.0f}},
+													{{1.0f, -1.0f,  -1.0f}},
 													{{1.0f, -1.0f,  1.0f}},
-													{{-1.0f, -1.0f,  0.0f}},
-													{{0.5f, 1.0f,  0.5f}},
+													{{-1.0f, -1.0f,  -1.0f}},
+													{{0.0f, 1.0f,  0.0f}},
 												 });
 	DXR::IndexBuffer index_buffer(device, commandList, 
 									{   0,1,2,
@@ -82,6 +82,13 @@ void MainDirectXThread(DXR::Window& window)
 
 	while(window.ShouldContinue)
 	{
+		{
+			scale_factor += scale_step;
+			model = DirectX::XMMatrixRotationAxis({0.0f,1.0f,0.0f},scale_factor);
+			mvp = model * view * projection;
+			constant_buffer.UpdateData({mvp});
+		}
+
 		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
 		swapchain.Prepare(commandList);
 
@@ -96,7 +103,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		commandList->DrawIndexedInstanced(6*3, 1, 0, 0, 0);
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();

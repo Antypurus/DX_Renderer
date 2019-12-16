@@ -77,11 +77,6 @@ namespace DXR
 	void Swapchain::CreateDepthStencilBufferView(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
 		this->m_depth_stencil_buffer_resource = std::make_unique<DepthStencilBuffer>(device, commandList, this->m_DSV_descriptor_heap, this->m_resolution);
-		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-		depthStencilDesc.Format = DepthStencilBuffer::DepthStencilBufferFormat;
-		depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-		depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-		device->CreateDepthStencilView(this->m_depth_stencil_buffer_resource->GetResource(),&depthStencilDesc,this->m_DSV_descriptor_heap[0]);
 	}
 
 	void Swapchain::SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset, UINT yOffset)
