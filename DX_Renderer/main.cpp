@@ -40,7 +40,8 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 
 	commandList.GetCommandAllocator()->Reset();
-	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
+	commandList.FullReset(pso);
+	commandList.SetName(L"Main Command List");
 
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
@@ -113,8 +114,7 @@ void MainDirectXThread(DXR::Window& window)
 
 		device.GetGraphicsCommandQueue()->Flush(fence);
 
-		commandList.GetCommandAllocator()->Reset();
-		commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
+		commandList.FullReset(pso);
 	}
 
 }

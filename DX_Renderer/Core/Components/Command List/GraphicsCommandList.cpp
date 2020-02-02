@@ -1,5 +1,6 @@
 #include "GraphicsCommandList.hpp"
 #include "../../../Tooling/Validate.hpp"
+#include "../Pipeline/PipelineStateObject.hpp"
 
 namespace DXR
 {
@@ -22,6 +23,27 @@ namespace DXR
 	ID3D12CommandAllocator* GraphicsCommandList::GetCommandAllocator()
 	{
 		return this->m_command_allocator.Get();
+	}
+
+	void GraphicsCommandList::ResetCommandAllocator() const
+	{
+		DXCall(this->m_command_allocator->Reset());
+	}
+
+	void GraphicsCommandList::ResetCommandList(PipelineStateObject& pso) const
+	{
+		DXCall(this->m_command_list->Reset(this->m_command_allocator.Get(),pso.GetPipelineStateObject()));
+	}
+
+	void GraphicsCommandList::FullReset(PipelineStateObject& pso) const
+	{
+		this->ResetCommandAllocator();
+		this->ResetCommandList(pso);
+	}
+
+	void GraphicsCommandList::SetName(const std::wstring& CommandListName)
+	{
+		this->m_command_list->SetName(CommandListName.c_str());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
