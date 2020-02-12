@@ -13,7 +13,7 @@ namespace DXR
 		return this->m_command_queue.Get();
 	}
 
-	void CommandQueue::Flush(Fence fence)
+	void CommandQueue::Flush(Fence& fence)
 	{
 		fence.Advance();
 		fence.Signal(*this);
