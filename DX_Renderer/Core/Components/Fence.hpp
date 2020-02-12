@@ -21,6 +21,7 @@ namespace DXR
 		HANDLE m_wait_event_handle = nullptr;
 	public:
 		Fence(UINT64 initialValue,GraphicsDevice& device);
+		Fence(const Fence& fence);
 		~Fence();
 		void Advance();
 		void Signal(CommandQueue& queue) const;

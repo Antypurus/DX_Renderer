@@ -14,6 +14,16 @@ namespace DXR
 		SUCCESS_LOG(L"Fence Created");
 	}
 
+	Fence::Fence(const Fence& fence)
+	{
+		this->initial_value = fence.initial_value;
+		this->current_value = fence.current_value;
+		INFO_LOG(L"Copying Fence");
+		fence.m_fence.CopyTo(this->m_fence.ReleaseAndGetAddressOf());
+		this->CreateWaitEvent();
+		SUCCESS_LOG(L"Fence Copied");
+	}
+
 	Fence::~Fence()
 	{
 		if(this->m_wait_event_handle != nullptr)
