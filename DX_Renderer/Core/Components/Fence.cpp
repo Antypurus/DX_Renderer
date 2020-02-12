@@ -16,14 +16,11 @@ namespace DXR
 	void Fence::Advance()
 	{
 		this->current_value++;
-		INFO_LOG(L"Fence Value Advaned");
 	}
 
 	void Fence::Signal(CommandQueue& queue) const
 	{
-		INFO_LOG(L"Attempting To Signal Fence");
 		DXCall(queue->Signal(this->m_fence.Get(),this->current_value));
-		SUCCESS_LOG(L"Fence Signaled");
 	}
 
 	UINT64 Fence::GetCompletedValue() const
@@ -33,7 +30,6 @@ namespace DXR
 
 	void Fence::WaitForFence() const
 	{
-		INFO_LOG(L"Started Waring On Fence");
 		if(this->GetCompletedValue()<this->current_value)
 		{
 			HANDLE eventHandle = CreateEventEx(nullptr,false,false,EVENT_ALL_ACCESS);
@@ -41,6 +37,5 @@ namespace DXR
 			WaitForSingleObject(eventHandle,INFINITE);
 			CloseHandle(eventHandle);
 		}
-		SUCCESS_LOG(L"Finished Waiting On Fence");
 	}
 }

@@ -90,7 +90,6 @@ namespace DXR
 		viewport.TopLeftY = (FLOAT)yOffset;
 
 		commandList->RSSetViewports(1, &viewport);
-		INFO_LOG(L"Set Viewport In Command List");
 	}
 
 	void Swapchain::SetScisorRect(GraphicsCommandList& commandList, Resolution& resolution)
@@ -102,7 +101,6 @@ namespace DXR
 		rect.bottom = resolution.Height;
 
 		commandList->RSSetScissorRects(1, &rect);
-		INFO_LOG(L"Set Scisor Rect In Command List");
 	}
 
 	void Swapchain::Prepare(GraphicsCommandList& commandList)

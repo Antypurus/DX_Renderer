@@ -19,7 +19,6 @@ namespace DXR
 	{
 		if(index < this->DescriptorCount)
 		{
-			INFO_LOG(L"Fetched Descriptor Handle From Descriptor Heap");
 			return {this->m_descriptor_heap->GetCPUDescriptorHandleForHeapStart().ptr + index * this->m_descriptor_handle_increment_size};
 		}
 		WARNING_LOG(L"Attempt To Access Out Of Bound Descriptor Handle From Descriptor Heap");
