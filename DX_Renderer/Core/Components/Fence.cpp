@@ -10,7 +10,16 @@ namespace DXR
 		this->current_value = current_value;
 		INFO_LOG(L"Creting Fence");
 		DXCall(device->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->m_fence)));
+		this->CreateWaitEvent();
 		SUCCESS_LOG(L"Fence Created");
+	}
+
+	Fence::~Fence()
+	{
+		if(this->m_wait_event_handle != nullptr)
+		{
+			CloseHandle(this->m_wait_event_handle);
+		}
 	}
 
 	void Fence::Advance()
@@ -30,12 +39,27 @@ namespace DXR
 
 	void Fence::WaitForFence() const
 	{
-		if(this->GetCompletedValue()<this->current_value)
+		while(this->GetCompletedValue()<this->current_value)
 		{
-			HANDLE eventHandle = CreateEventEx(nullptr,false,false,EVENT_ALL_ACCESS);
-			this->m_fence->SetEventOnCompletion(current_value,eventHandle);
-			WaitForSingleObject(eventHandle,INFINITE);
-			CloseHandle(eventHandle);
+			this->m_fence->SetEventOnCompletion(current_value, this->m_wait_event_handle);
+			WaitForSingleObject(this->m_wait_event_handle,INFINITE);
+		}
+	}
+
+	void Fence::CreateWaitEvent()
+	{
+		this->m_wait_event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if(this->m_wait_event_handle == nullptr)
+		{
+		#ifndef NDEBUG
+			DWORD error = GetLastError();
+			wchar_t* msg = FormatErrorMessage(error);
+			DXR::LogError(__FILENAME__, __LINE__, msg);
+			free(msg);
+			__debugbreak();
+		#else
+			exit(-1);
+		#endif
 		}
 	}
 }
