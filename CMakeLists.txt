@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.14)
 
 project(DX_Renderer VERSION 0.0.1)
 
-set(warnings "/W4 /WX /EHsc /wd26812")
+set(warnings "/W4 /WX /EHsc")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26812")
 
 file(GLOB_RECURSE  SRCS
         "DX_Renderer/*.cpp"
