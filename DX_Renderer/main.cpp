@@ -39,7 +39,6 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 
-	commandList.GetCommandAllocator()->Reset();
 	commandList.FullReset(pso);
 	commandList.SetName(L"Main Command List");
 
@@ -73,8 +72,7 @@ void MainDirectXThread(DXR::Window& window)
 	DirectX::XMMATRIX mvp = model * view * projection;
 	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, {mvp});
 
-	commandList.GetCommandAllocator()->Reset();
-	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
+	commandList.FullReset(pso);
 
 	FLOAT color[4] = {0.4f, 0.6f, 0.9f, 1.0f};
 
@@ -90,7 +88,7 @@ void MainDirectXThread(DXR::Window& window)
 			constant_buffer.UpdateData({mvp});
 		}
 
-		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
+		commandList.SetGraphicsRootSignature(root_signature);
 		swapchain.Prepare(commandList);
 
 		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);

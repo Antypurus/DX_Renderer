@@ -46,6 +46,11 @@ namespace DXR
 		this->m_command_list->SetName(CommandListName.c_str());
 	}
 
+	void GraphicsCommandList::SetGraphicsRootSignature(const RootSignature& RootSignature)
+	{
+		this->m_command_list->SetGraphicsRootSignature(RootSignature.GetRootSignature());
+	}
+
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
 	{
 		INFO_LOG(L"Creating Command Allocator");

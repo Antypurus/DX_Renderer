@@ -8,6 +8,7 @@
 namespace DXR
 {
 	struct PipelineStateObject;
+	struct RootSignature;
 	using namespace Microsoft;
 
 	struct GraphicsCommandList
@@ -25,6 +26,7 @@ namespace DXR
 		void ResetCommandList(PipelineStateObject& pso) const;
 		void FullReset(PipelineStateObject& pso) const;
 		void SetName(const std::wstring& CommandListName);
+		void SetGraphicsRootSignature(const RootSignature& RootSignature);
 	private:
 		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);
