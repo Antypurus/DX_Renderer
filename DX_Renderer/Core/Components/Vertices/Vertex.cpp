@@ -76,7 +76,7 @@ namespace DXR
 		input_elements_descriptions->push_back(position_element_description);
 		input_elements_descriptions->push_back(color_element_description);
 		D3D12_INPUT_LAYOUT_DESC input_layout = {};
-		input_layout.NumElements = input_elements_descriptions->size();
+		input_layout.NumElements = (UINT)(input_elements_descriptions->size());
 		input_layout.pInputElementDescs = input_elements_descriptions->data();
 
 		return input_layout;

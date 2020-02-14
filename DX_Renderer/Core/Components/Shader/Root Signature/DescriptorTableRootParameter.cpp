@@ -65,7 +65,7 @@ namespace DXR
 		}
 
 		D3D12_ROOT_DESCRIPTOR_TABLE descriptor_table = {};
-		descriptor_table.NumDescriptorRanges = this->m_table_entries.size();
+		descriptor_table.NumDescriptorRanges = (UINT)this->m_table_entries.size();
 		descriptor_table.pDescriptorRanges = descriptor_table_entries;
 
 		return descriptor_table;

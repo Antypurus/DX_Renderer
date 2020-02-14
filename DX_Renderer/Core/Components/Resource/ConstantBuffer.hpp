@@ -52,8 +52,9 @@ namespace DXR
 		//TODO(Tiago): Logging & Optimizing Initial Data Copy
 		void UploadData()
 		{
-			T* data_array = new T[this->m_data.size()];
-			for(size_t i = 0;i < this->m_data.size();++i)
+			const size_t entry_count = this->m_data.size();
+			T* data_array = new T[entry_count];
+			for(size_t i = 0;i < entry_count;++i)
 			{
 				data_array[i] = this->m_data[i];
 			}

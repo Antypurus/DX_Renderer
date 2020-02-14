@@ -25,7 +25,7 @@ namespace DXR
 
 	void RootSignature::CreateRootSignature(GraphicsDevice& device)
 	{
-		UINT root_parameter_count = this->m_constant_root_parameters.size() + this->m_descriptor_root_parameters.size()
+		UINT64 root_parameter_count = this->m_constant_root_parameters.size() + this->m_descriptor_root_parameters.size()
 			+ this->m_descriptor_table_root_parameters.size();
 		D3D12_ROOT_PARAMETER* root_parameters = new D3D12_ROOT_PARAMETER[root_parameter_count];
 
@@ -48,7 +48,7 @@ namespace DXR
 		}
 
 		D3D12_ROOT_SIGNATURE_DESC root_signature = {};
-		root_signature.NumParameters = root_parameter_count;
+		root_signature.NumParameters = (UINT)root_parameter_count;
 		if(root_parameter_count == 0)
 		{
 			root_signature.pParameters = nullptr;
