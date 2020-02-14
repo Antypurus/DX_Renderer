@@ -13,7 +13,7 @@ namespace DXR
 	struct ConstantBuffer : public Resource
 	{
 	public:
-		const UINT64 ConstantBufferSizeMultiplier = 256;
+		const short ConstantBufferSizeMultiplier = 256;
 	private:
 		DescriptorHeap m_heap;
 		std::vector<T> m_data;
@@ -117,7 +117,7 @@ namespace DXR
 
 		UINT CalculateBufferSize()
 		{
-			const UINT data_buffer_size = this->m_data.size() * sizeof(T);
+			const UINT data_buffer_size = (UINT)(this->m_data.size() * sizeof(T));
 			const UINT entrie_count = std::lround(std::ceil(data_buffer_size / (double)ConstantBufferSizeMultiplier));
 			return entrie_count * ConstantBufferSizeMultiplier;
 		}
