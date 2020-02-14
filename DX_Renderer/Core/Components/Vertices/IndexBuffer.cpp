@@ -28,8 +28,9 @@ namespace DXR
 
 	void IndexBuffer::CreateUploadBuffer(GraphicsDevice& device)
 	{
-		auto data = new UINT[this->m_indices.size()];
-		for(size_t i = 0;i < this->m_indices.size();++i)
+		const size_t entrie_count = this->m_indices.size();
+		auto data = new UINT[entrie_count];
+		for(size_t i = 0;i < entrie_count;++i)
 		{
 			data[i] = this->m_indices[i];
 		}

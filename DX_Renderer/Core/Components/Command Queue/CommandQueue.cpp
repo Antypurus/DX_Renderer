@@ -22,12 +22,25 @@ namespace DXR
 
 	CommandQueue::CommandQueue(CommandQueueType type) : Type(type)
 	{
+		this->m_command_queue_type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		switch(Type)
 		{
 			case(CommandQueueType::Direct):
 			{
-				this->m_command_queue_type = D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_DIRECT;
+				this->m_command_queue_type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+				break;
 			}
+			case(CommandQueueType::Bundle):
+			{
+				this->m_command_queue_type = D3D12_COMMAND_LIST_TYPE_BUNDLE;
+				break;
+			}
+			case(CommandQueueType::Compute):
+			{
+				this->m_command_queue_type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+				break;
+			}
+			default:break;
 		}
 	}
 }

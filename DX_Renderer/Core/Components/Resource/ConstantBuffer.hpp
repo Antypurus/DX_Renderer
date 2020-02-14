@@ -115,10 +115,11 @@ namespace DXR
 			return heap_properties;
 		}
 
-		UINT64 CalculateBufferSize()
+		UINT CalculateBufferSize()
 		{
-			const UINT64 data_buffer_size = this->m_data.size() * sizeof(T);
-			return ceil(data_buffer_size / (double)ConstantBufferSizeMultiplier) * ConstantBufferSizeMultiplier;
+			const UINT data_buffer_size = this->m_data.size() * sizeof(T);
+			const UINT entrie_count = std::lround(std::ceil(data_buffer_size / (double)ConstantBufferSizeMultiplier));
+			return entrie_count * ConstantBufferSizeMultiplier;
 		}
 	};
 

@@ -68,7 +68,7 @@ namespace DXR
 	{
 		HANDLE hConsole = Debug::ConsoleHandle;
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN);
-		printf_s("[INFO]@%lls:%d=>%s\n", file, line, message);
+		wprintf_s(L"[INFO]@%lls:%d=>%hs\n", file, line, message);
 		SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 	}
 }

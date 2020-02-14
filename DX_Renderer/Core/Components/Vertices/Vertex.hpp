@@ -13,8 +13,8 @@ namespace DXR
 	{
 	public:
 	protected:
-		XMFLOAT3 m_position;
-		XMFLOAT4 m_color;
+		XMFLOAT3 m_position = {};
+		XMFLOAT4 m_color = {};
 	public:
 		Vertex() = default;
 		Vertex(XMFLOAT3 position,XMFLOAT4 color);
