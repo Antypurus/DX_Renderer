@@ -29,7 +29,7 @@ namespace DXR
 		ID3D12CommandQueue* GetCommandQueueRawPtr();
 		void Flush(Fence& fence);
 	protected:
-		CommandQueue(CommandQueueType type);;
+		CommandQueue(CommandQueueType type);
 		
 	};
 }

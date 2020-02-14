@@ -44,7 +44,7 @@ namespace DXR
 		IDXGIFactory2* GetDXGIFactory() const;
 		DescriptorSizes GetDescriptorSizes()const;
 		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
-		CommandQueue* GetGraphicsCommandQueue();
+		CommandQueue& GetGraphicsCommandQueue();
 		Fence CreateFence(UINT64 initialValue);
 		GraphicsCommandList CreateGraphicsCommandList();
 		Swapchain CreateSwapchain(Window& window, UINT refreshRate, GraphicsCommandList& commandList);

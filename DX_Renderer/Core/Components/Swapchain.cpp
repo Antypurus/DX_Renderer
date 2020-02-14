@@ -51,7 +51,7 @@ namespace DXR
 		swapchain_description.SampleDesc.Count = 1;
 
 		INFO_LOG(L"Creating Swapchain");
-		DXCall(device.GetDXGIFactory()->CreateSwapChainForHwnd(device.GetGraphicsCommandQueue()->GetCommandQueueRawPtr()
+		DXCall(device.GetDXGIFactory()->CreateSwapChainForHwnd(device.GetGraphicsCommandQueue().GetCommandQueueRawPtr()
 															   , window.GetWindowHandle(),
 															   &swapchain_description,
 															   nullptr,

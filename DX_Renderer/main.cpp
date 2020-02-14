@@ -18,8 +18,10 @@ void MainDirectXThread(DXR::Window& window)
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 	DXR::GraphicsDevice device(1);
 
-	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
-	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
+	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(
+		L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
+	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(
+		L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
 
 	DXR::RootSignature root_signature;
 	DXR::DescriptorTableRootParameter desc_table;
@@ -62,8 +64,8 @@ void MainDirectXThread(DXR::Window& window)
 
 	commandList->Close();
 	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
-	(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
-	device.GetGraphicsCommandQueue()->Flush(fence);
+	device.GetGraphicsCommandQueue()->ExecuteCommandLists(1, commandLists);
+	device.GetGraphicsCommandQueue().Flush(fence);
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({0.0f,0.0f,-10.0f,1.0f}, {0.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f,0.0f});
@@ -106,11 +108,11 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();
-		(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
+		device.GetGraphicsCommandQueue()->ExecuteCommandLists(1, commandLists);
 
 		swapchain.Present(commandList);
 
-		device.GetGraphicsCommandQueue()->Flush(fence);
+		device.GetGraphicsCommandQueue().Flush(fence);
 
 		commandList.FullReset(pso);
 	}

@@ -160,8 +160,8 @@ namespace DXR
 		SUCCESS_LOG(L"Finished Fetching Supported MSAA Quality Levels");
 	}
 
-	CommandQueue* GraphicsDevice::GetGraphicsCommandQueue()
+	CommandQueue& GraphicsDevice::GetGraphicsCommandQueue()
 	{
-		return this->m_graphics_command_queue;
+		return *this->m_graphics_command_queue;
 	}
 }

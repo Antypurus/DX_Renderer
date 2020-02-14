@@ -9,6 +9,7 @@ namespace DXR
 	{
 	public:
 		friend GraphicsDevice;
+		GraphicsCommandQueue(const GraphicsCommandQueue& queue);
 	private:
 		GraphicsCommandQueue(GraphicsDevice& device);
 		inline void CreateCommandQueue(GraphicsDevice& device);

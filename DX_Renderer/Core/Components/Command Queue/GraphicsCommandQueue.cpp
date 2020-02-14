@@ -10,6 +10,12 @@ namespace DXR
 		this->CreateCommandQueue(device);
 	}
 
+	GraphicsCommandQueue::GraphicsCommandQueue(const GraphicsCommandQueue& queue):CommandQueue(queue.Type)
+	{
+		this->m_command_queue_type = queue.m_command_queue_type;
+		this->m_command_queue = queue.m_command_queue;
+	}
+
 	inline void GraphicsCommandQueue::CreateCommandQueue(GraphicsDevice& device)
 	{
 		D3D12_COMMAND_QUEUE_DESC command_queue_description = {};
