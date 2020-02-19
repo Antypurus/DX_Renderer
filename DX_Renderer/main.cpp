@@ -18,10 +18,8 @@ void MainDirectXThread(DXR::Window& window)
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 	DXR::GraphicsDevice device(1);
 
-	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(
-		L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
-	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(
-		L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
+	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
+	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
 
 	DXR::RootSignature root_signature;
 	DXR::DescriptorTableRootParameter desc_table;
