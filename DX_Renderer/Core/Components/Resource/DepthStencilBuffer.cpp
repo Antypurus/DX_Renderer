@@ -25,6 +25,11 @@ namespace DXR
 		INFO_LOG(L"Queued Resource Barrier Into Command List For Execution");
 	}
 
+	void DepthStencilBuffer::Clear(GraphicsCommandList& commandList) const
+	{
+		commandList->ClearDepthStencilView((*this->m_descriptor_heap)[0], D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	}
+
 	D3D12_RESOURCE_DESC DepthStencilBuffer::CreateResourceDescription()
 	{
 		D3D12_RESOURCE_DESC resource_description = {};

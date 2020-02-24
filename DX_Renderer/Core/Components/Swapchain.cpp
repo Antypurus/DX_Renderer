@@ -133,6 +133,11 @@ namespace DXR
 		return this->m_DSV_descriptor_heap[0];
 	}
 
+	DepthStencilBuffer& Swapchain::GetDepthStencilBuffer()
+	{
+		return *this->m_depth_stencil_buffer_resource;
+	}
+
 	void Swapchain::PrepareBackbufferForPresentation(GraphicsCommandList& commandList)
 	{
 		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].Get(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
