@@ -17,7 +17,7 @@ namespace DXR
 	private:
 		Resolution m_resolution;
 	public:
-		DepthStencilBuffer(GraphicsDevice& device, GraphicsCommandList& commandList,DescriptorHeap& heap,Resolution& resolution);
+		DepthStencilBuffer(GraphicsDevice& device, GraphicsCommandList& commandList,DescriptorHeap& heap,size_t HeapIndex,Resolution& resolution);
 		void Clear(GraphicsCommandList& commandList) const;
 	protected:
 		D3D12_RESOURCE_DESC CreateResourceDescription() override;

@@ -10,7 +10,7 @@ namespace DXR
 	public:
 	private:
 	public:
-		RenderTargetView(ID3D12Resource* RenderTarget, DescriptorHeap& DescriptorHeap, Resolution& Resolution);
+		RenderTargetView(ID3D12Resource* RenderTarget, DescriptorHeap& DescriptorHeap, Resolution& Resolution, size_t HeapIndex);
 	private:
 	};
 }

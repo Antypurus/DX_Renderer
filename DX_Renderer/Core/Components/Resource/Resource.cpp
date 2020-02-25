@@ -17,7 +17,7 @@ namespace DXR
 		return this->m_descriptor_heap;
 	}
 
-	Resource::Resource(DescriptorHeap& heap) :m_descriptor_heap(&heap){}
+	Resource::Resource(DescriptorHeap& heap, size_t HeapIndex) :m_descriptor_heap(&heap), m_heap_index(HeapIndex){}
 
 	Resource::Resource()
 	{

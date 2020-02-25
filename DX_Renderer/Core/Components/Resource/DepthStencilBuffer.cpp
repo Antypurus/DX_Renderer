@@ -8,7 +8,7 @@
 namespace DXR
 {
 	DepthStencilBuffer::DepthStencilBuffer(GraphicsDevice& device, GraphicsCommandList& commandList,
-		DescriptorHeap& heap, Resolution& resolution): Resource(heap)
+		DescriptorHeap& heap, size_t HeapIndex, Resolution& resolution): Resource(heap, HeapIndex)
 	{
 		this->m_resolution = resolution;
 		D3D12_RESOURCE_DESC resource_description = this->DepthStencilBuffer::CreateResourceDescription();
