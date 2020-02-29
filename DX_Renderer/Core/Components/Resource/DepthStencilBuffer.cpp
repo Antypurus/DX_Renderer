@@ -27,7 +27,7 @@ namespace DXR
 
 	void DepthStencilBuffer::Clear(GraphicsCommandList& commandList) const
 	{
-		commandList->ClearDepthStencilView((*this->m_descriptor_heap)[0], D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+		commandList->ClearDepthStencilView((*this->m_descriptor_heap)[this->m_heap_index], D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	}
 
 	D3D12_RESOURCE_DESC DepthStencilBuffer::CreateResourceDescription()
