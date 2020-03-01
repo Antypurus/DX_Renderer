@@ -64,13 +64,23 @@ namespace DXR
 
 	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device)
 	{
-		this->m_backbuffers = {nullptr,nullptr};
+		std::vector<WRL::ComPtr<ID3D12Resource>> backbuffers;
+		for(size_t i = 0;i<this->m_swapchain_buffer_count;++i)
+		{
+			backbuffers.emplace_back(nullptr);
+		}
+		
 		for(UINT i = 0;i < this->m_swapchain_buffer_count;++i)
 		{
 			INFO_LOG(L"Creating Backbuffer Render Target View");
-			DXCall(this->m_swapchain->GetBuffer(i, IID_PPV_ARGS(&this->m_backbuffers[i])));
-			device->CreateRenderTargetView(this->m_backbuffers[i].Get(), nullptr, this->m_RTV_descriptor_heap[i]);
+			DXCall(this->m_swapchain->GetBuffer(i, IID_PPV_ARGS(&backbuffers[i])));
+			device->CreateRenderTargetView(backbuffers[i].Get(), nullptr, this->m_RTV_descriptor_heap[i]);
 			SUCCESS_LOG(L"Backbuffer Render Target View Created");
+		}
+
+		for (size_t i = 0; i < this->m_swapchain_buffer_count; ++i)
+		{
+			this->m_backbuffers.emplace_back(backbuffers[i],this->m_RTV_descriptor_heap,this->m_resolution,i);
 		}
 	}
 
@@ -108,7 +118,7 @@ namespace DXR
 		this->SetViewport(commandList, this->m_resolution, 0, 0);
 		this->SetScisorRect(commandList, this->m_resolution);
 
-		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].Get(),D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};
+		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
 
@@ -118,9 +128,9 @@ namespace DXR
 		this->m_current_backbuffer = this->m_current_backbuffer == 1 ? 0 : 1;
 	}
 
-	ID3D12Resource* Swapchain::GetCurrentBackbuffer()
+	ID3D12Resource* Swapchain::GetCurrentBackbufferResource()
 	{
-		return this->m_backbuffers[this->m_current_backbuffer].Get();
+		return this->m_backbuffers[this->m_current_backbuffer].GetResource();
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE Swapchain::GetCurrentBackBufferDescriptor()
@@ -138,9 +148,14 @@ namespace DXR
 		return *this->m_depth_stencil_buffer_resource;
 	}
 
+	RenderTargetView& Swapchain::GetCurrentBackBuffer()
+	{
+		return this->m_backbuffers[this->m_current_backbuffer];
+	}
+
 	void Swapchain::PrepareBackbufferForPresentation(GraphicsCommandList& commandList)
 	{
-		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].Get(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
+		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
 }

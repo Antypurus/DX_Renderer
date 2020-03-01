@@ -8,6 +8,7 @@
 #include "../Windows Abstractions/Window.hpp"
 #include "Resource/DescriptorHeap.hpp"
 #include "Resource/DepthStencilBuffer.hpp"
+#include "Resource/RenderTargetView.hpp"
 
 namespace DXR
 {
@@ -31,17 +32,18 @@ namespace DXR
 		DescriptorHeap m_DSV_descriptor_heap;
 		std::unique_ptr<DepthStencilBuffer> m_depth_stencil_buffer_resource;
 		UINT8 m_current_backbuffer = 0;
-		std::vector<WRL::ComPtr<ID3D12Resource>> m_backbuffers;
+		std::vector<RenderTargetView> m_backbuffers;
 	public:
 		IDXGISwapChain1* operator->();
 		void SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset = 0, UINT yOffset = 0);
 		void SetScisorRect(GraphicsCommandList& commandList, Resolution& resolution);
 		void Prepare(GraphicsCommandList& commandList);
 		void Present(GraphicsCommandList& commandList);
-		ID3D12Resource* GetCurrentBackbuffer();
+		ID3D12Resource* GetCurrentBackbufferResource();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferDescriptor();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilBufferDescriptor();
 		DepthStencilBuffer& GetDepthStencilBuffer();
+		RenderTargetView& GetCurrentBackBuffer();
 		void PrepareBackbufferForPresentation(GraphicsCommandList& commandList);
 	private:
 		Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList);

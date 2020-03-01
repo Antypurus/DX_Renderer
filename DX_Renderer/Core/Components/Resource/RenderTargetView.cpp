@@ -4,10 +4,10 @@
 
 namespace DXR
 {
-	RenderTargetView::RenderTargetView(ID3D12Resource* RenderTarget, DescriptorHeap& DescriptorHeap,
+	RenderTargetView::RenderTargetView(WRL::ComPtr<ID3D12Resource>& RenderTarget, DescriptorHeap& DescriptorHeap,
 		Resolution& Resolution, size_t HeapIndex):Resource(DescriptorHeap, HeapIndex)
 	{
-		this->m_resource = WRL::ComPtr<ID3D12Resource>(RenderTarget);
+		RenderTarget.CopyTo(IID_PPV_ARGS(&this->m_resource));
 		this->m_descriptor_heap = &DescriptorHeap;
 		this->m_heap_index = HeapIndex;
 	}
