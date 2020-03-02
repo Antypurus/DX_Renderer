@@ -1,3 +1,4 @@
+#include <iostream>
 #include <Windows.h>
 #include <thread>
 #include "Tooling/Log.hpp"
@@ -16,7 +17,7 @@
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-	DXR::GraphicsDevice device(1);
+	DXR::GraphicsDevice device(0);
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
 	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
@@ -108,7 +109,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->Close();
 		device.GetGraphicsCommandQueue()->ExecuteCommandLists(1, commandLists);
 
-		swapchain.Present(commandList);
+		swapchain.Present();
 
 		device.GetGraphicsCommandQueue().Flush(fence);
 

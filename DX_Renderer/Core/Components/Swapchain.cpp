@@ -122,7 +122,7 @@ namespace DXR
 		barrier.ExecuteResourceBarrier(commandList);
 	}
 
-	void Swapchain::Present(GraphicsCommandList& commandList)
+	void Swapchain::Present()
 	{
 		DXCall(this->m_swapchain->Present(0, 0));
 		this->m_current_backbuffer = this->m_current_backbuffer == 1 ? 0 : 1;

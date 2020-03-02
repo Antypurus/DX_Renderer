@@ -38,7 +38,7 @@ namespace DXR
 		void SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset = 0, UINT yOffset = 0);
 		void SetScisorRect(GraphicsCommandList& commandList, Resolution& resolution);
 		void Prepare(GraphicsCommandList& commandList);
-		void Present(GraphicsCommandList& commandList);
+		void Present();
 		ID3D12Resource* GetCurrentBackbufferResource();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferDescriptor();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilBufferDescriptor();
