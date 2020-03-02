@@ -19,14 +19,14 @@ namespace DXR
 		WRL::ComPtr<ID3D12CommandAllocator> m_command_allocator;
 		WRL::ComPtr<ID3D12GraphicsCommandList> m_command_list;
 	public:
-		ID3D12GraphicsCommandList* operator->();
+		ID3D12GraphicsCommandList* operator->() const;
 		ID3D12GraphicsCommandList* GetRAWInterface() const;
-		ID3D12CommandAllocator* GetCommandAllocator();
+		ID3D12CommandAllocator* GetCommandAllocator() const;
 		void ResetCommandAllocator() const;
 		void ResetCommandList(PipelineStateObject& pso) const;
 		void FullReset(PipelineStateObject& pso) const;
-		void SetName(const std::wstring& CommandListName);
-		void SetGraphicsRootSignature(const RootSignature& RootSignature);
+		void SetName(const std::wstring& CommandListName) const;
+		void SetGraphicsRootSignature(const RootSignature& RootSignature) const;
 	private:
 		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);

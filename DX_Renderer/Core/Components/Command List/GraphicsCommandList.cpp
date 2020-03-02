@@ -10,7 +10,7 @@ namespace DXR
 		this->CreateCommandList(device);
 	}
 
-	ID3D12GraphicsCommandList* GraphicsCommandList::operator->()
+	ID3D12GraphicsCommandList* GraphicsCommandList::operator->() const
 	{
 		return this->m_command_list.Get();
 	}
@@ -20,7 +20,7 @@ namespace DXR
 		return this->m_command_list.Get();
 	}
 
-	ID3D12CommandAllocator* GraphicsCommandList::GetCommandAllocator()
+	ID3D12CommandAllocator* GraphicsCommandList::GetCommandAllocator() const
 	{
 		return this->m_command_allocator.Get();
 	}
@@ -41,12 +41,12 @@ namespace DXR
 		this->ResetCommandList(pso);
 	}
 
-	void GraphicsCommandList::SetName(const std::wstring& CommandListName)
+	void GraphicsCommandList::SetName(const std::wstring& CommandListName) const
 	{
 		this->m_command_list->SetName(CommandListName.c_str());
 	}
 
-	void GraphicsCommandList::SetGraphicsRootSignature(const RootSignature& RootSignature)
+	void GraphicsCommandList::SetGraphicsRootSignature(const RootSignature& RootSignature) const
 	{
 		this->m_command_list->SetGraphicsRootSignature(RootSignature.GetRootSignature());
 	}
