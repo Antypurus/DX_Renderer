@@ -1,6 +1,8 @@
 #include "GraphicsCommandList.hpp"
 #include "../../../Tooling/Validate.hpp"
 #include "../Pipeline/PipelineStateObject.hpp"
+#include "../Resource/RenderTargetView.hpp"
+#include "../Resource/DepthStencilBuffer.hpp"
 
 namespace DXR
 {
@@ -49,6 +51,12 @@ namespace DXR
 	void GraphicsCommandList::SetGraphicsRootSignature(const RootSignature& RootSignature) const
 	{
 		this->m_command_list->SetGraphicsRootSignature(RootSignature.GetRootSignature());
+	}
+
+	void GraphicsCommandList::SetDisplayRenderTarget(const RenderTargetView& RenderTarget,
+		const DepthStencilBuffer& ZBuffer)
+	{
+		this->m_command_list->OMSetRenderTargets(1, &RenderTarget.GetCPUHandle(), FALSE, &ZBuffer.GetCPUHandle());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)

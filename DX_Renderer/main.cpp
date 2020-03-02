@@ -94,7 +94,8 @@ void MainDirectXThread(DXR::Window& window)
 
 		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
-		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), FALSE, &swapchain.GetDepthStencilBufferDescriptor());
+		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
+		
 		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
 		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
