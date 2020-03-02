@@ -12,7 +12,7 @@
 #include "Core/Components/Pipeline/PipelineStateObject.hpp"
 #include "Core/Components/Shader/VertexShader.hpp"
 #include "Core/Components/Shader/PixelShader.hpp"
-#include "Core/Components/Resource/ConstantBuffer.hpp"
+#include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {

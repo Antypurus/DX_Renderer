@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-#include "Resource.hpp"
-#include "../GraphicsDevice.hpp"
-#include "DescriptorHeap.hpp"
-#include "../../../Tooling/Validate.hpp"
+#include "../Resource.hpp"
+#include "../../GraphicsDevice.hpp"
+#include "../DescriptorHeap.hpp"
+#include "../../../../Tooling/Validate.hpp"
 
 namespace DXR
 {
