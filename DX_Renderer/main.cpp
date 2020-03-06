@@ -100,8 +100,8 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->IASetVertexBuffers(0, 1, &vertex_buffer.GetVertexBufferDescriptor());
-		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
+		vertex_buffer.Bind(commandList);
+		index_buffer.Bind(commandList);
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
 		commandList->DrawIndexedInstanced(6*3, 1, 0, 0, 0);

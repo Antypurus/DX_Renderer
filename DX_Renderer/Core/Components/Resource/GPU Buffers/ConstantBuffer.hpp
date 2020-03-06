@@ -38,6 +38,10 @@ namespace DXR
 			this->UploadData();
 		}
 
+		void Bind(size_t slot)
+		{
+			
+		}
 	protected:
 		void CreateConstantBufferDescriptor(GraphicsDevice& device)
 		{

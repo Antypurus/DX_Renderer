@@ -20,6 +20,16 @@ namespace DXR
 		return this->m_index_buffer_descriptor;
 	}
 
+	void IndexBuffer::Bind(GraphicsCommandList& CommandList)
+	{
+		CommandList->IASetIndexBuffer(&this->m_index_buffer_descriptor);
+	}
+
+	size_t IndexBuffer::GetIndexCount() const
+	{
+		return this->m_indices.size();
+	}
+
 	void IndexBuffer::CreateIndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
 		this->m_index_buffer = std::make_unique<GPUDefaultBuffer>(device, commandList, this->m_indices.size(), sizeof(UINT));
