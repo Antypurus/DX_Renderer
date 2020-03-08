@@ -17,7 +17,7 @@
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-	DXR::GraphicsDevice device(0);
+	DXR::GraphicsDevice device(1);
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
 	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
@@ -100,8 +100,8 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		vertex_buffer.Bind(commandList);
-		index_buffer.Bind(commandList);
+		commandList.BindVertexBuffer(vertex_buffer);
+		commandList.BindIndexBuffer(index_buffer);
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
 		commandList->DrawIndexedInstanced(6*3, 1, 0, 0, 0);

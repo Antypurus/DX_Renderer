@@ -3,6 +3,7 @@
 #include "../Pipeline/PipelineStateObject.hpp"
 #include "../Resource/RenderTargetView.hpp"
 #include "../Resource/DepthStencilBuffer.hpp"
+#include "../Vertices/IndexBuffer.hpp"
 
 namespace DXR
 {
@@ -57,6 +58,12 @@ namespace DXR
 		const DepthStencilBuffer& ZBuffer)
 	{
 		this->m_command_list->OMSetRenderTargets(1, &RenderTarget.GetCPUHandle(), FALSE, &ZBuffer.GetCPUHandle());
+	}
+
+	void GraphicsCommandList::BindIndexBuffer(IndexBuffer& IndexBuffer)
+	{
+		this->m_current_index_buffer = &IndexBuffer;
+		this->m_command_list->IASetIndexBuffer(&IndexBuffer.GetIndexBufferDescriptor());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)

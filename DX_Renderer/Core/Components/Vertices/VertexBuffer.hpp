@@ -46,11 +46,6 @@ namespace DXR
 			return this->m_input_layout;
 		}
 
-		void Bind(GraphicsCommandList& CommandList)
-		{
-			CommandList->IASetVertexBuffers(0, 1, &this->m_vertex_buffer_descriptor);
-		}
-
 	private:
 
 		void GenerateInputLayoutDescription()

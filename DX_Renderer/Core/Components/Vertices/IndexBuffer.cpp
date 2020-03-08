@@ -20,11 +20,6 @@ namespace DXR
 		return this->m_index_buffer_descriptor;
 	}
 
-	void IndexBuffer::Bind(GraphicsCommandList& CommandList)
-	{
-		CommandList->IASetIndexBuffer(&this->m_index_buffer_descriptor);
-	}
-
 	size_t IndexBuffer::GetIndexCount() const
 	{
 		return this->m_indices.size();
@@ -38,9 +33,9 @@ namespace DXR
 
 	void IndexBuffer::CreateUploadBuffer(GraphicsDevice& device)
 	{
-		const size_t entrie_count = this->m_indices.size();
-		auto data = new UINT[entrie_count];
-		for(size_t i = 0;i < entrie_count;++i)
+		const size_t entry_count = this->m_indices.size();
+		auto data = new UINT[entry_count];
+		for(size_t i = 0;i < entry_count;++i)
 		{
 			data[i] = this->m_indices[i];
 		}
@@ -50,7 +45,7 @@ namespace DXR
 		this->m_upload_buffer->GetResource()->SetName(L"Index Buffer Upload Buffer");
 	}
 
-	void IndexBuffer::UploadData(GraphicsCommandList& commandList)
+	void IndexBuffer::UploadData(GraphicsCommandList& commandList) const
 	{
 		this->m_upload_buffer->CopyDataToGPUBuffer(commandList, *this->m_index_buffer);
 	}
