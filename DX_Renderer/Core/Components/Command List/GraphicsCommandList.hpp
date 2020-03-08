@@ -35,6 +35,7 @@ namespace DXR
 		void SetGraphicsRootSignature(const RootSignature& RootSignature) const;
 		void SetDisplayRenderTarget(const RenderTargetView& RenderTarget, const DepthStencilBuffer& ZBuffer);
 		void BindIndexBuffer(IndexBuffer& IndexBuffer);
+		void SendDrawCall() const;
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);

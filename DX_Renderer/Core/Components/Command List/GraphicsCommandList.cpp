@@ -66,6 +66,13 @@ namespace DXR
 		this->m_command_list->IASetIndexBuffer(&IndexBuffer.GetIndexBufferDescriptor());
 	}
 
+	void GraphicsCommandList::SendDrawCall() const
+	{
+		if (this->m_current_index_buffer == nullptr) return;
+
+		this->m_command_list->DrawIndexedInstanced(this->m_current_index_buffer->GetIndexCount(), 1, 0, 0, 0);
+	}
+
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
 	{
 		INFO_LOG(L"Creating Command Allocator");

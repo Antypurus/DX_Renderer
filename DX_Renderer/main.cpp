@@ -104,7 +104,8 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindIndexBuffer(index_buffer);
 		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
 
-		commandList->DrawIndexedInstanced(6*3, 1, 0, 0, 0);
+		commandList.SendDrawCall();
+		
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList->Close();
