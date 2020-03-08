@@ -73,6 +73,11 @@ namespace DXR
 		this->m_command_list->DrawIndexedInstanced(this->m_current_index_buffer->GetIndexCount(), 1, 0, 0, 0);
 	}
 
+	void GraphicsCommandList::Close() const
+	{
+		DXCall(this->m_command_list->Close());
+	}
+
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
 	{
 		INFO_LOG(L"Creating Command Allocator");

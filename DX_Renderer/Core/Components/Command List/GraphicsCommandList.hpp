@@ -38,6 +38,7 @@ namespace DXR
 		void SetDisplayRenderTarget(const RenderTargetView& RenderTarget, const DepthStencilBuffer& ZBuffer);
 		void BindIndexBuffer(IndexBuffer& IndexBuffer);
 		void SendDrawCall() const;
+		void Close() const;
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);

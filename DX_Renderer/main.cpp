@@ -108,7 +108,7 @@ void MainDirectXThread(DXR::Window& window)
 		
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
-		commandList->Close();
+		commandList.Close();
 		device.GetGraphicsCommandQueue()->ExecuteCommandLists(1, commandLists);
 
 		swapchain.Present();
