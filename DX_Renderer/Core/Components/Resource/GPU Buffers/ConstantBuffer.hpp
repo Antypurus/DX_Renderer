@@ -22,6 +22,7 @@ namespace DXR
 		{
 			this->m_heap = device.CreateConstantBufferDescriptorHeap(1);
 			this->m_descriptor_heap = &this->m_heap;
+			this->m_heap_index = 0;
 
 			this->m_resource_description = this->ConstantBuffer<T>::CreateResourceDescription();
 			this->m_optimized_clear_value = {};
@@ -36,11 +37,6 @@ namespace DXR
 		{
 			this->m_data = data;
 			this->UploadData();
-		}
-
-		void Bind(size_t slot)
-		{
-			
 		}
 	protected:
 		void CreateConstantBufferDescriptor(GraphicsDevice& device)

@@ -5,6 +5,8 @@
 #include "../GraphicsDevice.hpp"
 #include <string>
 
+
+#include "../Resource/GPU Buffers/ConstantBuffer.hpp"
 #include "../Vertices/VertexBuffer.hpp"
 
 namespace DXR
@@ -39,6 +41,9 @@ namespace DXR
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);
+
+		template<typename T>
+		void BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot);
 	private:
 		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);
@@ -49,5 +54,11 @@ namespace DXR
 	void GraphicsCommandList::BindVertexBuffer(VertexBuffer<T>& VertexBuffer)
 	{
 		this->m_command_list->IASetVertexBuffers(0,1,&VertexBuffer.GetVertexBufferDescriptor());
+	}
+
+	template <typename T>
+	void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
+	{
+		this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
 	}
 }

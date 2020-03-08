@@ -25,6 +25,7 @@ namespace DXR
 		virtual ~Resource() = default;
 		DescriptorHeap* GetDescriptorHeap();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const;
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const;
 	protected:
 		Resource(DescriptorHeap& heap, size_t HeapIndex);
 		Resource();

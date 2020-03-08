@@ -102,7 +102,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
-		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
+		commandList.BindConstantBuffer(constant_buffer, 0);
 
 		commandList.SendDrawCall();
 		
