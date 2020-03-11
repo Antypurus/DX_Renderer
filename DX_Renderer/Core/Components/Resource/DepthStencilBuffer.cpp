@@ -8,7 +8,7 @@
 namespace DXR
 {
 	DepthStencilBuffer::DepthStencilBuffer(GraphicsDevice& device, GraphicsCommandList& commandList,
-		DescriptorHeap& heap, Resolution& resolution): Resource(heap)
+		DescriptorHeap& heap, size_t HeapIndex, Resolution& resolution): Resource(heap, HeapIndex)
 	{
 		this->m_resolution = resolution;
 		D3D12_RESOURCE_DESC resource_description = this->DepthStencilBuffer::CreateResourceDescription();
@@ -23,6 +23,11 @@ namespace DXR
 		const ResourceBarrier resource_barrier = {*this->m_resource.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_DEPTH_WRITE};
 		resource_barrier.ExecuteResourceBarrier(commandList);
 		INFO_LOG(L"Queued Resource Barrier Into Command List For Execution");
+	}
+
+	void DepthStencilBuffer::Clear(GraphicsCommandList& commandList) const
+	{
+		commandList->ClearDepthStencilView((*this->m_descriptor_heap)[this->m_heap_index], D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	}
 
 	D3D12_RESOURCE_DESC DepthStencilBuffer::CreateResourceDescription()

@@ -1,4 +1,5 @@
 #include "Resource.hpp"
+#include "DescriptorHeap.hpp"
 
 namespace DXR
 {
@@ -17,7 +18,17 @@ namespace DXR
 		return this->m_descriptor_heap;
 	}
 
-	Resource::Resource(DescriptorHeap& heap) :m_descriptor_heap(&heap){}
+	D3D12_CPU_DESCRIPTOR_HANDLE Resource::GetCPUHandle() const
+	{
+		return (*this->m_descriptor_heap)[this->m_heap_index];
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE Resource::GetGPUHandle() const
+	{
+		return (*this->m_descriptor_heap).Get(this->m_heap_index);
+	}
+
+	Resource::Resource(DescriptorHeap& heap, size_t HeapIndex) :m_descriptor_heap(&heap), m_heap_index(HeapIndex){}
 
 	Resource::Resource()
 	{

@@ -21,10 +21,11 @@ namespace DXR
 	public:
 		IndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, const std::vector<UINT>& indices);
 		D3D12_INDEX_BUFFER_VIEW GetIndexBufferDescriptor() const;
+		[[nodiscard]]size_t GetIndexCount() const;
 	private:
 		void CreateIndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList);
 		void CreateUploadBuffer(GraphicsDevice& device);
-		void UploadData(GraphicsCommandList& commandList);
+		void UploadData(GraphicsCommandList& commandList) const;
 		void CreateIndexBufferDescriptor();
 	};
 }

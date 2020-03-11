@@ -5,7 +5,7 @@
 #include <vector>
 #include <d3d12.h>
 
-#include "Command Queue/CommandQueue.hpp"
+#include "Command Queue/GraphicsCommandQueue.hpp"
 
 namespace DXR
 {
@@ -35,7 +35,7 @@ namespace DXR
 		WRL::ComPtr<IDXGIFactory2> m_dxgi_factory;
 		WRL::ComPtr <ID3D12Device> m_device;
 		DescriptorSizes descriptorSizes{};
-		CommandQueue* m_graphics_command_queue{};
+		GraphicsCommandQueue* m_graphics_command_queue{};
 		// public and privte methods
 	public:
 		GraphicsDevice();
@@ -44,7 +44,7 @@ namespace DXR
 		IDXGIFactory2* GetDXGIFactory() const;
 		DescriptorSizes GetDescriptorSizes()const;
 		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
-		CommandQueue* GetGraphicsCommandQueue();
+		GraphicsCommandQueue& GetGraphicsCommandQueue();
 		Fence CreateFence(UINT64 initialValue);
 		GraphicsCommandList CreateGraphicsCommandList();
 		Swapchain CreateSwapchain(Window& window, UINT refreshRate, GraphicsCommandList& commandList);

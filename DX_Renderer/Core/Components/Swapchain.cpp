@@ -51,7 +51,7 @@ namespace DXR
 		swapchain_description.SampleDesc.Count = 1;
 
 		INFO_LOG(L"Creating Swapchain");
-		DXCall(device.GetDXGIFactory()->CreateSwapChainForHwnd(device.GetGraphicsCommandQueue()->GetCommandQueueRawPtr()
+		DXCall(device.GetDXGIFactory()->CreateSwapChainForHwnd(device.GetGraphicsCommandQueue().GetCommandQueueRawPtr()
 															   , window.GetWindowHandle(),
 															   &swapchain_description,
 															   nullptr,
@@ -64,19 +64,29 @@ namespace DXR
 
 	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device)
 	{
-		this->m_backbuffers = {nullptr,nullptr};
+		std::vector<WRL::ComPtr<ID3D12Resource>> backbuffers;
+		for(size_t i = 0;i<this->m_swapchain_buffer_count;++i)
+		{
+			backbuffers.emplace_back(nullptr);
+		}
+		
 		for(UINT i = 0;i < this->m_swapchain_buffer_count;++i)
 		{
 			INFO_LOG(L"Creating Backbuffer Render Target View");
-			DXCall(this->m_swapchain->GetBuffer(i, IID_PPV_ARGS(&this->m_backbuffers[i])));
-			device->CreateRenderTargetView(this->m_backbuffers[i].Get(), nullptr, this->m_RTV_descriptor_heap[i]);
+			DXCall(this->m_swapchain->GetBuffer(i, IID_PPV_ARGS(&backbuffers[i])));
+			device->CreateRenderTargetView(backbuffers[i].Get(), nullptr, this->m_RTV_descriptor_heap[i]);
 			SUCCESS_LOG(L"Backbuffer Render Target View Created");
+		}
+
+		for (size_t i = 0; i < this->m_swapchain_buffer_count; ++i)
+		{
+			this->m_backbuffers.emplace_back(backbuffers[i],this->m_RTV_descriptor_heap,this->m_resolution,i);
 		}
 	}
 
 	void Swapchain::CreateDepthStencilBufferView(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
-		this->m_depth_stencil_buffer_resource = std::make_unique<DepthStencilBuffer>(device, commandList, this->m_DSV_descriptor_heap, this->m_resolution);
+		this->m_depth_stencil_buffer_resource = std::make_unique<DepthStencilBuffer>(device, commandList, this->m_DSV_descriptor_heap,0 ,this->m_resolution);
 	}
 
 	void Swapchain::SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset, UINT yOffset)
@@ -90,7 +100,6 @@ namespace DXR
 		viewport.TopLeftY = (FLOAT)yOffset;
 
 		commandList->RSSetViewports(1, &viewport);
-		INFO_LOG(L"Set Viewport In Command List");
 	}
 
 	void Swapchain::SetScisorRect(GraphicsCommandList& commandList, Resolution& resolution)
@@ -102,7 +111,6 @@ namespace DXR
 		rect.bottom = resolution.Height;
 
 		commandList->RSSetScissorRects(1, &rect);
-		INFO_LOG(L"Set Scisor Rect In Command List");
 	}
 
 	void Swapchain::Prepare(GraphicsCommandList& commandList)
@@ -110,19 +118,19 @@ namespace DXR
 		this->SetViewport(commandList, this->m_resolution, 0, 0);
 		this->SetScisorRect(commandList, this->m_resolution);
 
-		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].Get(),D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};
+		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
 
-	void Swapchain::Present(GraphicsCommandList& commandList)
+	void Swapchain::Present()
 	{
 		DXCall(this->m_swapchain->Present(0, 0));
 		this->m_current_backbuffer = this->m_current_backbuffer == 1 ? 0 : 1;
 	}
 
-	ID3D12Resource* Swapchain::GetCurrentBackbuffer()
+	ID3D12Resource* Swapchain::GetCurrentBackbufferResource()
 	{
-		return this->m_backbuffers[this->m_current_backbuffer].Get();
+		return this->m_backbuffers[this->m_current_backbuffer].GetResource();
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE Swapchain::GetCurrentBackBufferDescriptor()
@@ -135,9 +143,19 @@ namespace DXR
 		return this->m_DSV_descriptor_heap[0];
 	}
 
+	DepthStencilBuffer& Swapchain::GetDepthStencilBuffer()
+	{
+		return *this->m_depth_stencil_buffer_resource;
+	}
+
+	RenderTargetView& Swapchain::GetCurrentBackBuffer()
+	{
+		return this->m_backbuffers[this->m_current_backbuffer];
+	}
+
 	void Swapchain::PrepareBackbufferForPresentation(GraphicsCommandList& commandList)
 	{
-		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].Get(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
+		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
 }
