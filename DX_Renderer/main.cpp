@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <thread>
 #include "Tooling/Log.hpp"
+#include "Core/Components/Command Queue/GraphicsCommandQueue.hpp"
 #include "Core/Windows Abstractions/Window.hpp"
 #include "Core/Components/GraphicsDevice.hpp"
 #include "Core/Components/Fence.hpp"
@@ -17,7 +18,7 @@
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-	DXR::GraphicsDevice device(1);
+	DXR::GraphicsDevice device;
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
 	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
@@ -62,8 +63,8 @@ void MainDirectXThread(DXR::Window& window)
 								  });
 
 	commandList->Close();
-	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
-	device.GetGraphicsCommandQueue()->ExecuteCommandLists(1, commandLists);
+	
+	device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 	device.GetGraphicsCommandQueue().Flush(fence);
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
@@ -109,7 +110,7 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList.Close();
-		device.GetGraphicsCommandQueue()->ExecuteCommandLists(1, commandLists);
+		device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 
 		swapchain.Present();
 

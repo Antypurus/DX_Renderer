@@ -1,17 +1,22 @@
 #pragma once
 
 #include "CommandQueue.hpp"
-#include "../GraphicsDevice.hpp"
+#include <vector>
 
 namespace DXR
 {
+	struct GraphicsCommandList;
+	struct GraphicsDevice;
+	
 	struct GraphicsCommandQueue: public CommandQueue
 	{
-	public:
 		friend GraphicsDevice;
-		GraphicsCommandQueue(const GraphicsCommandQueue& queue);
-	private:
+	public:
 		GraphicsCommandQueue(GraphicsDevice& device);
+		GraphicsCommandQueue(const GraphicsCommandQueue& queue);
+		void ExecuteCommandList(const GraphicsCommandList& CommandList);
+		void ExecuteCommandLists(const std::vector<GraphicsCommandList&>& CommandLists);
+	private:
 		inline void CreateCommandQueue(GraphicsDevice& device);
 	};
 }
