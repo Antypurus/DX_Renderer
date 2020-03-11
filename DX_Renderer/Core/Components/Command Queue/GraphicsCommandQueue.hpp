@@ -15,7 +15,7 @@ namespace DXR
 		GraphicsCommandQueue(GraphicsDevice& device);
 		GraphicsCommandQueue(const GraphicsCommandQueue& queue);
 		void ExecuteCommandList(const GraphicsCommandList& CommandList);
-		void ExecuteCommandLists(const std::vector<GraphicsCommandList&>& CommandLists);
+		void ExecuteCommandLists(const std::vector<GraphicsCommandList*>& CommandLists);
 	private:
 		inline void CreateCommandQueue(GraphicsDevice& device);
 	};

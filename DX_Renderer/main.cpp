@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <thread>
+#include <vector>
 #include "Tooling/Log.hpp"
 #include "Core/Components/Command Queue/GraphicsCommandQueue.hpp"
 #include "Core/Windows Abstractions/Window.hpp"

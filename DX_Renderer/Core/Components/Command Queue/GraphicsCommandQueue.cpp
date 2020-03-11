@@ -20,12 +20,19 @@ namespace DXR
 
 	void GraphicsCommandQueue::ExecuteCommandList(const GraphicsCommandList& CommandList)
 	{
-		ID3D12CommandList* List[] = { CommandList.GetRAWInterface() };
-		this->m_command_queue->ExecuteCommandLists(1, List);
+		ID3D12CommandList* list[] = { CommandList.GetRAWInterface() };
+		this->m_command_queue->ExecuteCommandLists(1, list);
 	}
 
-	void GraphicsCommandQueue::ExecuteCommandLists(const std::vector<GraphicsCommandList&>& CommandLists)
+	void GraphicsCommandQueue::ExecuteCommandLists(const std::vector<GraphicsCommandList*>& CommandLists)
 	{
+		ID3D12CommandList** lists = new ID3D12CommandList * [CommandLists.size()];
+		for (size_t list_index = 0; list_index < CommandLists.size(); ++list_index)
+		{
+			lists[list_index] = CommandLists[list_index]->GetRAWInterface();
+		}
+		this->m_command_queue->ExecuteCommandLists(CommandLists.size(), lists);
+		delete[] lists;
 	}
 
 	inline void GraphicsCommandQueue::CreateCommandQueue(GraphicsDevice& device)
