@@ -57,14 +57,15 @@ namespace DXR
 
 	D3D12_ROOT_DESCRIPTOR_TABLE DescriptorTableRootParameter::GenerateDescriptorTable()
 	{
-		D3D12_DESCRIPTOR_RANGE* descriptor_table_entries = new D3D12_DESCRIPTOR_RANGE[this->m_table_entries.size()];
-		for(size_t i = 0;i < this->m_table_entries.size();++i)
+		const uint64_t entry_count = this->m_table_entries.size();
+		D3D12_DESCRIPTOR_RANGE* descriptor_table_entries = new D3D12_DESCRIPTOR_RANGE[entry_count];
+		for(size_t i = 0;i < entry_count;++i)
 		{
 			descriptor_table_entries[i] = this->m_table_entries[i];
 		}
 
 		D3D12_ROOT_DESCRIPTOR_TABLE descriptor_table = {};
-		descriptor_table.NumDescriptorRanges = this->m_table_entries.size();
+		descriptor_table.NumDescriptorRanges = (UINT)this->m_table_entries.size();
 		descriptor_table.pDescriptorRanges = descriptor_table_entries;
 
 		return descriptor_table;

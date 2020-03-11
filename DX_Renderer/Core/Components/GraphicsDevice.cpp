@@ -1,7 +1,6 @@
 #include "GraphicsDevice.hpp"
 #include "../../Tooling/Validate.hpp"
 #include "Fence.hpp"
-#include "Command Queue/GraphicsCommandQueue.hpp"
 #include "Command List/GraphicsCommandList.hpp"
 #include "Swapchain.hpp"
 #include "Resource/DescriptorHeap.hpp"
@@ -160,8 +159,8 @@ namespace DXR
 		SUCCESS_LOG(L"Finished Fetching Supported MSAA Quality Levels");
 	}
 
-	CommandQueue* GraphicsDevice::GetGraphicsCommandQueue()
+	GraphicsCommandQueue& GraphicsDevice::GetGraphicsCommandQueue()
 	{
-		return this->m_graphics_command_queue;
+		return *this->m_graphics_command_queue;
 	}
 }

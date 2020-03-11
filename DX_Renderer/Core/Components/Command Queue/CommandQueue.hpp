@@ -27,9 +27,9 @@ namespace DXR
 		virtual ~CommandQueue(){};
 		ID3D12CommandQueue* operator->();
 		ID3D12CommandQueue* GetCommandQueueRawPtr();
-		void Flush(Fence fence);
+		void Flush(Fence& fence);
 	protected:
-		CommandQueue(CommandQueueType type);;
+		CommandQueue(CommandQueueType type);
 		
 	};
 }

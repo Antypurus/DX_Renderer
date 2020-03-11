@@ -53,7 +53,7 @@ namespace DXR
 			this->m_input_elements = this->m_vertices[0].GenerateInputElementDescription();
 
 			D3D12_INPUT_LAYOUT_DESC input_layout = {};
-			input_layout.NumElements = this->m_input_elements.size();
+			input_layout.NumElements = (UINT)this->m_input_elements.size();
 			input_layout.pInputElementDescs = this->m_input_elements.data();
 
 			this->m_input_layout = input_layout;
@@ -87,8 +87,8 @@ namespace DXR
 		{
 			D3D12_VERTEX_BUFFER_VIEW vertex_buffer_descriptor = {};
 			vertex_buffer_descriptor.BufferLocation = (*this->m_vertex_buffer)->GetGPUVirtualAddress();
-			vertex_buffer_descriptor.SizeInBytes = (UINT)this->m_vertices.size() * this->m_vertices[0].GetElementSize();
-			vertex_buffer_descriptor.StrideInBytes = this->m_vertices[0].GetElementSize();
+			vertex_buffer_descriptor.SizeInBytes = (UINT)(this->m_vertices.size() * this->m_vertices[0].GetElementSize());
+			vertex_buffer_descriptor.StrideInBytes = (UINT)(this->m_vertices[0].GetElementSize());
 
 			this->m_vertex_buffer_descriptor = vertex_buffer_descriptor;
 		}

@@ -1,6 +1,8 @@
+#include <iostream>
 #include <Windows.h>
 #include <thread>
 #include "Tooling/Log.hpp"
+#include "Core/Components/Command Queue/GraphicsCommandQueue.hpp"
 #include "Core/Windows Abstractions/Window.hpp"
 #include "Core/Components/GraphicsDevice.hpp"
 #include "Core/Components/Fence.hpp"
@@ -11,15 +13,15 @@
 #include "Core/Components/Pipeline/PipelineStateObject.hpp"
 #include "Core/Components/Shader/VertexShader.hpp"
 #include "Core/Components/Shader/PixelShader.hpp"
-#include "Core/Components/Resource/ConstantBuffer.hpp"
+#include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-	DXR::GraphicsDevice device(1);
+	DXR::GraphicsDevice device;
 
-	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
-	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"C:/Users/craky/Desktop/DX_Renderer/DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
+	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
+	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
 
 	DXR::RootSignature root_signature;
 	DXR::DescriptorTableRootParameter desc_table;
@@ -39,8 +41,8 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 
-	commandList.GetCommandAllocator()->Reset();
-	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
+	commandList.FullReset(pso);
+	commandList.SetName(L"Main Command List");
 
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
@@ -61,9 +63,9 @@ void MainDirectXThread(DXR::Window& window)
 								  });
 
 	commandList->Close();
-	ID3D12CommandList* commandLists[] = {commandList.GetRAWInterface()};
-	(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
-	device.GetGraphicsCommandQueue()->Flush(fence);
+	
+	device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
+	device.GetGraphicsCommandQueue().Flush(fence);
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({0.0f,0.0f,-10.0f,1.0f}, {0.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f,0.0f});
@@ -72,8 +74,7 @@ void MainDirectXThread(DXR::Window& window)
 	DirectX::XMMATRIX mvp = model * view * projection;
 	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, {mvp});
 
-	commandList.GetCommandAllocator()->Reset();
-	commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
+	commandList.FullReset(pso);
 
 	FLOAT color[4] = {0.4f, 0.6f, 0.9f, 1.0f};
 
@@ -89,32 +90,31 @@ void MainDirectXThread(DXR::Window& window)
 			constant_buffer.UpdateData({mvp});
 		}
 
-		commandList->SetGraphicsRootSignature(root_signature.GetRootSignature());
+		commandList.SetGraphicsRootSignature(root_signature);
 		swapchain.Prepare(commandList);
 
-		commandList->ClearRenderTargetView(swapchain.GetCurrentBackBufferDescriptor(), color, 0, nullptr);
-		commandList->ClearDepthStencilView(swapchain.GetDepthStencilBufferDescriptor(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-		commandList->OMSetRenderTargets(1, &swapchain.GetCurrentBackBufferDescriptor(), FALSE, &swapchain.GetDepthStencilBufferDescriptor());
-		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
-		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
+		swapchain.GetDepthStencilBuffer().Clear(commandList);
+		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
+		
+		commandList.BindDescriptorHeap(*constant_buffer.GetDescriptorHeap());
 
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->IASetVertexBuffers(0, 1, &vertex_buffer.GetVertexBufferDescriptor());
-		commandList->IASetIndexBuffer(&index_buffer.GetIndexBufferDescriptor());
-		commandList->SetGraphicsRootDescriptorTable(0, constant_buffer.GetDescriptorHeap()->Get(0));
+		commandList.BindVertexBuffer(vertex_buffer);
+		commandList.BindIndexBuffer(index_buffer);
+		commandList.BindConstantBuffer(constant_buffer, 0);
 
-		commandList->DrawIndexedInstanced(6*3, 1, 0, 0, 0);
+		commandList.SendDrawCall();
+		
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
-		commandList->Close();
-		(*device.GetGraphicsCommandQueue())->ExecuteCommandLists(1, commandLists);
+		commandList.Close();
+		device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 
-		swapchain.Present(commandList);
+		swapchain.Present();
 
-		device.GetGraphicsCommandQueue()->Flush(fence);
+		device.GetGraphicsCommandQueue().Flush(fence);
 
-		commandList.GetCommandAllocator()->Reset();
-		commandList->Reset(commandList.GetCommandAllocator(), pso.GetPipelineStateObject());
+		commandList.FullReset(pso);
 	}
 
 }

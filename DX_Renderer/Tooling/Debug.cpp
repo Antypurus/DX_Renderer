@@ -7,6 +7,13 @@ namespace DXR
 	Debug Debug::DebugInterface = {};
 	HANDLE Debug::ConsoleHandle = {};
 
+	Debug::~Debug()
+	{
+		fclose(this->stdin_stream);
+		fclose(this->stdout_stream);
+		fclose(this->stderr_stream);
+	}
+
 	Debug::Debug()
 	{
 		this->CreateLogTerminal();
@@ -27,9 +34,9 @@ namespace DXR
 	{
 #ifndef NDEBUG
 		AllocConsole();
-		FILE* input = freopen("CONIN$", "r", stdin);
-		FILE* output = freopen("CONOUT$", "w", stdout);
-		FILE* error = freopen("CONOUT$", "w", stderr);
+		freopen_s(&this->stdin_stream,"CONIN$", "r", stdin);
+		freopen_s(&this->stdout_stream,"CONOUT$", "w", stdout);
+		freopen_s(&this->stderr_stream,"CONOUT$", "w", stderr);
 		Debug::ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
 	}

@@ -10,20 +10,36 @@ namespace DXR
 		this->current_value = current_value;
 		INFO_LOG(L"Creting Fence");
 		DXCall(device->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->m_fence)));
+		this->CreateWaitEvent();
 		SUCCESS_LOG(L"Fence Created");
+	}
+
+	Fence::Fence(const Fence& fence)
+	{
+		this->initial_value = fence.initial_value;
+		this->current_value = fence.current_value;
+		INFO_LOG(L"Copying Fence");
+		fence.m_fence.CopyTo(this->m_fence.ReleaseAndGetAddressOf());
+		this->CreateWaitEvent();
+		SUCCESS_LOG(L"Fence Copied");
+	}
+
+	Fence::~Fence()
+	{
+		if(this->m_wait_event_handle != nullptr)
+		{
+			CloseHandle(this->m_wait_event_handle);
+		}
 	}
 
 	void Fence::Advance()
 	{
 		this->current_value++;
-		INFO_LOG(L"Fence Value Advaned");
 	}
 
 	void Fence::Signal(CommandQueue& queue) const
 	{
-		INFO_LOG(L"Attempting To Signal Fence");
 		DXCall(queue->Signal(this->m_fence.Get(),this->current_value));
-		SUCCESS_LOG(L"Fence Signaled");
 	}
 
 	UINT64 Fence::GetCompletedValue() const
@@ -33,14 +49,27 @@ namespace DXR
 
 	void Fence::WaitForFence() const
 	{
-		INFO_LOG(L"Started Waring On Fence");
-		if(this->GetCompletedValue()<this->current_value)
+		while(this->GetCompletedValue()<this->current_value)
 		{
-			HANDLE eventHandle = CreateEventEx(nullptr,false,false,EVENT_ALL_ACCESS);
-			this->m_fence->SetEventOnCompletion(current_value,eventHandle);
-			WaitForSingleObject(eventHandle,INFINITE);
-			CloseHandle(eventHandle);
+			this->m_fence->SetEventOnCompletion(current_value, this->m_wait_event_handle);
+			WaitForSingleObject(this->m_wait_event_handle,INFINITE);
 		}
-		SUCCESS_LOG(L"Finished Waiting On Fence");
+	}
+
+	void Fence::CreateWaitEvent()
+	{
+		this->m_wait_event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if(this->m_wait_event_handle == nullptr)
+		{
+		#ifndef NDEBUG
+			DWORD error = GetLastError();
+			wchar_t* msg = FormatErrorMessage(error);
+			DXR::LogError(__FILENAME__, __LINE__, msg);
+			free(msg);
+			__debugbreak();
+		#else
+			exit(-1);
+		#endif
+		}
 	}
 }

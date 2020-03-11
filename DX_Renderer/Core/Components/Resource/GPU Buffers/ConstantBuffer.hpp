@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-#include "Resource.hpp"
-#include "../GraphicsDevice.hpp"
-#include "DescriptorHeap.hpp"
-#include "../../../Tooling/Validate.hpp"
+#include "../Resource.hpp"
+#include "../../GraphicsDevice.hpp"
+#include "../DescriptorHeap.hpp"
+#include "../../../../Tooling/Validate.hpp"
 
 namespace DXR
 {
@@ -13,7 +13,7 @@ namespace DXR
 	struct ConstantBuffer : public Resource
 	{
 	public:
-		const UINT64 ConstantBufferSizeMultiplier = 256;
+		const short ConstantBufferSizeMultiplier = 256;
 	private:
 		DescriptorHeap m_heap;
 		std::vector<T> m_data;
@@ -22,6 +22,7 @@ namespace DXR
 		{
 			this->m_heap = device.CreateConstantBufferDescriptorHeap(1);
 			this->m_descriptor_heap = &this->m_heap;
+			this->m_heap_index = 0;
 
 			this->m_resource_description = this->ConstantBuffer<T>::CreateResourceDescription();
 			this->m_optimized_clear_value = {};
@@ -37,7 +38,6 @@ namespace DXR
 			this->m_data = data;
 			this->UploadData();
 		}
-
 	protected:
 		void CreateConstantBufferDescriptor(GraphicsDevice& device)
 		{
@@ -52,8 +52,9 @@ namespace DXR
 		//TODO(Tiago): Logging & Optimizing Initial Data Copy
 		void UploadData()
 		{
-			T* data_array = new T[this->m_data.size()];
-			for(size_t i = 0;i < this->m_data.size();++i)
+			const size_t entry_count = this->m_data.size();
+			T* data_array = new T[entry_count];
+			for(size_t i = 0;i < entry_count;++i)
 			{
 				data_array[i] = this->m_data[i];
 			}
@@ -115,10 +116,11 @@ namespace DXR
 			return heap_properties;
 		}
 
-		UINT64 CalculateBufferSize()
+		UINT CalculateBufferSize()
 		{
-			const UINT64 data_buffer_size = this->m_data.size() * sizeof(T);
-			return ceil(data_buffer_size / (double)ConstantBufferSizeMultiplier) * ConstantBufferSizeMultiplier;
+			const UINT data_buffer_size = (UINT)(this->m_data.size() * sizeof(T));
+			const UINT entrie_count = std::lround(std::ceil(data_buffer_size / (double)ConstantBufferSizeMultiplier));
+			return entrie_count * ConstantBufferSizeMultiplier;
 		}
 	};
 
