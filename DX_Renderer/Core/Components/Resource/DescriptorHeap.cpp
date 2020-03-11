@@ -30,7 +30,7 @@ namespace DXR
 		return {this->m_descriptor_heap->GetGPUDescriptorHandleForHeapStart().ptr + index * this->m_descriptor_handle_increment_size};
 	}
 
-	ID3D12DescriptorHeap* DescriptorHeap::GetRAWInterface()
+	ID3D12DescriptorHeap* DescriptorHeap::GetRAWInterface() const
 	{
 		return this->m_descriptor_heap.Get();
 	}

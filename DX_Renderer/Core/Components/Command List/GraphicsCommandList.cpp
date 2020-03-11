@@ -4,6 +4,7 @@
 #include "../Resource/RenderTargetView.hpp"
 #include "../Resource/DepthStencilBuffer.hpp"
 #include "../Vertices/IndexBuffer.hpp"
+#include <vector>
 
 namespace DXR
 {
@@ -64,6 +65,23 @@ namespace DXR
 	{
 		this->m_current_index_buffer = &IndexBuffer;
 		this->m_command_list->IASetIndexBuffer(&IndexBuffer.GetIndexBufferDescriptor());
+	}
+
+	void GraphicsCommandList::BindDescriptorHeap(const DescriptorHeap& DescriptorHeap)
+	{
+		ID3D12DescriptorHeap* Heap[1] = { DescriptorHeap.GetRAWInterface() };
+		this->m_command_list->SetDescriptorHeaps(1, Heap);
+	}
+
+	void GraphicsCommandList::BindDescriptorHeaps(const std::vector<DescriptorHeap*>& DescriptorHeaps)
+	{
+		ID3D12DescriptorHeap** Heaps = new ID3D12DescriptorHeap* [DescriptorHeaps.size()];
+		for (size_t heap_index = 0; heap_index < DescriptorHeaps.size(); ++heap_index)
+		{
+			Heaps[heap_index] = DescriptorHeaps[heap_index]->GetRAWInterface();
+		}
+		this->m_command_list->SetDescriptorHeaps(DescriptorHeaps.size(), Heaps);
+		delete[] Heaps;
 	}
 
 	void GraphicsCommandList::SendDrawCall() const

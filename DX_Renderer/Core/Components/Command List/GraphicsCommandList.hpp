@@ -37,6 +37,8 @@ namespace DXR
 		void SetGraphicsRootSignature(const RootSignature& RootSignature) const;
 		void SetDisplayRenderTarget(const RenderTargetView& RenderTarget, const DepthStencilBuffer& ZBuffer);
 		void BindIndexBuffer(IndexBuffer& IndexBuffer);
+		void BindDescriptorHeap(const DescriptorHeap& DescriptorHeap);
+		void BindDescriptorHeaps(const std::vector<DescriptorHeap*>& DescriptorHeaps);
 		void SendDrawCall() const;
 		void Close() const;
 

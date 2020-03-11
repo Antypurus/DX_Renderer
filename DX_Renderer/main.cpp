@@ -1,7 +1,6 @@
 #include <iostream>
 #include <Windows.h>
 #include <thread>
-#include <vector>
 #include "Tooling/Log.hpp"
 #include "Core/Components/Command Queue/GraphicsCommandQueue.hpp"
 #include "Core/Windows Abstractions/Window.hpp"
@@ -98,8 +97,7 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 		
-		ID3D12DescriptorHeap* heaps[] = {constant_buffer.GetDescriptorHeap()->GetRAWInterface()};
-		commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+		commandList.BindDescriptorHeap(*constant_buffer.GetDescriptorHeap());
 
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList.BindVertexBuffer(vertex_buffer);
