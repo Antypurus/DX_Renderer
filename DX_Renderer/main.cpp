@@ -99,7 +99,6 @@ void MainDirectXThread(DXR::Window& window)
 		
 		commandList.BindDescriptorHeap(*constant_buffer.GetDescriptorHeap());
 
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);

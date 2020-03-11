@@ -18,14 +18,24 @@ namespace DXR
 	struct RootSignature;
 	using namespace Microsoft;
 
+	enum class PrimitiveTopology
+	{
+		None,
+		Points,
+		Lines,
+		Triangles
+	};
+
 	struct GraphicsCommandList
 	{
 	public:
+		const static PrimitiveTopology DefaultPrimitiveTopology = PrimitiveTopology::Triangles;
 		friend GraphicsDevice;
 	private:
 		WRL::ComPtr<ID3D12CommandAllocator> m_command_allocator;
 		WRL::ComPtr<ID3D12GraphicsCommandList> m_command_list;
 		IndexBuffer* m_current_index_buffer = nullptr;
+		mutable PrimitiveTopology m_current_primitive_topology = PrimitiveTopology::None;
 	public:
 		ID3D12GraphicsCommandList* operator->() const;
 		[[nodiscard]] ID3D12GraphicsCommandList* GetRAWInterface() const;
@@ -39,7 +49,8 @@ namespace DXR
 		void BindIndexBuffer(IndexBuffer& IndexBuffer);
 		void BindDescriptorHeap(const DescriptorHeap& DescriptorHeap);
 		void BindDescriptorHeaps(const std::vector<DescriptorHeap*>& DescriptorHeaps);
-		void SendDrawCall() const;
+		void SetPrimitiveTopology(PrimitiveTopology Topology);
+		void SendDrawCall();
 		void Close() const;
 
 		template<typename T>

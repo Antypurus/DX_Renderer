@@ -84,9 +84,42 @@ namespace DXR
 		delete[] Heaps;
 	}
 
-	void GraphicsCommandList::SendDrawCall() const
+	void GraphicsCommandList::SetPrimitiveTopology(PrimitiveTopology Topology)
+	{
+		this->m_current_primitive_topology = Topology;
+		switch (m_current_primitive_topology)
+		{
+		case DXR::PrimitiveTopology::None:
+		{
+			break;
+		}
+		case DXR::PrimitiveTopology::Points:
+		{
+			this->m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+			break;
+		}
+		case DXR::PrimitiveTopology::Lines:
+		{
+			this->m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
+			break;
+		}
+		case DXR::PrimitiveTopology::Triangles:
+		{
+			this->m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	void GraphicsCommandList::SendDrawCall()
 	{
 		if (this->m_current_index_buffer == nullptr) return;
+		if (this->m_current_primitive_topology == PrimitiveTopology::None)
+		{
+			this->SetPrimitiveTopology(this->DefaultPrimitiveTopology);
+		}
 
 		this->m_command_list->DrawIndexedInstanced(this->m_current_index_buffer->GetIndexCount(), 1, 0, 0, 0);
 	}
@@ -94,6 +127,7 @@ namespace DXR
 	void GraphicsCommandList::Close() const
 	{
 		DXCall(this->m_command_list->Close());
+		this->m_current_primitive_topology = PrimitiveTopology::None;
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
