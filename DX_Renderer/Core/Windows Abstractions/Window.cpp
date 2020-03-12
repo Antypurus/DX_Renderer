@@ -1,10 +1,18 @@
 #include "Window.hpp"
 #include "../../Tooling/Log.hpp"
+#include "../../ThirdParty/imgui/imgui.h"
+#include "../../ThirdParty/imgui/imgui_impl_win32.h"
+#include "../../ThirdParty/imgui/imgui_impl_dx12.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace DXR
 {
 	LRESULT WindowMessageCallbackProcedure(HWND WindowHandle, UINT Message, WPARAM WParam, LPARAM LParam)
 	{
+		if (ImGui_ImplWin32_WndProcHandler(WindowHandle, Message, WParam, LParam))
+			return true;
+
 		switch(Message)
 		{
 			case WM_CLOSE:

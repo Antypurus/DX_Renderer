@@ -102,7 +102,7 @@ void MainDirectXThread(DXR::Window& window)
 	if (device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap)) != S_OK)
 		return;
 
-	ImGui_ImplWin32_Init(window.GetCurrentWindowHandle());
+	ImGui_ImplWin32_Init(window.GetWindowHandle());
 	ImGui_ImplDX12_Init(device.GetRawInterface(), 2,
 		swapchain.m_backbuffer_format, heap,
 		heap->GetCPUDescriptorHandleForHeapStart(),
@@ -117,23 +117,8 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-		{
-			static float f = 0.0f;
-			static int counter = 0;
-
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
-
-			//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End();
-		}
+		bool show = true;
+		ImGui::ShowDemoWindow(&show);
 
 		{
 			scale_factor += scale_step;
@@ -162,7 +147,7 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.GetRAWInterface());
 		
-		commandList.SendDrawCall();
+		//commandList.SendDrawCall();
 
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
