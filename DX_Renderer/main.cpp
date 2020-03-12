@@ -14,10 +14,23 @@
 #include "Core/Components/Shader/VertexShader.hpp"
 #include "Core/Components/Shader/PixelShader.hpp"
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
+#include "ThirdParty/imgui/imgui.h"
+#include "ThirdParty/imgui/examples/imgui_impl_win32.h"
+#include "ThirdParty/imgui/examples/imgui_impl_dx12.h"
 
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
 	DXR::GraphicsDevice device;
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
@@ -83,6 +96,42 @@ void MainDirectXThread(DXR::Window& window)
 
 	while(window.ShouldContinue)
 	{
+
+		// Start the Dear ImGui frame
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+		bool show_another_window = false;
+		bool show_demo_window = false;
+		float clear_color[3] = { 0,0,0 };
+		if (true)
+			ImGui::ShowDemoWindow(&show_demo_window);
+
+		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+		{
+			static float f = 0.0f;
+			static int counter = 0;
+
+			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+			ImGui::Checkbox("Another Window", &show_another_window);
+
+			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+				counter++;
+			ImGui::SameLine();
+			ImGui::Text("counter = %d", counter);
+
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
+		}
+
 		{
 			scale_factor += scale_step;
 			model = DirectX::XMMatrixRotationAxis({0.0f,1.0f,0.0f},scale_factor);
@@ -103,6 +152,9 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);
 
+		ImGui::Render();
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.GetRAWInterface());
+
 		commandList.SendDrawCall();
 		
 		swapchain.PrepareBackbufferForPresentation(commandList);
@@ -116,6 +168,10 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.FullReset(pso);
 	}
+
+	ImGui_ImplDX12_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 
 }
 
