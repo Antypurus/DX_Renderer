@@ -15,21 +15,12 @@
 #include "Core/Components/Shader/PixelShader.hpp"
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
 #include "ThirdParty/imgui/imgui.h"
-#include "ThirdParty/imgui/examples/imgui_impl_win32.h"
-#include "ThirdParty/imgui/examples/imgui_impl_dx12.h"
+#include "ThirdParty/imgui/imgui_impl_win32.h"
+#include "ThirdParty/imgui/imgui_impl_dx12.h"
 
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
 
 	DXR::GraphicsDevice device;
 
@@ -93,6 +84,30 @@ void MainDirectXThread(DXR::Window& window)
 
 	float scale_factor = 1;
 	float scale_step = 0.1f;
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	ID3D12DescriptorHeap* heap;
+	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	desc.NumDescriptors = 1;
+	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	if (device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap)) != S_OK)
+		return;
+
+	ImGui_ImplWin32_Init(window.GetCurrentWindowHandle());
+	ImGui_ImplDX12_Init(device.GetRawInterface(), 1,
+		DXGI_FORMAT_R8G8B8A8_UNORM, heap,
+		heap->GetCPUDescriptorHandleForHeapStart(),
+		heap->GetGPUDescriptorHandleForHeapStart());
+
 
 	while(window.ShouldContinue)
 	{
