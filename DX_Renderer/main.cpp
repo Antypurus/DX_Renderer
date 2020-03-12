@@ -103,8 +103,8 @@ void MainDirectXThread(DXR::Window& window)
 		return;
 
 	ImGui_ImplWin32_Init(window.GetCurrentWindowHandle());
-	ImGui_ImplDX12_Init(device.GetRawInterface(), 1,
-		DXGI_FORMAT_R8G8B8A8_UNORM, heap,
+	ImGui_ImplDX12_Init(device.GetRawInterface(), 2,
+		swapchain.m_backbuffer_format, heap,
 		heap->GetCPUDescriptorHandleForHeapStart(),
 		heap->GetGPUDescriptorHandleForHeapStart());
 
@@ -117,13 +117,6 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		bool show_another_window = false;
-		bool show_demo_window = false;
-		float clear_color[3] = { 0,0,0 };
-		if (true)
-			ImGui::ShowDemoWindow(&show_demo_window);
-
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 		{
 			static float f = 0.0f;
@@ -132,18 +125,13 @@ void MainDirectXThread(DXR::Window& window)
 			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
 			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-			ImGui::Checkbox("Another Window", &show_another_window);
-
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
 			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 				counter++;
 			ImGui::SameLine();
 			ImGui::Text("counter = %d", counter);
 
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
 
@@ -167,11 +155,15 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);
 
+		commandList.SendDrawCall();
+
+		ID3D12DescriptorHeap* heaps[] = { heap };
+		commandList->SetDescriptorHeaps(1, heaps);
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.GetRAWInterface());
-
-		commandList.SendDrawCall();
 		
+		commandList.SendDrawCall();
+
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList.Close();
