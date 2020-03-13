@@ -25,5 +25,6 @@ namespace DXR
 	private:
 		void InitImGUI(GraphicsDevice& Device, Window& Window, Swapchain& swapchain);
 		void Bind(GraphicsDevice& Device, Window& Window, Swapchain& swapchain);
+		void RegisterWindowHook(Window& window);
 	};
 }

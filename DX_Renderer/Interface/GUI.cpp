@@ -7,12 +7,16 @@
 #include "../Core/Components/Resource/DescriptorHeap.hpp"
 #include "../Core/Components/Command List/GraphicsCommandList.hpp"
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 namespace DXR
 {
 	GUI::GUI(GraphicsDevice& Device, Window& Window, Swapchain& swapchain)
 	{
 		this->m_cbv_heap = Device.CreateConstantBufferDescriptorHeap(1);
 		this->InitImGUI(Device, Window,swapchain);
+		this->Bind(Device, Window, swapchain);
+		this->RegisterWindowHook(Window);
 	}
 
 	GUI::~GUI()
@@ -46,8 +50,6 @@ namespace DXR
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
-
-		this->Bind(Device, Window, swapchain);
 	}
 
 	void GUI::Bind(GraphicsDevice& Device, Window& Window, Swapchain& swapchain)
@@ -57,5 +59,18 @@ namespace DXR
 			swapchain.m_backbuffer_format, this->m_cbv_heap.GetRAWInterface(),
 			this->m_cbv_heap.GetCPUHeapHandle(),
 			this->m_cbv_heap.GetGPUHeapHandle());
+	}
+
+	void GUI::RegisterWindowHook(Window& window)
+	{
+		window.RegisterWindowEventCallback(0, 
+			{
+				[](HWND WindowHandle, UINT Message, WPARAM WParam, LPARAM LParam)
+				{
+					ImGui_ImplWin32_WndProcHandler(WindowHandle, Message, WParam, LParam);
+				}
+				, WM_NULL
+				, "ImGUI Wrapper"
+			});
 	}
 }

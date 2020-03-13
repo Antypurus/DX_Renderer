@@ -1,18 +1,10 @@
 #include "Window.hpp"
 #include "../../Tooling/Log.hpp"
-#include "../../ThirdParty/imgui/imgui.h"
-#include "../../ThirdParty/imgui/imgui_impl_win32.h"
-#include "../../ThirdParty/imgui/imgui_impl_dx12.h"
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace DXR
 {
 	LRESULT WindowMessageCallbackProcedure(HWND WindowHandle, UINT Message, WPARAM WParam, LPARAM LParam)
 	{
-		if (ImGui_ImplWin32_WndProcHandler(WindowHandle, Message, WParam, LParam))
-			return true;
-
 		switch(Message)
 		{
 			case WM_CLOSE:
@@ -75,11 +67,24 @@ namespace DXR
 
 	void Window::HandleMessage(UINT Message, HWND windowHandle, WPARAM WParam, LPARAM LParam)
 	{
-		auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(Message);
-		while(currentCallback != rangeEnd)
+		// handlers for specifically this message type
 		{
-			currentCallback->second.callback(windowHandle, Message, WParam, LParam);
-			++currentCallback;
+			auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(Message);
+			while (currentCallback != rangeEnd)
+			{
+				currentCallback->second.callback(windowHandle, Message, WParam, LParam);
+				++currentCallback;
+			}
+		}
+
+		// handlers for all message types
+		{
+			auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(0);
+			while (currentCallback != rangeEnd)
+			{
+				currentCallback->second.callback(windowHandle, Message, WParam, LParam);
+				++currentCallback;
+			}
 		}
 	}
 
