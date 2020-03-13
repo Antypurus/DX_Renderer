@@ -14,9 +14,7 @@
 #include "Core/Components/Shader/VertexShader.hpp"
 #include "Core/Components/Shader/PixelShader.hpp"
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
-#include "ThirdParty/imgui/imgui.h"
-#include "ThirdParty/imgui/imgui_impl_win32.h"
-#include "ThirdParty/imgui/imgui_impl_dx12.h"
+#include "Interface/GUI.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -85,43 +83,20 @@ void MainDirectXThread(DXR::Window& window)
 	float scale_factor = 1;
 	float scale_step = 0.1f;
 
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	ID3D12DescriptorHeap* heap;
-	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	desc.NumDescriptors = 1;
-	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	if (device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap)) != S_OK)
-		return;
-
-	ImGui_ImplWin32_Init(window.GetWindowHandle());
-	ImGui_ImplDX12_Init(device.GetRawInterface(), 2,
-		swapchain.m_backbuffer_format, heap,
-		heap->GetCPUDescriptorHandleForHeapStart(),
-		heap->GetGPUDescriptorHandleForHeapStart());
+	DXR::GUI gui(device, window, swapchain);
 
 
 	while(window.ShouldContinue)
 	{
 
 		// Start the Dear ImGui frame
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+		gui.StartFrame();
 
-		bool show = true;
-		ImGui::ShowDemoWindow(&show);
+		ImGui::Begin("Window");
+		ImGui::SliderAngle("Rotation", &scale_factor);
+		ImGui::End();
 
 		{
-			scale_factor += scale_step;
 			model = DirectX::XMMatrixRotationAxis({0.0f,1.0f,0.0f},scale_factor);
 			mvp = model * view * projection;
 			constant_buffer.UpdateData({mvp});
@@ -142,12 +117,7 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.SendDrawCall();
 
-		ID3D12DescriptorHeap* heaps[] = { heap };
-		commandList->SetDescriptorHeaps(1, heaps);
-		ImGui::Render();
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.GetRAWInterface());
-		
-		//commandList.SendDrawCall();
+		gui.Render(commandList);
 
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
@@ -160,10 +130,6 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.FullReset(pso);
 	}
-
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
 
 }
 
