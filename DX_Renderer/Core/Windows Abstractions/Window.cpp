@@ -67,11 +67,24 @@ namespace DXR
 
 	void Window::HandleMessage(UINT Message, HWND windowHandle, WPARAM WParam, LPARAM LParam)
 	{
-		auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(Message);
-		while(currentCallback != rangeEnd)
+		// handlers for specifically this message type
 		{
-			currentCallback->second.callback(windowHandle, Message, WParam, LParam);
-			++currentCallback;
+			auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(Message);
+			while (currentCallback != rangeEnd)
+			{
+				currentCallback->second.callback(windowHandle, Message, WParam, LParam);
+				++currentCallback;
+			}
+		}
+
+		// handlers for all message types
+		{
+			auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(0);
+			while (currentCallback != rangeEnd)
+			{
+				currentCallback->second.callback(windowHandle, Message, WParam, LParam);
+				++currentCallback;
+			}
 		}
 	}
 
