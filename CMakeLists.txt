@@ -8,7 +8,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26812")
 
 file(GLOB_RECURSE  SRCS
         "DX_Renderer/*.cpp"
-        "DX_Renderer/*.hpp")
+        "DX_Renderer/*.hpp"
+	"DX_Renderer/*.h")
 
 add_compile_definitions(WIN32_LEAN_AND_MEAN)
 

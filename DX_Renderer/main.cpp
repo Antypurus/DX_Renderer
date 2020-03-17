@@ -14,10 +14,12 @@
 #include "Core/Components/Shader/VertexShader.hpp"
 #include "Core/Components/Shader/PixelShader.hpp"
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
+#include "Interface/GUI.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
+
 	DXR::GraphicsDevice device;
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
@@ -81,10 +83,20 @@ void MainDirectXThread(DXR::Window& window)
 	float scale_factor = 1;
 	float scale_step = 0.1f;
 
+	DXR::GUI gui(device, window, swapchain);
+
+
 	while(window.ShouldContinue)
 	{
+
+		// Start the Dear ImGui frame
+		gui.StartFrame();
+
+		ImGui::Begin("Window");
+		ImGui::SliderAngle("Rotation", &scale_factor);
+		ImGui::End();
+
 		{
-			scale_factor += scale_step;
 			model = DirectX::XMMatrixRotationAxis({0.0f,1.0f,0.0f},scale_factor);
 			mvp = model * view * projection;
 			constant_buffer.UpdateData({mvp});
@@ -104,7 +116,9 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindConstantBuffer(constant_buffer, 0);
 
 		commandList.SendDrawCall();
-		
+
+		gui.Render(commandList);
+
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
 		commandList.Close();
