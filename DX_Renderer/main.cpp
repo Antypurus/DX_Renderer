@@ -20,7 +20,7 @@
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-	DXR::Image img;
+	DXR::TextureFS img;
 	DXR::GraphicsDevice device;
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
