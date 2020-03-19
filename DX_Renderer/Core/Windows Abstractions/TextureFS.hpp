@@ -10,7 +10,9 @@ namespace DXR
 	struct TextureData
 	{
 	private:
-		WRL::ComPtr<IWICBitmapFrameDecode> m_frame;
+		BYTE* m_texture_data = nullptr;
+	public:
+		TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame);
 	};
 	
 	struct TextureFS
@@ -22,7 +24,7 @@ namespace DXR
 	public:
 		~TextureFS();
 		static TextureFS& GetInstance();
-		static void LoadTextureData(const std::wstring& Filepath);
+		static TextureData LoadTextureData(const std::wstring& Filepath);
 	private:
 		TextureFS();
 		void CreateImagingFactory();
