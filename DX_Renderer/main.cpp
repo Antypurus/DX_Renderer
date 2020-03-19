@@ -15,7 +15,7 @@
 #include "Core/Components/Shader/PixelShader.hpp"
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
 #include "Interface/GUI.hpp"
-#include "Core/Windows Abstractions/Image.hpp"
+#include "Core/Windows Abstractions/TextureFS.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
