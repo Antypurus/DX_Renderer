@@ -23,6 +23,7 @@ namespace DXR
 	public:
 		TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame);
 	private:
+		bool ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
 		bool CheckIfFormatIsSupported() const;
 		bool CheckIfFormatIsSupported(const WICPixelFormatGUID& PixelFormat) const;
 		WICPixelFormatGUID DetermineCompatiblePixelFormat() const;
@@ -41,6 +42,7 @@ namespace DXR
 		~TextureFS();
 		static TextureFS& GetInstance();
 		static TextureData LoadTextureData(const std::wstring& Filepath);
+		IWICImagingFactory2* operator->() const;
 	private:
 		TextureFS();
 		void CreateImagingFactory();

@@ -15,8 +15,39 @@ namespace DXR
 
 		if(!CheckIfFormatIsSupported())
 		{
-			auto compatible_format = DetermineCompatiblePixelFormat();
+			const auto compatible_format = DetermineCompatiblePixelFormat();
+			if(!CheckIfFormatIsSupported(compatible_format))
+			{
+				//ERROR(Tiago): Unsupported Texture Format
+				ERROR_LOG(L"Unsupported Texture Format");
+				__debugbreak();
+				exit(-1);
+			}
+
+			//conver to new texture format
+			this->ConvertToFormat(TextureFrame,compatible_format);
 		}
+		else
+		{
+			
+		}
+	}
+
+	bool TextureData::ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat)
+	{
+		WRL::ComPtr<IWICFormatConverter> converter;
+		DXCall(TextureFS::GetInstance()->CreateFormatConverter(converter.GetAddressOf()));
+
+		BOOL isConvertible = FALSE;
+		DXCall(converter->CanConvert(this->m_pixel_format, PixelFormat, &isConvertible));
+		if(!isConvertible)
+		{
+			//ERROR(Tiago): Unsupported Texture Format
+			ERROR_LOG(L"Unsupported Texture Format");
+			__debugbreak();
+			exit(-1);
+		}
+		DXCall(converter->Initialize(TextureFrame.Get(), PixelFormat, WICBitmapDitherTypeErrorDiffusion, 0, 0, WICBitmapPaletteTypeCustom));
 	}
 
 	bool TextureData::CheckIfFormatIsSupported() const
@@ -171,6 +202,11 @@ namespace DXR
 		WRL::ComPtr<IWICBitmapFrameDecode> frame;
 		decoder->GetFrame(0, frame.GetAddressOf());
 		return { frame };
+	}
+
+	IWICImagingFactory2* DXR::TextureFS::operator->() const
+	{
+		return this->m_imaging_factory.Get();
 	}
 
 	TextureFS::TextureFS()
