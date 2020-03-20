@@ -24,8 +24,11 @@ namespace DXR
 		TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame);
 	private:
 		bool CheckIfFormatIsSupported() const;
+		bool CheckIfFormatIsSupported(const WICPixelFormatGUID& PixelFormat) const;
 		WICPixelFormatGUID DetermineCompatiblePixelFormat() const;
+		WICPixelFormatGUID DetermineCompatiblePixelFormat(const WICPixelFormatGUID& PixelFormat) const;
 		UINT8 ComputerPixelFormatBitsPerPixel() const;
+		UINT8 ComputerPixelFormatBitsPerPixel(const WICPixelFormatGUID& PixelFormat) const;
 	};
 	
 	struct TextureFS

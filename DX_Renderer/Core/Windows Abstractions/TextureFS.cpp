@@ -12,73 +12,88 @@ namespace DXR
 		DXCall(TextureFrame->GetSize(&width, &height));
 		this->m_height = height;
 		this->m_width = width;
+
+		if(!CheckIfFormatIsSupported())
+		{
+			auto compatible_format = DetermineCompatiblePixelFormat();
+		}
 	}
 
 	bool TextureData::CheckIfFormatIsSupported() const
 	{
+		return this->CheckIfFormatIsSupported(this->m_pixel_format);
+	}
+
+	bool TextureData::CheckIfFormatIsSupported(const WICPixelFormatGUID& PixelFormat) const
+	{
 		//NOTE(Tiago): pixel format type is defined in a weird way that seems to not allows for switch case statements
-		if (m_pixel_format == GUID_WICPixelFormat128bppRGBAFloat) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBAHalf) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBA) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppRGBA) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppBGRA) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppBGR) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppRGBA1010102XR) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppRGBA1010102) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppBGRA5551) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppBGR565) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppGrayFloat) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppGrayHalf) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppGray) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat8bppGray) return true;
-		else if (m_pixel_format == GUID_WICPixelFormat8bppAlpha) return true;
+		if (PixelFormat == GUID_WICPixelFormat128bppRGBAFloat) return true;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBAHalf) return true;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBA) return true;
+		else if (PixelFormat == GUID_WICPixelFormat32bppRGBA) return true;
+		else if (PixelFormat == GUID_WICPixelFormat32bppBGRA) return true;
+		else if (PixelFormat == GUID_WICPixelFormat32bppBGR) return true;
+		else if (PixelFormat == GUID_WICPixelFormat32bppRGBA1010102XR) return true;
+		else if (PixelFormat == GUID_WICPixelFormat32bppRGBA1010102) return true;
+		else if (PixelFormat == GUID_WICPixelFormat16bppBGRA5551) return true;
+		else if (PixelFormat == GUID_WICPixelFormat16bppBGR565) return true;
+		else if (PixelFormat == GUID_WICPixelFormat32bppGrayFloat) return true;
+		else if (PixelFormat == GUID_WICPixelFormat16bppGrayHalf) return true;
+		else if (PixelFormat == GUID_WICPixelFormat16bppGray) return true;
+		else if (PixelFormat == GUID_WICPixelFormat8bppGray) return true;
+		else if (PixelFormat == GUID_WICPixelFormat8bppAlpha) return true;
 
 		return false;
 	}
 
 	WICPixelFormatGUID TextureData::DetermineCompatiblePixelFormat() const
 	{
-		if (m_pixel_format == GUID_WICPixelFormatBlackWhite) return GUID_WICPixelFormat8bppGray;
-		else if (m_pixel_format == GUID_WICPixelFormat1bppIndexed) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat2bppIndexed) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat4bppIndexed) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat8bppIndexed) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat2bppGray) return GUID_WICPixelFormat8bppGray;
-		else if (m_pixel_format == GUID_WICPixelFormat4bppGray) return GUID_WICPixelFormat8bppGray;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppGrayFixedPoint) return GUID_WICPixelFormat16bppGrayHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppGrayFixedPoint) return GUID_WICPixelFormat32bppGrayFloat;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppBGR555) return GUID_WICPixelFormat16bppBGRA5551;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppBGR101010) return GUID_WICPixelFormat32bppRGBA1010102;
-		else if (m_pixel_format == GUID_WICPixelFormat24bppBGR) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat24bppRGB) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppPBGRA) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppPRGBA) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppRGB) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppBGR) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppBGRA) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppPRGBA) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppPBGRA) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppRGBFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppBGRFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBAFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppBGRAFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBHalf) return GUID_WICPixelFormat64bppRGBAHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppRGBHalf) return GUID_WICPixelFormat64bppRGBAHalf;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppPRGBAFloat) return GUID_WICPixelFormat128bppRGBAFloat;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppRGBFloat) return GUID_WICPixelFormat128bppRGBAFloat;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppRGBAFixedPoint) return GUID_WICPixelFormat128bppRGBAFloat;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppRGBFixedPoint) return GUID_WICPixelFormat128bppRGBAFloat;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppRGBE) return GUID_WICPixelFormat128bppRGBAFloat;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppCMYK) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppCMYK) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat40bppCMYKAlpha) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat80bppCMYKAlpha) return GUID_WICPixelFormat64bppRGBA;
+		return this->DetermineCompatiblePixelFormat(this->m_pixel_format);
+	}
+
+	WICPixelFormatGUID TextureData::DetermineCompatiblePixelFormat(const WICPixelFormatGUID& PixelFormat) const
+	{
+		if (PixelFormat == GUID_WICPixelFormatBlackWhite) return GUID_WICPixelFormat8bppGray;
+		else if (PixelFormat == GUID_WICPixelFormat1bppIndexed) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat2bppIndexed) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat4bppIndexed) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat8bppIndexed) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat2bppGray) return GUID_WICPixelFormat8bppGray;
+		else if (PixelFormat == GUID_WICPixelFormat4bppGray) return GUID_WICPixelFormat8bppGray;
+		else if (PixelFormat == GUID_WICPixelFormat16bppGrayFixedPoint) return GUID_WICPixelFormat16bppGrayHalf;
+		else if (PixelFormat == GUID_WICPixelFormat32bppGrayFixedPoint) return GUID_WICPixelFormat32bppGrayFloat;
+		else if (PixelFormat == GUID_WICPixelFormat16bppBGR555) return GUID_WICPixelFormat16bppBGRA5551;
+		else if (PixelFormat == GUID_WICPixelFormat32bppBGR101010) return GUID_WICPixelFormat32bppRGBA1010102;
+		else if (PixelFormat == GUID_WICPixelFormat24bppBGR) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat24bppRGB) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat32bppPBGRA) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat32bppPRGBA) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat48bppRGB) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat48bppBGR) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat64bppBGRA) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat64bppPRGBA) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat64bppPBGRA) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat48bppRGBFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat48bppBGRFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBAFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat64bppBGRAFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBFixedPoint) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBHalf) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat48bppRGBHalf) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat128bppPRGBAFloat) return GUID_WICPixelFormat128bppRGBAFloat;
+		else if (PixelFormat == GUID_WICPixelFormat128bppRGBFloat) return GUID_WICPixelFormat128bppRGBAFloat;
+		else if (PixelFormat == GUID_WICPixelFormat128bppRGBAFixedPoint) return GUID_WICPixelFormat128bppRGBAFloat;
+		else if (PixelFormat == GUID_WICPixelFormat128bppRGBFixedPoint) return GUID_WICPixelFormat128bppRGBAFloat;
+		else if (PixelFormat == GUID_WICPixelFormat32bppRGBE) return GUID_WICPixelFormat128bppRGBAFloat;
+		else if (PixelFormat == GUID_WICPixelFormat32bppCMYK) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat64bppCMYK) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat40bppCMYKAlpha) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat80bppCMYKAlpha) return GUID_WICPixelFormat64bppRGBA;
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
-		else if (m_pixel_format == GUID_WICPixelFormat32bppRGB) return GUID_WICPixelFormat32bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGB) return GUID_WICPixelFormat64bppRGBA;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppPRGBAHalf) return GUID_WICPixelFormat64bppRGBAHalf;
+		else if (PixelFormat == GUID_WICPixelFormat32bppRGB) return GUID_WICPixelFormat32bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGB) return GUID_WICPixelFormat64bppRGBA;
+		else if (PixelFormat == GUID_WICPixelFormat64bppPRGBAHalf) return GUID_WICPixelFormat64bppRGBAHalf;
 #endif
 
 		return GUID_WICPixelFormatDontCare;
@@ -86,47 +101,52 @@ namespace DXR
 
 	UINT8 TextureData::ComputerPixelFormatBitsPerPixel() const
 	{
-		if (m_pixel_format == GUID_WICPixelFormatBlackWhite) return 8;
-		else if (m_pixel_format == GUID_WICPixelFormat1bppIndexed) return 1;
-		else if (m_pixel_format == GUID_WICPixelFormat2bppIndexed) return 2;
-		else if (m_pixel_format == GUID_WICPixelFormat4bppIndexed) return 4;
-		else if (m_pixel_format == GUID_WICPixelFormat8bppIndexed) return 8;
-		else if (m_pixel_format == GUID_WICPixelFormat2bppGray) return 2;
-		else if (m_pixel_format == GUID_WICPixelFormat4bppGray) return 4;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppGrayFixedPoint) return 16;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppGrayFixedPoint) return 32;
-		else if (m_pixel_format == GUID_WICPixelFormat16bppBGR555) return 16;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppBGR101010) return 32;
-		else if (m_pixel_format == GUID_WICPixelFormat24bppBGR) return 24;
-		else if (m_pixel_format == GUID_WICPixelFormat24bppRGB) return 24;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppPBGRA) return 32;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppPRGBA) return 32;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppRGB) return 48;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppBGR) return 48;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppBGRA) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppPRGBA) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppPBGRA) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppRGBFixedPoint) return 48;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppBGRFixedPoint) return 48;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBAFixedPoint) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppBGRAFixedPoint) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBFixedPoint) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGBHalf) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat48bppRGBHalf) return 48;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppPRGBAFloat) return 128;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppRGBFloat) return 128;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppRGBAFixedPoint) return 128;
-		else if (m_pixel_format == GUID_WICPixelFormat128bppRGBFixedPoint) return 128;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppRGBE) return 32;
-		else if (m_pixel_format == GUID_WICPixelFormat32bppCMYK) return 32;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppCMYK) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat40bppCMYKAlpha) return 40;
-		else if (m_pixel_format == GUID_WICPixelFormat80bppCMYKAlpha) return 80;
+		return this->ComputerPixelFormatBitsPerPixel(this->m_pixel_format);
+	}
+
+	UINT8 TextureData::ComputerPixelFormatBitsPerPixel(const WICPixelFormatGUID& PixelFormat) const
+	{
+		if (PixelFormat == GUID_WICPixelFormatBlackWhite) return 8;
+		else if (PixelFormat == GUID_WICPixelFormat1bppIndexed) return 1;
+		else if (PixelFormat == GUID_WICPixelFormat2bppIndexed) return 2;
+		else if (PixelFormat == GUID_WICPixelFormat4bppIndexed) return 4;
+		else if (PixelFormat == GUID_WICPixelFormat8bppIndexed) return 8;
+		else if (PixelFormat == GUID_WICPixelFormat2bppGray) return 2;
+		else if (PixelFormat == GUID_WICPixelFormat4bppGray) return 4;
+		else if (PixelFormat == GUID_WICPixelFormat16bppGrayFixedPoint) return 16;
+		else if (PixelFormat == GUID_WICPixelFormat32bppGrayFixedPoint) return 32;
+		else if (PixelFormat == GUID_WICPixelFormat16bppBGR555) return 16;
+		else if (PixelFormat == GUID_WICPixelFormat32bppBGR101010) return 32;
+		else if (PixelFormat == GUID_WICPixelFormat24bppBGR) return 24;
+		else if (PixelFormat == GUID_WICPixelFormat24bppRGB) return 24;
+		else if (PixelFormat == GUID_WICPixelFormat32bppPBGRA) return 32;
+		else if (PixelFormat == GUID_WICPixelFormat32bppPRGBA) return 32;
+		else if (PixelFormat == GUID_WICPixelFormat48bppRGB) return 48;
+		else if (PixelFormat == GUID_WICPixelFormat48bppBGR) return 48;
+		else if (PixelFormat == GUID_WICPixelFormat64bppBGRA) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat64bppPRGBA) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat64bppPBGRA) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat48bppRGBFixedPoint) return 48;
+		else if (PixelFormat == GUID_WICPixelFormat48bppBGRFixedPoint) return 48;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBAFixedPoint) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat64bppBGRAFixedPoint) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBFixedPoint) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGBHalf) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat48bppRGBHalf) return 48;
+		else if (PixelFormat == GUID_WICPixelFormat128bppPRGBAFloat) return 128;
+		else if (PixelFormat == GUID_WICPixelFormat128bppRGBFloat) return 128;
+		else if (PixelFormat == GUID_WICPixelFormat128bppRGBAFixedPoint) return 128;
+		else if (PixelFormat == GUID_WICPixelFormat128bppRGBFixedPoint) return 128;
+		else if (PixelFormat == GUID_WICPixelFormat32bppRGBE) return 32;
+		else if (PixelFormat == GUID_WICPixelFormat32bppCMYK) return 32;
+		else if (PixelFormat == GUID_WICPixelFormat64bppCMYK) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat40bppCMYKAlpha) return 40;
+		else if (PixelFormat == GUID_WICPixelFormat80bppCMYKAlpha) return 80;
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
-		else if (m_pixel_format == GUID_WICPixelFormat32bppRGB) return 32;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppRGB) return 64;
-		else if (m_pixel_format == GUID_WICPixelFormat64bppPRGBAHalf) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat32bppRGB) return 32;
+		else if (PixelFormat == GUID_WICPixelFormat64bppRGB) return 64;
+		else if (PixelFormat == GUID_WICPixelFormat64bppPRGBAHalf) return 64;
 #endif
 
 		return 0;
