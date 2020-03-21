@@ -19,21 +19,52 @@ namespace DXR
 			if(!CheckIfFormatIsSupported(compatible_format))
 			{
 				//ERROR(Tiago): Unsupported Texture Format
-				ERROR_LOG(L"Unsupported Texture Format");
+				ERROR_LOG("Unsupported Texture Format");
 				__debugbreak();
 				exit(-1);
 			}
 
 			//conver to new texture format
-			this->ConvertToFormat(TextureFrame,compatible_format);
+			auto converter = this->ConvertToFormat(TextureFrame,compatible_format);
+
+			// texture information
+			this->m_bit_per_pixel = this->ComputerPixelFormatBitsPerPixel(compatible_format);
+			this->m_pixel_format = compatible_format;
+			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
+
+			//allocate texture buffer
+			BYTE* texture_buffer = (BYTE*)malloc(this->m_image_size);
+			while(texture_buffer==nullptr)
+			{
+				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
+				texture_buffer = (BYTE*)malloc(this->m_image_size);
+			}
+			this->m_texture_data = std::make_unique<BYTE*>(texture_buffer);
+			
+			// texture data must be extracted from the converter in this case
+			DXCall(converter->CopyPixels(0, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, (BYTE*)this->m_texture_data.get()));
 		}
 		else
 		{
+			// texture information
+			this->m_bit_per_pixel = this->ComputerPixelFormatBitsPerPixel(this->m_pixel_format);
+			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
+
+			// allocate texture buffer
+			BYTE* texture_buffer = (BYTE*)malloc(this->m_image_size);
+			while (texture_buffer == nullptr)
+			{
+				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
+				texture_buffer = (BYTE*)malloc(this->m_image_size);
+			}
+			this->m_texture_data = std::make_unique<BYTE*>(texture_buffer);
 			
+			// extract texture data from the texture frame
+			DXCall(TextureFrame->CopyPixels(0, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, (BYTE*)this->m_texture_data.get()));
 		}
 	}
 
-	bool TextureData::ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat)
+	WRL::ComPtr<IWICFormatConverter> TextureData::ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat)
 	{
 		WRL::ComPtr<IWICFormatConverter> converter;
 		DXCall(TextureFS::GetInstance()->CreateFormatConverter(converter.GetAddressOf()));
@@ -43,11 +74,12 @@ namespace DXR
 		if(!isConvertible)
 		{
 			//ERROR(Tiago): Unsupported Texture Format
-			ERROR_LOG(L"Unsupported Texture Format");
+			ERROR_LOG("Unsupported Texture Format");
 			__debugbreak();
 			exit(-1);
 		}
 		DXCall(converter->Initialize(TextureFrame.Get(), PixelFormat, WICBitmapDitherTypeErrorDiffusion, 0, 0, WICBitmapPaletteTypeCustom));
+		return converter;
 	}
 
 	bool TextureData::CheckIfFormatIsSupported() const

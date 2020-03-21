@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <memory>
 #include <string>
 #include <wincodec.h>
 #include <wrl.h>
@@ -11,7 +12,7 @@ namespace DXR
 	{
 	private:
 		// actual texture
-		BYTE* m_texture_data = nullptr;
+		std::unique_ptr<BYTE*> m_texture_data = nullptr;
 		// metadata
 		UINT8 m_bit_per_pixel;
 		UINT64 m_image_size;
@@ -23,7 +24,7 @@ namespace DXR
 	public:
 		TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame);
 	private:
-		bool ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
+		WRL::ComPtr<IWICFormatConverter> ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
 		bool CheckIfFormatIsSupported() const;
 		bool CheckIfFormatIsSupported(const WICPixelFormatGUID& PixelFormat) const;
 		WICPixelFormatGUID DetermineCompatiblePixelFormat() const;
