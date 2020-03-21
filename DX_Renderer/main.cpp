@@ -20,7 +20,7 @@
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-	DXR::TextureFS img;
+	auto text = DXR::TextureFS::LoadTextureData(L"./DX_Renderer/Resources/Textures/star.jpg");
 	DXR::GraphicsDevice device;
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");

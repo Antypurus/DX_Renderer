@@ -44,6 +44,7 @@ namespace DXR
 		static TextureFS& GetInstance();
 		static TextureData LoadTextureData(const std::wstring& Filepath);
 		IWICImagingFactory2* operator->() const;
+		static UINT ComputeTextureFormatBitsPerPixel(const WICPixelFormatGUID& PixelFormat);
 	private:
 		TextureFS();
 		void CreateImagingFactory();

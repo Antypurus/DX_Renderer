@@ -28,7 +28,8 @@ namespace DXR
 			auto converter = this->ConvertToFormat(TextureFrame,compatible_format);
 
 			// texture information
-			this->m_bit_per_pixel = this->ComputerPixelFormatBitsPerPixel(compatible_format);
+			this->m_pixel_format = compatible_format;
+			this->m_bit_per_pixel = this->ComputerPixelFormatBitsPerPixel();
 			this->m_pixel_format = compatible_format;
 			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
 
@@ -42,12 +43,12 @@ namespace DXR
 			this->m_texture_data = std::make_unique<BYTE*>(texture_buffer);
 			
 			// texture data must be extracted from the converter in this case
-			DXCall(converter->CopyPixels(0, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, (BYTE*)this->m_texture_data.get()));
+			DXCall(converter->CopyPixels(NULL, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, texture_buffer));
 		}
 		else
 		{
 			// texture information
-			this->m_bit_per_pixel = this->ComputerPixelFormatBitsPerPixel(this->m_pixel_format);
+			this->m_bit_per_pixel = this->ComputerPixelFormatBitsPerPixel();
 			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
 
 			// allocate texture buffer
@@ -169,50 +170,7 @@ namespace DXR
 
 	UINT8 TextureData::ComputerPixelFormatBitsPerPixel(const WICPixelFormatGUID& PixelFormat) const
 	{
-		if (PixelFormat == GUID_WICPixelFormatBlackWhite) return 8;
-		else if (PixelFormat == GUID_WICPixelFormat1bppIndexed) return 1;
-		else if (PixelFormat == GUID_WICPixelFormat2bppIndexed) return 2;
-		else if (PixelFormat == GUID_WICPixelFormat4bppIndexed) return 4;
-		else if (PixelFormat == GUID_WICPixelFormat8bppIndexed) return 8;
-		else if (PixelFormat == GUID_WICPixelFormat2bppGray) return 2;
-		else if (PixelFormat == GUID_WICPixelFormat4bppGray) return 4;
-		else if (PixelFormat == GUID_WICPixelFormat16bppGrayFixedPoint) return 16;
-		else if (PixelFormat == GUID_WICPixelFormat32bppGrayFixedPoint) return 32;
-		else if (PixelFormat == GUID_WICPixelFormat16bppBGR555) return 16;
-		else if (PixelFormat == GUID_WICPixelFormat32bppBGR101010) return 32;
-		else if (PixelFormat == GUID_WICPixelFormat24bppBGR) return 24;
-		else if (PixelFormat == GUID_WICPixelFormat24bppRGB) return 24;
-		else if (PixelFormat == GUID_WICPixelFormat32bppPBGRA) return 32;
-		else if (PixelFormat == GUID_WICPixelFormat32bppPRGBA) return 32;
-		else if (PixelFormat == GUID_WICPixelFormat48bppRGB) return 48;
-		else if (PixelFormat == GUID_WICPixelFormat48bppBGR) return 48;
-		else if (PixelFormat == GUID_WICPixelFormat64bppBGRA) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat64bppPRGBA) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat64bppPBGRA) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat48bppRGBFixedPoint) return 48;
-		else if (PixelFormat == GUID_WICPixelFormat48bppBGRFixedPoint) return 48;
-		else if (PixelFormat == GUID_WICPixelFormat64bppRGBAFixedPoint) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat64bppBGRAFixedPoint) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat64bppRGBFixedPoint) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat64bppRGBHalf) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat48bppRGBHalf) return 48;
-		else if (PixelFormat == GUID_WICPixelFormat128bppPRGBAFloat) return 128;
-		else if (PixelFormat == GUID_WICPixelFormat128bppRGBFloat) return 128;
-		else if (PixelFormat == GUID_WICPixelFormat128bppRGBAFixedPoint) return 128;
-		else if (PixelFormat == GUID_WICPixelFormat128bppRGBFixedPoint) return 128;
-		else if (PixelFormat == GUID_WICPixelFormat32bppRGBE) return 32;
-		else if (PixelFormat == GUID_WICPixelFormat32bppCMYK) return 32;
-		else if (PixelFormat == GUID_WICPixelFormat64bppCMYK) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat40bppCMYKAlpha) return 40;
-		else if (PixelFormat == GUID_WICPixelFormat80bppCMYKAlpha) return 80;
-
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
-		else if (PixelFormat == GUID_WICPixelFormat32bppRGB) return 32;
-		else if (PixelFormat == GUID_WICPixelFormat64bppRGB) return 64;
-		else if (PixelFormat == GUID_WICPixelFormat64bppPRGBAHalf) return 64;
-#endif
-
-		return 0;
+		return TextureFS::ComputeTextureFormatBitsPerPixel(PixelFormat);
 	}
 
 	TextureFS::~TextureFS()
@@ -239,6 +197,18 @@ namespace DXR
 	IWICImagingFactory2* DXR::TextureFS::operator->() const
 	{
 		return this->m_imaging_factory.Get();
+	}
+
+	UINT TextureFS::ComputeTextureFormatBitsPerPixel(const WICPixelFormatGUID& PixelFormat)
+	{
+		WRL::ComPtr<IWICComponentInfo> info;
+		TextureFS::GetInstance().m_imaging_factory->CreateComponentInfo(PixelFormat,info.GetAddressOf());
+		IWICPixelFormatInfo* pixelinfo = nullptr;
+		info->QueryInterface(IID_IWICPixelFormatInfo, (LPVOID*)&pixelinfo);
+		UINT result = 0;
+		DXCall(pixelinfo->GetBitsPerPixel(&result));
+		pixelinfo->Release();
+		return result;
 	}
 
 	TextureFS::TextureFS()
