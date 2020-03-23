@@ -175,6 +175,7 @@ namespace DXR
 
 	TextureFS::~TextureFS()
 	{
+		this->m_imaging_factory.Reset();
 		CoUninitialize();
 	}
 
