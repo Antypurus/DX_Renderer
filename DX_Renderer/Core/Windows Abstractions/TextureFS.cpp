@@ -67,12 +67,6 @@ namespace DXR
 			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
 
 			// allocate texture buffer
-			BYTE* texture_buffer = new BYTE[this->m_image_size];
-			while (texture_buffer == nullptr)
-			{
-				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
-				texture_buffer = new BYTE[this->m_image_size];
-			}
 			this->m_texture_data = std::make_unique<BYTE[]>(this->m_image_size);
 
 			// extract texture data from the texture frame
