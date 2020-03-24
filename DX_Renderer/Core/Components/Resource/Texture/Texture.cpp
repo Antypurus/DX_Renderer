@@ -12,11 +12,12 @@ namespace DXR
 		this->m_texture_format = this->DetermineTextureDataFormat();
 		this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(Device,1,this->m_texture_data.GetTextureSize(),(void*)this->m_texture_data.GetTextureData());
 		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, this->m_texture_data.GetTextureSize());
-		
+
+		this->CreateResourceDescription();
 		this->UploadTextureData(CommandList);
 	}
 
-	DXGI_FORMAT Texture::DetermineTextureDataFormat()
+	DXGI_FORMAT Texture::DetermineTextureDataFormat() const
 	{
 		if (this->m_texture_data.GetTextureFormat() == GUID_WICPixelFormat128bppRGBAFloat) return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		else if (this->m_texture_data.GetTextureFormat() == GUID_WICPixelFormat64bppRGBAHalf) return DXGI_FORMAT_R16G16B16A16_FLOAT;
