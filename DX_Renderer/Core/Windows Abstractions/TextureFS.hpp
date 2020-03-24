@@ -29,6 +29,8 @@ namespace DXR
 		const BYTE* const GetTextureData() const;
 		UINT64 GetTextureSize() const;
 		WICPixelFormatGUID GetTextureFormat() const;
+		UINT64 GetWidth() const;
+		UINT64 GetHeight() const;
 	private:
 		WRL::ComPtr<IWICFormatConverter> ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
 		bool CheckIfFormatIsSupported() const;

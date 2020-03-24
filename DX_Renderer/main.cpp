@@ -22,7 +22,6 @@ void MainDirectXThread(DXR::Window& window)
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 
 	//auto texture = DXR::TextureFS::LoadTextureData(L"./DX_Renderer/Resources/Textures/star.jpg");
-	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg");
 
 	DXR::GraphicsDevice device;
 
@@ -67,6 +66,7 @@ void MainDirectXThread(DXR::Window& window)
 			1,3,4,
 			3,0,4
 		});
+	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device,commandList);
 
 	commandList->Close();
 

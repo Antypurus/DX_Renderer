@@ -1,12 +1,19 @@
 #include "Texture.hpp"
 #include "../GPU Buffers/GPUDefaultBuffer.hpp"
 #include "../GPU Buffers/GPUUploadBuffer.hpp"
+#include "../../GraphicsDevice.hpp"
+#include "../../Command List/GraphicsCommandList.hpp"
 
 namespace DXR
 {
-	Texture::Texture(const std::wstring& filepath)
+	Texture::Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
 		this->m_texture_data = TextureFS::LoadTextureData(filepath);
+		this->m_texture_format = this->DetermineTextureDataFormat();
+		this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(Device,1,this->m_texture_data.GetTextureSize(),(void*)this->m_texture_data.GetTextureData());
+		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, this->m_texture_data.GetTextureSize());
+		
+		this->UploadTextureData(CommandList);
 	}
 
 	DXGI_FORMAT Texture::DetermineTextureDataFormat()
@@ -29,5 +36,30 @@ namespace DXR
 		else if (this->m_texture_data.GetTextureFormat() == GUID_WICPixelFormat8bppAlpha) return DXGI_FORMAT_A8_UNORM;
 
 		return DXGI_FORMAT_UNKNOWN;
+	}
+
+	void Texture::CreateResourceDescription()
+	{
+		D3D12_RESOURCE_DESC resource = {};
+		resource.Alignment = 0;
+		resource.DepthOrArraySize = 1;//For now only 2D textures
+		resource.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		resource.Flags = D3D12_RESOURCE_FLAG_NONE;
+		resource.Format = this->m_texture_format;
+		resource.Height = this->m_texture_data.GetHeight();
+		resource.Width = this->m_texture_data.GetWidth();
+		resource.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+		resource.MipLevels = 1;
+		// For now no texture multisampling is allowed
+		resource.SampleDesc.Count = 1;
+		resource.SampleDesc.Quality = 0;
+
+		this->m_resource_description = resource;
+	}
+
+	void Texture::UploadTextureData(GraphicsCommandList& CommandList)
+	{
+		this->m_upload_buffer->CopyDataToGPUBuffer(CommandList,*this->m_texture_buffer);
+		//NOTE(Tiago): Evict Upload Bufffer?
 	}
 }
