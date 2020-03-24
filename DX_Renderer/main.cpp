@@ -14,13 +14,15 @@
 #include "Core/Components/Shader/VertexShader.hpp"
 #include "Core/Components/Shader/PixelShader.hpp"
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
+#include "Core/Components/Resource/Texture/Texture.hpp"
 #include "Interface/GUI.hpp"
-#include "Core/Windows Abstractions/TextureFS.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-	auto text = DXR::TextureFS::LoadTextureData(L"./DX_Renderer/Resources/Textures/star.jpg");
+
+	//auto texture = DXR::TextureFS::LoadTextureData(L"./DX_Renderer/Resources/Textures/star.jpg");
+	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg");
 
 	DXR::GraphicsDevice device;
 

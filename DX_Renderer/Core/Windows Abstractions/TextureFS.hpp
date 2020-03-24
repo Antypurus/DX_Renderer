@@ -12,19 +12,23 @@ namespace DXR
 	{
 	private:
 		// actual texture
-		std::unique_ptr<BYTE[]> m_texture_data = nullptr;
+		std::unique_ptr<BYTE> m_texture_data = nullptr;
 		// metadata
-		UINT8 m_bit_per_pixel;
-		UINT64 m_image_size;
-		UINT64 m_alignment;
-		UINT64 m_width;
-		UINT64 m_height;
-		UINT16 m_mip_levels;
-		WICPixelFormatGUID m_pixel_format;
+		UINT8 m_bit_per_pixel = 0;
+		UINT64 m_image_size = 0;
+		UINT64 m_alignment = 0;
+		UINT64 m_width = 0;
+		UINT64 m_height =0;
+		UINT16 m_mip_levels = 0;
+		WICPixelFormatGUID m_pixel_format = GUID_WICPixelFormatDontCare;
 	public:
+		~TextureData();
+		TextureData() = default;
 		TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame);
+		void operator=(const TextureData& texture);
 		const BYTE* const GetTextureData() const;
 		UINT64 GetTextureSize() const;
+		WICPixelFormatGUID GetTextureFormat() const;
 	private:
 		WRL::ComPtr<IWICFormatConverter> ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
 		bool CheckIfFormatIsSupported() const;

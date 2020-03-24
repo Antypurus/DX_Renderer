@@ -5,18 +5,45 @@ namespace DXR
 {
 	TextureFS TextureFS::m_instance = {};
 
+	void TextureData::operator=(const TextureData& texture)
+	{
+		this->m_bit_per_pixel = texture.m_bit_per_pixel;
+		this->m_image_size = texture.m_image_size;
+		this->m_alignment = texture.m_alignment;
+		this->m_width = texture.m_width;
+		this->m_height = texture.m_height;
+		this->m_mip_levels = texture.m_mip_levels;
+		this->m_pixel_format = texture.m_pixel_format;
+
+		//copy texture data from original to the new object
+		BYTE* original_texture_data = m_texture_data.get();
+		BYTE* new_texture_data = new BYTE[this->m_image_size];
+		while (new_texture_data == nullptr)
+		{
+			WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
+			new_texture_data = new BYTE[this->m_image_size];
+		}
+		this->m_texture_data = std::make_unique<BYTE>(*new_texture_data);
+	}
+
+	TextureData::~TextureData()
+	{
+		WARNING_LOG("Destructing texture data holder");
+	}
+
 	TextureData::TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame)
 	{
 		DXCall(TextureFrame->GetPixelFormat(&this->m_pixel_format));
-		UINT width,height;
+		UINT width, height;
 		DXCall(TextureFrame->GetSize(&width, &height));
 		this->m_height = height;
 		this->m_width = width;
+		this->m_alignment = 0;
 
-		if(!CheckIfFormatIsSupported())
+		if (!CheckIfFormatIsSupported())
 		{
 			const auto compatible_format = DetermineCompatiblePixelFormat();
-			if(!CheckIfFormatIsSupported(compatible_format))
+			if (!CheckIfFormatIsSupported(compatible_format))
 			{
 				//ERROR(Tiago): Unsupported Texture Format
 				ERROR_LOG("Unsupported Texture Format");
@@ -25,7 +52,7 @@ namespace DXR
 			}
 
 			//conver to new texture format
-			auto converter = this->ConvertToFormat(TextureFrame,compatible_format);
+			auto converter = this->ConvertToFormat(TextureFrame, compatible_format);
 
 			// texture information
 			this->m_pixel_format = compatible_format;
@@ -34,14 +61,14 @@ namespace DXR
 			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
 
 			//allocate texture buffer
-			BYTE* texture_buffer = (BYTE*)malloc(this->m_image_size);
-			while(texture_buffer==nullptr)
+			BYTE* texture_buffer = new BYTE[this->m_image_size];
+			while (texture_buffer == nullptr)
 			{
 				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
-				texture_buffer = (BYTE*)malloc(this->m_image_size);
+				texture_buffer = new BYTE[this->m_image_size];
 			}
-			this->m_texture_data = std::make_unique<BYTE[]>(*texture_buffer);
-			
+			this->m_texture_data = std::make_unique<BYTE>(*texture_buffer);
+
 			// texture data must be extracted from the converter in this case
 			DXCall(converter->CopyPixels(nullptr, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, texture_buffer));
 		}
@@ -52,14 +79,14 @@ namespace DXR
 			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
 
 			// allocate texture buffer
-			BYTE* texture_buffer = (BYTE*)malloc(this->m_image_size);
+			BYTE* texture_buffer = new BYTE[this->m_image_size];
 			while (texture_buffer == nullptr)
 			{
 				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
-				texture_buffer = (BYTE*)malloc(this->m_image_size);
+				texture_buffer = new BYTE[this->m_image_size];
 			}
-			this->m_texture_data = std::make_unique<BYTE[]>(*texture_buffer);
-			
+			this->m_texture_data = std::make_unique<BYTE>(*texture_buffer);
+
 			// extract texture data from the texture frame
 			DXCall(TextureFrame->CopyPixels(nullptr, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, (BYTE*)this->m_texture_data.get()));
 		}
@@ -87,7 +114,7 @@ namespace DXR
 
 		BOOL isConvertible = FALSE;
 		DXCall(converter->CanConvert(this->m_pixel_format, PixelFormat, &isConvertible));
-		if(!isConvertible)
+		if (!isConvertible)
 		{
 			//ERROR(Tiago): Unsupported Texture Format
 			ERROR_LOG("Unsupported Texture Format");
@@ -204,7 +231,7 @@ namespace DXR
 		TextureFS instance = GetInstance();
 		WRL::ComPtr<IWICBitmapDecoder> decoder;
 		DXCall(instance.m_imaging_factory->CreateDecoderFromFilename(Filepath.c_str(), NULL, GENERIC_READ, WICDecodeMetadataCacheOnLoad, decoder.GetAddressOf()));
-		
+
 		WRL::ComPtr<IWICBitmapFrameDecode> frame;
 		decoder->GetFrame(0, frame.GetAddressOf());
 		return { frame };
@@ -218,7 +245,7 @@ namespace DXR
 	UINT TextureFS::ComputeTextureFormatBitsPerPixel(const WICPixelFormatGUID& PixelFormat)
 	{
 		WRL::ComPtr<IWICComponentInfo> info;
-		TextureFS::GetInstance().m_imaging_factory->CreateComponentInfo(PixelFormat,info.GetAddressOf());
+		TextureFS::GetInstance().m_imaging_factory->CreateComponentInfo(PixelFormat, info.GetAddressOf());
 		IWICPixelFormatInfo* pixelinfo = nullptr;
 		info->QueryInterface(IID_IWICPixelFormatInfo, (LPVOID*)&pixelinfo);
 		UINT result = 0;
