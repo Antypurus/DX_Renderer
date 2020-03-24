@@ -16,14 +16,8 @@ namespace DXR
 		this->m_pixel_format = texture.m_pixel_format;
 
 		//copy texture data from original to the new object
-		BYTE* original_texture_data = m_texture_data.get();
-		BYTE* new_texture_data = new BYTE[this->m_image_size];
-		while (new_texture_data == nullptr)
-		{
-			WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
-			new_texture_data = new BYTE[this->m_image_size];
-		}
-		this->m_texture_data = std::make_unique<BYTE>(*new_texture_data);
+		this->m_texture_data = std::make_unique<BYTE[]>(this->m_image_size);
+		memmove(this->m_texture_data.get(),texture.m_texture_data.get(),this->m_image_size);
 	}
 
 	TextureData::~TextureData()
@@ -61,16 +55,10 @@ namespace DXR
 			this->m_image_size = (this->m_width * this->m_height * this->m_bit_per_pixel) / 8;
 
 			//allocate texture buffer
-			BYTE* texture_buffer = new BYTE[this->m_image_size];
-			while (texture_buffer == nullptr)
-			{
-				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
-				texture_buffer = new BYTE[this->m_image_size];
-			}
-			this->m_texture_data = std::make_unique<BYTE>(*texture_buffer);
+			this->m_texture_data = std::make_unique<BYTE[]>(this->m_image_size);
 
 			// texture data must be extracted from the converter in this case
-			DXCall(converter->CopyPixels(nullptr, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, texture_buffer));
+			DXCall(converter->CopyPixels(nullptr, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, this->m_texture_data.get()));
 		}
 		else
 		{
@@ -85,7 +73,7 @@ namespace DXR
 				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
 				texture_buffer = new BYTE[this->m_image_size];
 			}
-			this->m_texture_data = std::make_unique<BYTE>(*texture_buffer);
+			this->m_texture_data = std::make_unique<BYTE[]>(this->m_image_size);
 
 			// extract texture data from the texture frame
 			DXCall(TextureFrame->CopyPixels(nullptr, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, (BYTE*)this->m_texture_data.get()));

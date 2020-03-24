@@ -12,7 +12,7 @@ namespace DXR
 	{
 	private:
 		// actual texture
-		std::unique_ptr<BYTE> m_texture_data = nullptr;
+		std::unique_ptr<BYTE[]> m_texture_data = nullptr;
 		// metadata
 		UINT8 m_bit_per_pixel = 0;
 		UINT64 m_image_size = 0;
