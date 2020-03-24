@@ -21,6 +21,7 @@ void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 	auto text = DXR::TextureFS::LoadTextureData(L"./DX_Renderer/Resources/Textures/star.jpg");
+
 	DXR::GraphicsDevice device;
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
@@ -39,7 +40,7 @@ void MainDirectXThread(DXR::Window& window)
 		root_signature,
 		DXR::Vertex::GetInputLayout(),
 		DXR::Swapchain::m_backbuffer_format,
-		DXR::DepthStencilBuffer::DepthStencilBufferFormat};
+		DXR::DepthStencilBuffer::DepthStencilBufferFormat };
 
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
@@ -49,37 +50,37 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
-												 {
-													 {{-1.0f, -1.0f,  1.0f},{1.0f,1.0f,1.0f,1.0f}},
-													{{1.0f, -1.0f,  -1.0f},{0.0f,1.0f,0.0f,1.0f}},
-													{{1.0f, -1.0f,  1.0f},{1.0f,0.0f,0.0f,1.0f}},
-													{{-1.0f, -1.0f,  -1.0f},{0.0f,0.0f,1.0f,1.0f}},
-													{{0.0f, 1.0f,  0.0f},{0.0f,0.0f,0.0f,1.0f}},
-												 });
-	DXR::IndexBuffer index_buffer(device, commandList, 
-									{   0,2,1,
-										0,1,3,
-										0,2,4,
-										2,1,4,
-										1,3,4,
-										3,0,4
-								  });
+		{
+			{{-1.0f, -1.0f,  1.0f},{1.0f,1.0f,1.0f,1.0f}},
+		   {{1.0f, -1.0f,  -1.0f},{0.0f,1.0f,0.0f,1.0f}},
+		   {{1.0f, -1.0f,  1.0f},{1.0f,0.0f,0.0f,1.0f}},
+		   {{-1.0f, -1.0f,  -1.0f},{0.0f,0.0f,1.0f,1.0f}},
+		   {{0.0f, 1.0f,  0.0f},{0.0f,0.0f,0.0f,1.0f}},
+		});
+	DXR::IndexBuffer index_buffer(device, commandList,
+		{ 0,2,1,
+			0,1,3,
+			0,2,4,
+			2,1,4,
+			1,3,4,
+			3,0,4
+		});
 
 	commandList->Close();
-	
+
 	device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 	device.GetGraphicsCommandQueue().Flush(fence);
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
-	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({0.0f,0.0f,-10.0f,1.0f}, {0.0f,0.0f,0.0f,1.0f}, {0.0f,1.0f,0.0f,0.0f});
+	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({ 0.0f,0.0f,-10.0f,1.0f }, { 0.0f,0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f,0.0f });
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(1, 1, 1);
 
 	DirectX::XMMATRIX mvp = model * view * projection;
-	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, {mvp});
+	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, { mvp });
 
 	commandList.FullReset(pso);
 
-	FLOAT color[4] = {0.4f, 0.6f, 0.9f, 1.0f};
+	FLOAT color[4] = { 0.4f, 0.6f, 0.9f, 1.0f };
 
 	float scale_factor = 1;
 	float scale_step = 0.1f;
@@ -87,7 +88,7 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::GUI gui(device, window, swapchain);
 
 
-	while(window.ShouldContinue)
+	while (window.ShouldContinue)
 	{
 
 		// Start the Dear ImGui frame
@@ -98,9 +99,9 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::End();
 
 		{
-			model = DirectX::XMMatrixRotationAxis({0.0f,1.0f,0.0f},scale_factor);
+			model = DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, scale_factor);
 			mvp = model * view * projection;
-			constant_buffer.UpdateData({mvp});
+			constant_buffer.UpdateData({ mvp });
 		}
 
 		commandList.SetGraphicsRootSignature(root_signature);
@@ -109,7 +110,7 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
-		
+
 		commandList.BindDescriptorHeap(*constant_buffer.GetDescriptorHeap());
 
 		commandList.BindVertexBuffer(vertex_buffer);
@@ -135,13 +136,13 @@ void MainDirectXThread(DXR::Window& window)
 }
 
 int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-							LPSTR lpCmdLine, int nCmdShow)
+	LPSTR lpCmdLine, int nCmdShow)
 {
-	DXR::Window window{hInstance,nCmdShow,{1280,720},"DX Renderer"};
+	DXR::Window window{ hInstance,nCmdShow,{1280,720},"DX Renderer" };
 
 	std::thread main_dx12_thread(MainDirectXThread, std::ref(window));
 
-	while(window.ShouldContinue)
+	while (window.ShouldContinue)
 	{
 		window.UpdateWindow();
 	}

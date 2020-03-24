@@ -40,10 +40,10 @@ namespace DXR
 				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
 				texture_buffer = (BYTE*)malloc(this->m_image_size);
 			}
-			this->m_texture_data = std::make_unique<BYTE*>(texture_buffer);
+			this->m_texture_data = std::make_unique<BYTE[]>(*texture_buffer);
 			
 			// texture data must be extracted from the converter in this case
-			DXCall(converter->CopyPixels(NULL, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, texture_buffer));
+			DXCall(converter->CopyPixels(nullptr, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, texture_buffer));
 		}
 		else
 		{
@@ -58,11 +58,26 @@ namespace DXR
 				WARNING_LOG("Failed To Allocate Texture Buffer, Retrying");
 				texture_buffer = (BYTE*)malloc(this->m_image_size);
 			}
-			this->m_texture_data = std::make_unique<BYTE*>(texture_buffer);
+			this->m_texture_data = std::make_unique<BYTE[]>(*texture_buffer);
 			
 			// extract texture data from the texture frame
-			DXCall(TextureFrame->CopyPixels(0, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, (BYTE*)this->m_texture_data.get()));
+			DXCall(TextureFrame->CopyPixels(nullptr, (this->m_width * this->m_bit_per_pixel) / 8, this->m_image_size, (BYTE*)this->m_texture_data.get()));
 		}
+	}
+
+	const BYTE* const TextureData::GetTextureData() const
+	{
+		return this->m_texture_data.get();
+	}
+
+	UINT64 TextureData::GetTextureSize() const
+	{
+		return this->m_image_size;
+	}
+
+	WICPixelFormatGUID TextureData::GetTextureFormat() const
+	{
+		return this->m_pixel_format;
 	}
 
 	WRL::ComPtr<IWICFormatConverter> TextureData::ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat)
