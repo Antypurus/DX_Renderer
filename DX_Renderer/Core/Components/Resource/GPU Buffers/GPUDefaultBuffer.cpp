@@ -7,23 +7,23 @@
 namespace DXR
 {
 	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize)
-		:m_element_count(elementCount),m_element_size(elementSize)
+		:m_element_count(elementCount), m_element_size(elementSize)
 	{
 		this->m_resource_description = this->GPUDefaultBuffer::CreateResourceDescription();
 		this->m_optimized_clear_value = {};
 		this->m_resource_heap_description = this->GPUDefaultBuffer::CreateResourceHeapDescription();
 
-		this->CreateResource(device,commandList);
+		this->CreateResource(device, commandList);
 	}
 
 	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount,
-		UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription)
+		UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription) :m_element_count(elementCount), m_element_size(elementSize)
 	{
-				this->m_resource_description = ResourceDescription;
+		this->m_resource_description = ResourceDescription;
 		this->m_optimized_clear_value = {};
 		this->m_resource_heap_description = this->GPUDefaultBuffer::CreateResourceHeapDescription();
 
-		this->CreateResource(device,commandList);
+		this->CreateResource(device, commandList);
 	}
 
 	void GPUDefaultBuffer::CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList)
@@ -41,7 +41,7 @@ namespace DXR
 		const ResourceBarrier resource_barrier = {
 			*this->m_resource.Get(),
 			D3D12_RESOURCE_STATE_COMMON,
-			D3D12_RESOURCE_STATE_COPY_DEST};
+			D3D12_RESOURCE_STATE_COPY_DEST };
 		resource_barrier.ExecuteResourceBarrier(commandList);
 		INFO_LOG(L"Queued GPU Resource State Transition From Common To Generic Read");
 	}

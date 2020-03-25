@@ -99,6 +99,16 @@ namespace DXR
 		return this->m_height;
 	}
 
+	UINT64 TextureData::GetBytesPerPixel() const
+	{
+		return this->m_bit_per_pixel/8;
+	}
+
+	UINT64 TextureData::CalculateRowPitch() const
+	{
+		return this->m_width * this->GetBytesPerPixel();
+	}
+
 	WRL::ComPtr<IWICFormatConverter> TextureData::ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat)
 	{
 		WRL::ComPtr<IWICFormatConverter> converter;

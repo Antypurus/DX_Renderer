@@ -4,14 +4,14 @@
 namespace DXR
 {
 
-	struct TextureUploadBuffer:public GPUUploadBuffer
+	struct TextureUploadBuffer: public GPUUploadBuffer
 	{
 	public:
 	private:
 	public:
 		TextureUploadBuffer(GraphicsDevice& Device, UINT64 elementSize, void* Data);
+		void UploadTextureDataToDefaultBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer, D3D12_RESOURCE_DESC& ResourceDescription, UINT64 RowPitch) const;
 	private:
-		void UploadTextureDataToDefaultBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer, D3D12_RESOURCE_DESC& ResourceDescription) const;
 	};
 
 }

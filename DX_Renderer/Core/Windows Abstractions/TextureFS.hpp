@@ -31,6 +31,8 @@ namespace DXR
 		WICPixelFormatGUID GetTextureFormat() const;
 		UINT64 GetWidth() const;
 		UINT64 GetHeight() const;
+		UINT64 GetBytesPerPixel() const;
+		UINT64 CalculateRowPitch() const;
 	private:
 		WRL::ComPtr<IWICFormatConverter> ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
 		bool CheckIfFormatIsSupported() const;

@@ -1,6 +1,5 @@
 #include "Texture.hpp"
 #include "../GPU Buffers/GPUDefaultBuffer.hpp"
-#include "../GPU Buffers/GPUUploadBuffer.hpp"
 #include "../../GraphicsDevice.hpp"
 #include "../../Command List/GraphicsCommandList.hpp"
 
@@ -12,10 +11,10 @@ namespace DXR
 		this->m_texture_format = this->DetermineTextureDataFormat();
 		this->CreateResourceDescription();
 
-		this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(Device,1,this->m_texture_data.GetTextureSize(),(void*)this->m_texture_data.GetTextureData(), this->m_resource_description);
-		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, this->m_texture_data.GetTextureSize(), this->m_resource_description);
+		this->m_upload_buffer = std::make_unique<TextureUploadBuffer>(Device, CalculateBufferSize(this->m_texture_data), (void*)this->m_texture_data.GetTextureData());
+		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, CalculateBufferSize(this->m_texture_data), this->m_resource_description);
 
-		this->UploadTextureData(CommandList);
+		this->m_upload_buffer->UploadTextureDataToDefaultBuffer(CommandList, *this->m_texture_buffer, this->m_resource_description, this->m_texture_data.CalculateRowPitch());
 	}
 
 	DXGI_FORMAT Texture::DetermineTextureDataFormat() const
@@ -61,7 +60,13 @@ namespace DXR
 
 	void Texture::UploadTextureData(GraphicsCommandList& CommandList)
 	{
-		this->m_upload_buffer->CopyDataToGPUBuffer(CommandList,*this->m_texture_buffer);
+		this->m_upload_buffer->CopyDataToGPUBuffer(CommandList, *this->m_texture_buffer);
 		//NOTE(Tiago): Evict Upload Bufffer?
+	}
+
+	UINT64 Texture::CalculateBufferSize(TextureData& data)
+	{
+		int textureHeapSize = ((((data.GetWidth() * data.GetBytesPerPixel()) + 255) & ~255) * (data.GetHeight() - 1)) + (data.GetWidth() * data.GetBytesPerPixel());
+		return textureHeapSize;
 	}
 }
