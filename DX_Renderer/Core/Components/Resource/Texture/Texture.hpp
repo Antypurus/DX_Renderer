@@ -24,6 +24,7 @@ namespace  DXR
 	public:
 		Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
 	private:
+		void CreateTextureBuffers(GraphicsDevice& Device, GraphicsCommandList& CommandList);
 		DXGI_FORMAT DetermineTextureDataFormat() const;
 		void CreateResourceDescription();
 		void UploadTextureData(GraphicsCommandList& commandList);

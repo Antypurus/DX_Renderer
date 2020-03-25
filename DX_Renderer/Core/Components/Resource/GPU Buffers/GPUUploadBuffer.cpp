@@ -86,6 +86,12 @@ namespace DXR
 		return std::make_unique<BYTE>(*data);
 	}
 
+	void GPUUploadBuffer::Evict(GraphicsDevice& device)
+	{
+		//ID3D12Pageable* const* array = {this->m_resource.GetAddressOf()};
+		//device->Evict(1,array);
+	}
+
 	void GPUUploadBuffer::CreateResource(GraphicsDevice& device)
 	{
 		INFO_LOG(L"Creating GPU Upload Buffer Resource");

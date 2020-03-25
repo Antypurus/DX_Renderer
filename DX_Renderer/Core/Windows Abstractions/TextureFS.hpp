@@ -22,7 +22,7 @@ namespace DXR
 		UINT16 m_mip_levels = 0;
 		WICPixelFormatGUID m_pixel_format = GUID_WICPixelFormatDontCare;
 	public:
-		~TextureData();
+		~TextureData() = default;
 		TextureData() = default;
 		TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame);
 		void operator=(const TextureData& texture);

@@ -20,11 +20,6 @@ namespace DXR
 		memmove(this->m_texture_data.get(),texture.m_texture_data.get(),this->m_image_size);
 	}
 
-	TextureData::~TextureData()
-	{
-		WARNING_LOG("Destructing texture data holder");
-	}
-
 	TextureData::TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame)
 	{
 		DXCall(TextureFrame->GetPixelFormat(&this->m_pixel_format));

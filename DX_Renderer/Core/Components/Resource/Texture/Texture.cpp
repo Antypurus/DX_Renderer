@@ -1,16 +1,25 @@
 #include "Texture.hpp"
+
+#include <thread>
+
 #include "../GPU Buffers/GPUDefaultBuffer.hpp"
 #include "../../GraphicsDevice.hpp"
 #include "../../Command List/GraphicsCommandList.hpp"
 
 namespace DXR
 {
+	
 	Texture::Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
 		this->m_texture_data = TextureFS::LoadTextureData(filepath);
 		this->m_texture_format = this->DetermineTextureDataFormat();
 		this->CreateResourceDescription();
 
+		this->CreateTextureBuffers(Device,CommandList);
+	}
+
+	void Texture::CreateTextureBuffers(GraphicsDevice& Device, GraphicsCommandList& CommandList)
+	{
 		this->m_upload_buffer = std::make_unique<TextureUploadBuffer>(Device, this->m_texture_data.GetTextureSize(), (void*)this->m_texture_data.GetTextureData());
 		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, CalculateBufferSize(this->m_texture_data), this->m_resource_description);
 

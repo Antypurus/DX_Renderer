@@ -20,6 +20,7 @@ namespace DXR
 		void CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer);
 		void UploadDataFromCPUBuffer(void* Data) const;
 		std::unique_ptr<BYTE> GetData();
+		void Evict(GraphicsDevice& device);
 	protected:
 		void CreateResource(GraphicsDevice& device);
 		D3D12_RESOURCE_DESC CreateResourceDescription() override;
