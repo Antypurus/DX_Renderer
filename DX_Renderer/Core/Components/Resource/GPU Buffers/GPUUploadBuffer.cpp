@@ -88,8 +88,8 @@ namespace DXR
 
 	void GPUUploadBuffer::Evict(GraphicsDevice& device)
 	{
-		//ID3D12Pageable* const* array = {this->m_resource.GetAddressOf()};
-		//device->Evict(1,array);
+		ID3D12Pageable* const data = *this->m_resource.GetAddressOf();
+		DXCall(device->Evict(1,&data));
 	}
 
 	void GPUUploadBuffer::CreateResource(GraphicsDevice& device)

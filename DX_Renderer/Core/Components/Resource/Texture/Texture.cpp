@@ -5,9 +5,15 @@
 #include "../GPU Buffers/GPUDefaultBuffer.hpp"
 #include "../../GraphicsDevice.hpp"
 #include "../../Command List/GraphicsCommandList.hpp"
+#include "../../Fence.hpp"
 
 namespace DXR
 {
+	static void WaitForDataTransfer(GraphicsDevice& device, Fence fence, TextureUploadBuffer* buffer)
+	{
+		fence.WaitForFence();
+		buffer->Evict(device);
+	}
 	
 	Texture::Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
@@ -16,6 +22,16 @@ namespace DXR
 		this->CreateResourceDescription();
 
 		this->CreateTextureBuffers(Device,CommandList);
+		this->QueueUploadBufferForEviction(Device);
+	}
+
+	void Texture::QueueUploadBufferForEviction(GraphicsDevice& Device) const
+	{
+		auto fence = Device.CreateFence(0);
+		fence.Advance();
+		fence.Signal(Device.GetGraphicsCommandQueue());
+		std::thread thread(WaitForDataTransfer,Device,fence,m_upload_buffer.get());
+		thread.detach();
 	}
 
 	void Texture::CreateTextureBuffers(GraphicsDevice& Device, GraphicsCommandList& CommandList)
