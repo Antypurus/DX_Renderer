@@ -11,11 +11,12 @@ namespace DXR
 	struct GPUUploadBuffer :public Resource
 	{
 	public:
-	private:
+	protected:
 		UINT64 m_element_count = 0;
 		UINT64 m_element_size = 0;
 	public:
 		GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data);
+		GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data, D3D12_RESOURCE_DESC ResourceDescription);
 		void CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer);
 		void UploadDataFromCPUBuffer(void* Data) const;
 		std::unique_ptr<BYTE> GetData();

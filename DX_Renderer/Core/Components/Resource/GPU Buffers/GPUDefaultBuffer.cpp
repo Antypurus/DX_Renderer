@@ -16,6 +16,16 @@ namespace DXR
 		this->CreateResource(device,commandList);
 	}
 
+	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount,
+		UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription)
+	{
+				this->m_resource_description = ResourceDescription;
+		this->m_optimized_clear_value = {};
+		this->m_resource_heap_description = this->GPUDefaultBuffer::CreateResourceHeapDescription();
+
+		this->CreateResource(device,commandList);
+	}
+
 	void GPUDefaultBuffer::CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
 		INFO_LOG(L"Creating GPU Buffer Resource");

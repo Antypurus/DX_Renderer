@@ -10,10 +10,11 @@ namespace DXR
 	{
 		this->m_texture_data = TextureFS::LoadTextureData(filepath);
 		this->m_texture_format = this->DetermineTextureDataFormat();
-		this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(Device,1,this->m_texture_data.GetTextureSize(),(void*)this->m_texture_data.GetTextureData());
-		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, this->m_texture_data.GetTextureSize());
-
 		this->CreateResourceDescription();
+
+		this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(Device,1,this->m_texture_data.GetTextureSize(),(void*)this->m_texture_data.GetTextureData(), this->m_resource_description);
+		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, this->m_texture_data.GetTextureSize(), this->m_resource_description);
+
 		this->UploadTextureData(CommandList);
 	}
 
