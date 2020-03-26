@@ -3,6 +3,9 @@ cbuffer MVPBuffer : register(b0)
 	float4x4 MVP;
 };
 
+Texture2D gText: register(t0);
+SamplerState gsampler: register(s0);
+
 struct VS_OUTPUT
 {
 	float4 position:SV_POSITION;

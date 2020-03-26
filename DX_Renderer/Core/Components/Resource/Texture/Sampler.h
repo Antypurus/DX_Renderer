@@ -43,6 +43,7 @@ namespace DXR
 	public:
 		Sampler() = default;
 		Sampler(GraphicsDevice& Device, const SamplerSettings& settings = {AddressMode::Wrap,Filter::Anisotropic,16});
+		void operator=(const Sampler& sampler);
 	private:
 		void CreateSampler(GraphicsDevice& device, const SamplerSettings& settings) const;
 		void CreateDescriptorHeap(GraphicsDevice& Device);

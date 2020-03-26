@@ -21,8 +21,6 @@ void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
 
-	//auto texture = DXR::TextureFS::LoadTextureData(L"./DX_Renderer/Resources/Textures/star.jpg");
-
 	DXR::GraphicsDevice device;
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "VSMain");
@@ -31,7 +29,13 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::RootSignature root_signature;
 	DXR::DescriptorTableRootParameter desc_table;
 	desc_table.AddCBVEntry(1);
+	DXR::DescriptorTableRootParameter srv_desc_table;
+	srv_desc_table.AddSRVEntry(1);
+	DXR::DescriptorTableRootParameter sampler_desc_table;
+	sampler_desc_table.AddSamplerEntry(1);
 	root_signature.AddDescriptorTableRootParameter(desc_table);
+	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
+	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
 	root_signature.CreateRootSignature(device);
 
 	DXR::PipelineStateObject pso = {
@@ -66,6 +70,7 @@ void MainDirectXThread(DXR::Window& window)
 			1,3,4,
 			3,0,4
 		});
+	
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device,commandList);
 
 	commandList->Close();
@@ -118,6 +123,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);
+		commandList.BindTexture(texture,0);
 
 		commandList.SendDrawCall();
 

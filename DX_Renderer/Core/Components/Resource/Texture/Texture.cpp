@@ -49,6 +49,7 @@ namespace DXR
 	{
 		this->m_heap = device.CreateShaderResourceDescriptorHeap(1);
 		this->m_descriptor_heap = &this->m_heap;
+		this->m_heap_index = 0;
 	}
 
 	void Texture::QueueUploadBufferForEviction(GraphicsDevice& Device) const

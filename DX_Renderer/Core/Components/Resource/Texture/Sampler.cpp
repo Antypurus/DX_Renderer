@@ -49,6 +49,15 @@ namespace DXR
 		this->CreateSampler(Device,settings);
 	}
 
+	void Sampler::operator=(const Sampler& sampler)
+	{
+		this->m_heap = sampler.m_heap;
+		this->m_descriptor_heap = &this->m_heap;
+		this->m_resource_description = sampler.m_resource_description;
+		this->m_heap_index = sampler.m_heap_index;
+		this->m_resource = sampler.m_resource;
+	}
+
 	void Sampler::CreateSampler(GraphicsDevice& device, const SamplerSettings& settings) const
 	{
 		D3D12_SAMPLER_DESC sampler_desc = {};
@@ -71,7 +80,8 @@ namespace DXR
 
 	void Sampler::CreateDescriptorHeap(GraphicsDevice& Device)
 	{
-		this->m_heap = Device.CreateSamplerDescriptorHeap(1);;
+		this->m_heap = Device.CreateSamplerDescriptorHeap(1);
+		this->m_descriptor_heap = &this->m_heap;
 		this->m_heap_index = 0;
 	}
 }

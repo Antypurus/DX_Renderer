@@ -17,6 +17,7 @@ namespace  DXR
 	struct Texture: public Resource
 	{
 	public:
+		friend GraphicsCommandList;
 	private:
 		Sampler m_sampler;
 		TextureData m_texture_data;

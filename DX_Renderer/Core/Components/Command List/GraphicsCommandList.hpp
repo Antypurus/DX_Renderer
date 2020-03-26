@@ -11,6 +11,7 @@
 
 namespace DXR
 {
+	struct Texture;
 	struct IndexBuffer;
 	struct DepthStencilBuffer;
 	struct RenderTargetView;
@@ -52,6 +53,7 @@ namespace DXR
 		void SetPrimitiveTopology(PrimitiveTopology Topology);
 		void SendDrawCall();
 		void Close() const;
+		void BindTexture(Texture& texture,UINT slot);
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);
