@@ -3,8 +3,8 @@ cbuffer MVPBuffer : register(b0)
 	float4x4 MVP;
 };
 
-Texture2D gText: register(t1);
-SamplerState gsampler: register(s1);
+Texture2D gText: register(t0);
+SamplerState gsampler: register(s0);
 
 struct VS_OUTPUT
 {
