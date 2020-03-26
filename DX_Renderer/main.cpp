@@ -31,13 +31,17 @@ void MainDirectXThread(DXR::Window& window)
 	//desc_table.AddCBVEntry(1);
 	DXR::DescriptorTableRootParameter srv_desc_table;
 	srv_desc_table.AddSRVEntry(1);
+	
 	DXR::DescriptorTableRootParameter sampler_desc_table;
 	sampler_desc_table.AddSamplerEntry(1);
+	
 	//root_signature.AddDescriptorTableRootParameter(desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
+	
 	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV,0);
 	root_signature.AddDescriptorRootParameter(rp);
+	
 	root_signature.CreateRootSignature(device);
 
 	DXR::PipelineStateObject pso = {

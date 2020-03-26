@@ -4,7 +4,7 @@ cbuffer MVPBuffer : register(b0)
 };
 
 Texture2D gText: register(t1);
-SamplerState gsampler: register(s2);
+SamplerState gsampler: register(s1);
 
 struct VS_OUTPUT
 {
