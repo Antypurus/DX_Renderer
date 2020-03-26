@@ -23,7 +23,7 @@ namespace DXR
 		this->CreateGraphicsCommandQueue();
 	}
 
-	ID3D12Device* GraphicsDevice::operator->() const
+	ID3D12Device5* GraphicsDevice::operator->() const
 	{
 		return this->m_device.Get();
 	}
@@ -79,7 +79,7 @@ namespace DXR
 		return DescriptorHeap(*this,descriptorCount,DescriptorType::Sampler,flags);
 	}
 
-	ID3D12Device* GraphicsDevice::GetRawInterface() const
+	ID3D12Device5* GraphicsDevice::GetRawInterface() const
 	{
 		return this->m_device.Get();
 	}
