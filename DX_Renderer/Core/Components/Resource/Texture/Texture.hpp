@@ -4,6 +4,7 @@
 #include "../../../Windows Abstractions/TextureFS.hpp"
 #include "../DescriptorHeap.hpp"
 #include "TextureUploadBuffer.hpp"
+#include "Sampler.h"
 
 namespace  DXR
 {
@@ -17,6 +18,7 @@ namespace  DXR
 	{
 	public:
 	private:
+		Sampler m_sampler;
 		TextureData m_texture_data;
 		DXGI_FORMAT m_texture_format;
 		D3D12_RESOURCE_DESC m_resource_description = {};

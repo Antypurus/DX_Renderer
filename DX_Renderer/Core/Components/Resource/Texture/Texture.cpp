@@ -26,6 +26,8 @@ namespace DXR
 
 		this->CreateDescriptorHeap(Device);
 		this->CreateShaderResourceViewDescription(Device);
+
+		this->m_sampler = Sampler(Device);
 	}
 
 	void Texture::CreateShaderResourceViewDescription(GraphicsDevice& Device) const

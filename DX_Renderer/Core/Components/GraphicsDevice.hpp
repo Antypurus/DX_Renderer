@@ -52,6 +52,7 @@ namespace DXR
 		DescriptorHeap CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount);
 		DescriptorHeap CreateConstantBufferDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 		DescriptorHeap CreateShaderResourceDescriptorHeap(const UINT descriptorCount);
+		DescriptorHeap CreateSamplerDescriptorHeap(const UINT descriptorCount);
 		ID3D12Device* GetRawInterface() const;
 	private:
 		void CreateDXGIFactory();
