@@ -58,19 +58,14 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 		{
-			{{-1.0f, -1.0f,  1.0f},{0.0f,0.0f}},
-		   {{1.0f, -1.0f,  -1.0f},{0.0f,0.0f}},
-		   {{1.0f, -1.0f,  1.0f},{1.0f,0.0f}},
-		   {{-1.0f, -1.0f,  -1.0f},{1.0f,0.0f}},
-		   {{0.0f, 1.0f,  0.0f},{0.5f,1.0f}},
+			{{-1.0f, -1.0f,  0.0f},	{0.0f,1.0f}},
+			{{1.0f, -1.0f,  0.0f},	{1.0f,1.0f}},
+			{{-1.0f, 1.0f,  0.0f},	{0.0f,0.0f}},
+			{{1.0f, 1.0f,  0.0f},	{1.0f,0.0f}},
 		});
 	DXR::IndexBuffer index_buffer(device, commandList,
 		{ 0,2,1,
-			0,1,3,
-			0,2,4,
-			2,1,4,
-			1,3,4,
-			3,0,4
+			1,3,2,
 		});
 
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
@@ -91,8 +86,10 @@ void MainDirectXThread(DXR::Window& window)
 
 	FLOAT color[4] = { 0.4f, 0.6f, 0.9f, 1.0f };
 
-	float scale_factor = 1;
-	float scale_step = 0.1f;
+	float x_rotation_angle = 0;
+	float y_rotation_angle = 1;
+	float z_rotation_angle = 0;
+	float scale = 1.0f;
 
 	DXR::GUI gui(device, window, swapchain);
 
@@ -104,11 +101,17 @@ void MainDirectXThread(DXR::Window& window)
 		gui.StartFrame();
 
 		ImGui::Begin("Window");
-		ImGui::SliderAngle("Rotation", &scale_factor);
+		ImGui::SliderAngle("X Rotation", &x_rotation_angle);
+		ImGui::SliderAngle("Y Rotation", &y_rotation_angle);
+		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
+		ImGui::SliderFloat("Model Scale",&scale,0,10);
 		ImGui::End();
 
 		{
-			model = DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, scale_factor);
+			model  = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
+			model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
+			model *= DirectX::XMMatrixRotationAxis({ 0.0f,0.0f,1.0f }, z_rotation_angle);
+			model *= DirectX::XMMatrixScaling(scale,scale,scale);
 			mvp = model * view * projection;
 			constant_buffer.UpdateData({ mvp });
 		}
