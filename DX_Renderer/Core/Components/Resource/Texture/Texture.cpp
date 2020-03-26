@@ -30,6 +30,16 @@ namespace DXR
 		this->m_sampler = Sampler(Device);
 	}
 
+	DescriptorHeap* Texture::GetSRVHeap()
+	{
+		return &this->m_heap;
+	}
+
+	DescriptorHeap* Texture::GetSamplerHeap()
+	{
+		return this->m_sampler.GetDescriptorHeap();
+	}
+
 	void Texture::CreateShaderResourceViewDescription(GraphicsDevice& Device) const
 	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};

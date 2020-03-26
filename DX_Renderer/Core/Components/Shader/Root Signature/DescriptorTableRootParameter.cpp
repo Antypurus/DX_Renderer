@@ -11,7 +11,7 @@ namespace DXR
 	{
 		D3D12_DESCRIPTOR_RANGE table_entry = {};
 		table_entry.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		table_entry.BaseShaderRegister = 0;
+		table_entry.BaseShaderRegister = 1;
 		table_entry.NumDescriptors = DescriptorCount;
 		table_entry.RegisterSpace = 0;
 		table_entry.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -47,7 +47,7 @@ namespace DXR
 	{
 		D3D12_DESCRIPTOR_RANGE table_entry = {};
 		table_entry.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-		table_entry.BaseShaderRegister = 0;
+		table_entry.BaseShaderRegister = 1;
 		table_entry.NumDescriptors = DescriptorCount;
 		table_entry.RegisterSpace = 0;
 		table_entry.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;

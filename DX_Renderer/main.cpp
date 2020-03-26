@@ -27,15 +27,17 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", "PSMain");
 
 	DXR::RootSignature root_signature;
-	DXR::DescriptorTableRootParameter desc_table;
-	desc_table.AddCBVEntry(1);
+	//DXR::DescriptorTableRootParameter desc_table;
+	//desc_table.AddCBVEntry(1);
 	DXR::DescriptorTableRootParameter srv_desc_table;
 	srv_desc_table.AddSRVEntry(1);
 	DXR::DescriptorTableRootParameter sampler_desc_table;
 	sampler_desc_table.AddSamplerEntry(1);
-	root_signature.AddDescriptorTableRootParameter(desc_table);
+	//root_signature.AddDescriptorTableRootParameter(desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
+	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV,0);
+	root_signature.AddDescriptorRootParameter(rp);
 	root_signature.CreateRootSignature(device);
 
 	DXR::PipelineStateObject pso = {
@@ -56,11 +58,11 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 		{
-			{{-1.0f, -1.0f,  1.0f},{1.0f,1.0f,1.0f,1.0f}},
-		   {{1.0f, -1.0f,  -1.0f},{0.0f,1.0f,0.0f,1.0f}},
-		   {{1.0f, -1.0f,  1.0f},{1.0f,0.0f,0.0f,1.0f}},
-		   {{-1.0f, -1.0f,  -1.0f},{0.0f,0.0f,1.0f,1.0f}},
-		   {{0.0f, 1.0f,  0.0f},{0.0f,0.0f,0.0f,1.0f}},
+			{{-1.0f, -1.0f,  1.0f},{0.0f,0.0f}},
+		   {{1.0f, -1.0f,  -1.0f},{0.0f,0.0f}},
+		   {{1.0f, -1.0f,  1.0f},{1.0f,0.0f}},
+		   {{-1.0f, -1.0f,  -1.0f},{1.0f,0.0f}},
+		   {{0.0f, 1.0f,  0.0f},{0.5f,1.0f}},
 		});
 	DXR::IndexBuffer index_buffer(device, commandList,
 		{ 0,2,1,
@@ -70,8 +72,8 @@ void MainDirectXThread(DXR::Window& window)
 			1,3,4,
 			3,0,4
 		});
-	
-	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device,commandList);
+
+	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
 
 	commandList->Close();
 
@@ -118,12 +120,12 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 
-		commandList.BindDescriptorHeap(*constant_buffer.GetDescriptorHeap());
+		commandList.BindDescriptorHeaps({texture.GetSRVHeap(),texture.GetSamplerHeap()});
 
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);
-		commandList.BindTexture(texture,0);
+		commandList.BindTexture(texture, 1);
 
 		commandList.SendDrawCall();
 

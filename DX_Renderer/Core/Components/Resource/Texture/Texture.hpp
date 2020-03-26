@@ -29,6 +29,8 @@ namespace  DXR
 		std::unique_ptr<GPUDefaultBuffer> m_texture_buffer = nullptr;
 	public:
 		Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
+		DescriptorHeap* GetSRVHeap();
+		DescriptorHeap* GetSamplerHeap();
 	private:
 		void CreateShaderResourceViewDescription(GraphicsDevice& Device) const;
 		void CreateDescriptorHeap(GraphicsDevice& Device);
