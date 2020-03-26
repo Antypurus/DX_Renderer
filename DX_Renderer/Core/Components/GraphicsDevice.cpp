@@ -69,6 +69,11 @@ namespace DXR
 		return DescriptorHeap(*this, descriptorCount, DescriptorType::ConstantBufferView, flags);
 	}
 
+	DescriptorHeap GraphicsDevice::CreateShaderResourceDescriptorHeap(const UINT descriptorCount)
+	{
+		return DescriptorHeap(*this,descriptorCount, DescriptorType::ConstantBufferView);
+	}
+
 	ID3D12Device* GraphicsDevice::GetRawInterface() const
 	{
 		return this->m_device.Get();

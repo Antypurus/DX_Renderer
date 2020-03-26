@@ -19,7 +19,7 @@ namespace DXR
 		UINT64 m_alignment = 0;
 		UINT64 m_width = 0;
 		UINT64 m_height =0;
-		UINT16 m_mip_levels = 0;
+		UINT16 m_mip_levels = 1;
 		WICPixelFormatGUID m_pixel_format = GUID_WICPixelFormatDontCare;
 	public:
 		~TextureData() = default;
@@ -33,6 +33,7 @@ namespace DXR
 		UINT64 GetHeight() const;
 		UINT64 GetBytesPerPixel() const;
 		UINT64 CalculateRowPitch() const;
+		UINT16 GetMipLevelCount() const;
 	private:
 		WRL::ComPtr<IWICFormatConverter> ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
 		bool CheckIfFormatIsSupported() const;

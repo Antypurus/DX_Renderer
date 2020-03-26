@@ -12,17 +12,41 @@ namespace DXR
 	static void WaitForDataTransfer(GraphicsDevice& device, Fence fence, TextureUploadBuffer* buffer)
 	{
 		fence.WaitForFence();
-		buffer->Evict(device);
+		//buffer->Evict(device);//TODO(Tiago): Figure out how to safely wait for data transfer to finish
 	}
-	
+
 	Texture::Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
 		this->m_texture_data = TextureFS::LoadTextureData(filepath);
 		this->m_texture_format = this->DetermineTextureDataFormat();
-		this->CreateResourceDescription();
+		this->m_resource_description = this->CreateResourceDescription();
 
-		this->CreateTextureBuffers(Device,CommandList);
+		this->CreateTextureBuffers(Device, CommandList);
 		this->QueueUploadBufferForEviction(Device);
+
+		this->CreateDescriptorHeap(Device);
+		this->CreateShaderResourceViewDescription(Device);
+	}
+
+	void Texture::CreateShaderResourceViewDescription(GraphicsDevice& Device) const
+	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+		srv_desc.Format = this->m_texture_format;
+		srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srv_desc.Texture2D = {};
+		srv_desc.Texture2D.MipLevels = this->m_texture_data.GetMipLevelCount();
+		srv_desc.Texture2D.MostDetailedMip = 0;
+		srv_desc.Texture2D.ResourceMinLODClamp = 0;
+		srv_desc.Texture2D.PlaneSlice = 0;
+
+		Device->CreateShaderResourceView(this->m_texture_buffer->GetResource(),&srv_desc,this->m_heap[0]);
+	}
+
+	void Texture::CreateDescriptorHeap(GraphicsDevice& device)
+	{
+		this->m_heap = device.CreateShaderResourceDescriptorHeap(1);
+		this->m_descriptor_heap = &this->m_heap;
 	}
 
 	void Texture::QueueUploadBufferForEviction(GraphicsDevice& Device) const
@@ -30,7 +54,7 @@ namespace DXR
 		auto fence = Device.CreateFence(0);
 		fence.Advance();
 		fence.Signal(Device.GetGraphicsCommandQueue());
-		std::thread thread(WaitForDataTransfer,Device,fence,m_upload_buffer.get());
+		std::thread thread(WaitForDataTransfer, Device, fence, m_upload_buffer.get());
 		thread.detach();
 	}
 
@@ -64,7 +88,12 @@ namespace DXR
 		return DXGI_FORMAT_UNKNOWN;
 	}
 
-	void Texture::CreateResourceDescription()
+	D3D12_HEAP_PROPERTIES Texture::CreateResourceHeapDescription()
+	{
+		return {};
+	}
+
+	D3D12_RESOURCE_DESC Texture::CreateResourceDescription()
 	{
 		D3D12_RESOURCE_DESC resource = {};
 		resource.Alignment = 0;
@@ -80,13 +109,17 @@ namespace DXR
 		resource.SampleDesc.Count = 1;
 		resource.SampleDesc.Quality = 0;
 
-		this->m_resource_description = resource;
+		return resource;
+	}
+
+	D3D12_CLEAR_VALUE Texture::CreateOptimizedClearValue()
+	{
+		return {};
 	}
 
 	void Texture::UploadTextureData(GraphicsCommandList& CommandList)
 	{
 		this->m_upload_buffer->CopyDataToGPUBuffer(CommandList, *this->m_texture_buffer);
-		//NOTE(Tiago): Evict Upload Bufffer?
 	}
 
 	UINT64 Texture::CalculateBufferSize(TextureData& data)

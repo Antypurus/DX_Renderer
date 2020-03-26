@@ -56,6 +56,14 @@ namespace DXR
 		}
 	}
 
+	void Fence::operator=(const Fence& fence)
+	{
+		this->m_fence = fence.m_fence;
+		this->initial_value = fence.initial_value;
+		this->current_value = fence.current_value;
+		this->CreateWaitEvent();
+	}
+
 	void Fence::CreateWaitEvent()
 	{
 		this->m_wait_event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);

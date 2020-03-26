@@ -104,6 +104,11 @@ namespace DXR
 		return this->m_width * this->GetBytesPerPixel();
 	}
 
+	UINT16 TextureData::GetMipLevelCount() const
+	{
+		return this->m_mip_levels;
+	}
+
 	WRL::ComPtr<IWICFormatConverter> TextureData::ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat)
 	{
 		WRL::ComPtr<IWICFormatConverter> converter;

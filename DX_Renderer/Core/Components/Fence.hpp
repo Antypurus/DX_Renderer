@@ -27,6 +27,7 @@ namespace DXR
 		void Signal(CommandQueue& queue) const;
 		UINT64 GetCompletedValue() const;
 		void WaitForFence() const;
+		void operator=(const Fence& fence);
 	private:
 		void CreateWaitEvent();
 	};
