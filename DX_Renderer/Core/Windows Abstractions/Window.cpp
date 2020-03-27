@@ -152,6 +152,12 @@ namespace DXR
 
 		current_window = this;
 		SUCCESS_LOG(L"Window Creation Completed");
+
+		// specified resolution is the windows res but not the client or drawable resolution, need to fix that
+		RECT clientRect = {};
+		GetClientRect(this->m_window_handle,&clientRect);
+		this->m_window_resolution.Height = abs(clientRect.top - clientRect.bottom);
+		this->m_window_resolution.Width = abs(clientRect.right - clientRect.left);
 	}
 
 }

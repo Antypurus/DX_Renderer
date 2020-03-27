@@ -34,12 +34,12 @@ namespace DXR
 		friend GraphicsDevice;
 	private:
 		WRL::ComPtr<ID3D12CommandAllocator> m_command_allocator;
-		WRL::ComPtr<ID3D12GraphicsCommandList> m_command_list;
+		WRL::ComPtr<ID3D12GraphicsCommandList4> m_command_list;
 		IndexBuffer* m_current_index_buffer = nullptr;
 		mutable PrimitiveTopology m_current_primitive_topology = PrimitiveTopology::None;
 	public:
-		ID3D12GraphicsCommandList* operator->() const;
-		[[nodiscard]] ID3D12GraphicsCommandList* GetRAWInterface() const;
+		ID3D12GraphicsCommandList4* operator->() const;
+		[[nodiscard]] ID3D12GraphicsCommandList4* GetRAWInterface() const;
 		[[nodiscard]] ID3D12CommandAllocator* GetCommandAllocator() const;
 		void ResetCommandAllocator() const;
 		void ResetCommandList(PipelineStateObject& pso) const;

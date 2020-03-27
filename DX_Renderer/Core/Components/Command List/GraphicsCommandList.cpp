@@ -15,12 +15,12 @@ namespace DXR
 		this->CreateCommandList(device);
 	}
 
-	ID3D12GraphicsCommandList* GraphicsCommandList::operator->() const
+	ID3D12GraphicsCommandList4* GraphicsCommandList::operator->() const
 	{
 		return this->m_command_list.Get();
 	}
 
-	ID3D12GraphicsCommandList* GraphicsCommandList::GetRAWInterface() const
+	ID3D12GraphicsCommandList4* GraphicsCommandList::GetRAWInterface() const
 	{
 		return this->m_command_list.Get();
 	}
