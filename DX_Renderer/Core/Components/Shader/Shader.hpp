@@ -4,6 +4,10 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include <atlbase.h>        
+#include <dxcapi.h>
+#include <d3d12shader.h>    
+
 namespace DXR
 {
 
@@ -42,5 +46,17 @@ namespace DXR
 		virtual void CompileFromFile(const std::wstring& filename, const std::string& entryPoint);
 		virtual void Compile(const std::string& shaderCode, const std::string& entryPoint);
 		Shader(ShaderType shaderType);
+	};
+
+	
+	struct ShaderCompiler
+	{
+	private:
+		WRL::ComPtr<IDxcCompiler2> m_compiler;
+		WRL::ComPtr<IDxcLibrary> m_library;
+		WRL::ComPtr<IDxcIncludeHandler> m_include_handler;
+	public:
+	private:
+		ShaderCompiler();
 	};
 }

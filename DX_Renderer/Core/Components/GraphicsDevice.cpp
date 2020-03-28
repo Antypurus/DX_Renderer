@@ -24,7 +24,6 @@ namespace DXR
 		{
 			WARNING_LOG(L"Device Does Not Support DirectX Ray Tracing");
 		}
-
 	}
 
 	ID3D12Device5* GraphicsDevice::operator->() const

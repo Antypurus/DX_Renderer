@@ -110,4 +110,10 @@ namespace DXR
 				break;
 		}
 	}
+	
+	ShaderCompiler::ShaderCompiler()
+	{		
+		//DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&this->m_compiler));
+		//DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&this->m_library));
+	}
 }
