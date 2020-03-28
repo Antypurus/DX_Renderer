@@ -26,13 +26,13 @@ target_link_libraries(DX_Renderer PRIVATE
         "dxcompiler.lib")
 		
 add_custom_command(
-	TARGET DX_Renderer POST_BUILD #Adds a post-build event
+	TARGET DX_Renderer PRE_BUILD #Adds a post-build event
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
 	"${PROJECT_SOURCE_DIR}/DX_Renderer/ThirdParty/DXC/dxcompiler.dll"
 	$<TARGET_FILE_DIR:DX_Renderer>)
 	
 add_custom_command(
-	TARGET DX_Renderer POST_BUILD #Adds a post-build event
+	TARGET DX_Renderer PRE_BUILD #Adds a post-build event
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
 	"${PROJECT_SOURCE_DIR}/DX_Renderer/ThirdParty/DXC/dxil.dll"
 	$<TARGET_FILE_DIR:DX_Renderer>) 
