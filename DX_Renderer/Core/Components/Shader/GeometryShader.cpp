@@ -12,15 +12,6 @@ namespace DXR
 		return shader;
 	}
 
-	GeometryShader GeometryShader::CompileShader(const std::wstring& shaderCode, const std::wstring& entryPoint)
-	{
-		GeometryShader shader;
-		INFO_LOG(L"Started Compiling Geometry Shader");
-		shader.Compile(shaderCode, entryPoint);
-		SUCCESS_LOG(L"Geomtry Shader Compiled");
-		return shader;
-	}
-
 	GeometryShader::GeometryShader() :Shader(ShaderType::GeometryShader)
 	{
 	}

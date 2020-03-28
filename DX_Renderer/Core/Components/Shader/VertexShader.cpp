@@ -15,13 +15,4 @@ namespace DXR
 		SUCCESS_LOG(L"Vertex Shader Compiled");
 		return shader;
 	}
-
-	VertexShader VertexShader::CompileShader(const std::wstring& shaderCode, const std::wstring& entryPoint)
-	{
-		INFO_LOG(L"Starting Vertex Shader Compilation");
-		VertexShader shader;
-		shader.Compile(shaderCode, entryPoint);
-		SUCCESS_LOG(L"Vertex Shader Compiled");
-		return shader;
-	}
 }

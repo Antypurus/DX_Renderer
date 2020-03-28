@@ -41,9 +41,8 @@ namespace DXR
 		D3D12_SHADER_BYTECODE GetShaderBytecode();
 		static D3D12_SHADER_BYTECODE NoShaderBytecode(); 
 	protected:
-		virtual void CompileFromFile(const std::wstring& filename, const std::wstring& entryPoint);
-		virtual void Compile(const std::wstring& shaderCode, const std::wstring& entryPoint);
 		Shader(ShaderType shaderType);
+		virtual void CompileFromFile(const std::wstring& filename, const std::wstring& entryPoint);
 	};
 
 	
