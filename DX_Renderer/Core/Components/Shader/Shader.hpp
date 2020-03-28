@@ -3,10 +3,8 @@
 
 #include <d3d12.h>
 #include <wrl.h>
-
-#include <atlbase.h>        
+     
 #include <dxcapi.h>
-#include <d3d12shader.h>    
 
 namespace DXR
 {
