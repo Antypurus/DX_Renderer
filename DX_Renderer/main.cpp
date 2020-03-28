@@ -16,6 +16,7 @@
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
 #include "Core/Components/Resource/Texture/Texture.hpp"
 #include "Interface/GUI.hpp"
+#include "Core//Components/RayTracing/AccelerationStructure.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -97,6 +98,7 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::GUI gui(device, window, swapchain);
 
+	DXR::BLAS blas(vertex_buffer);
 
 	while (window.ShouldContinue)
 	{

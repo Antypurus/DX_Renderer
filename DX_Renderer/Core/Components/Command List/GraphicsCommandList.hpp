@@ -17,6 +17,7 @@ namespace DXR
 	struct RenderTargetView;
 	struct PipelineStateObject;
 	struct RootSignature;
+	template<typename VertexStruct> struct VertexBuffer;
 	using namespace Microsoft;
 
 	enum class PrimitiveTopology
@@ -53,7 +54,7 @@ namespace DXR
 		void SetPrimitiveTopology(PrimitiveTopology Topology);
 		void SendDrawCall();
 		void Close() const;
-		void BindTexture(Texture& texture,UINT slot);
+		void BindTexture(Texture& texture, UINT slot);
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);
@@ -69,13 +70,13 @@ namespace DXR
 	template <typename T>
 	void GraphicsCommandList::BindVertexBuffer(VertexBuffer<T>& VertexBuffer)
 	{
-		this->m_command_list->IASetVertexBuffers(0,1,&VertexBuffer.GetVertexBufferDescriptor());
+		this->m_command_list->IASetVertexBuffers(0, 1, &VertexBuffer.GetVertexBufferDescriptor());
 	}
 
 	template <typename T>
 	void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
 	{
 		//this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
-		this->m_command_list->SetGraphicsRootConstantBufferView(Slot,ConstantBuffer.m_resource->GetGPUVirtualAddress());
+		this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
 	}
 }
