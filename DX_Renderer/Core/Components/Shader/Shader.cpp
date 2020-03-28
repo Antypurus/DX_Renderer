@@ -5,6 +5,9 @@
 
 namespace DXR
 {
+
+	using namespace WRL;
+
 	D3D12_SHADER_BYTECODE Shader::GetShaderBytecode()
 	{
 		D3D12_SHADER_BYTECODE shader_bytecode = {};
@@ -21,33 +24,15 @@ namespace DXR
 
 		return bytecode;
 	}
-	void Shader::CompileFromFile(const std::wstring& filename, const std::string& entryPoint)
+	void Shader::CompileFromFile(const std::wstring& filename, const std::wstring& entryPoint)
 	{
-		ID3DBlob* shader_code;
-		ID3DBlob* error_msg;
-		UINT compilation_flags = 0;
-
-	#ifndef NDEBUG
-		compilation_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-	#endif
-
-		DXCall(D3DCompileFromFile(filename.c_str(), nullptr, nullptr, entryPoint.c_str(), this->m_shader_type_name.c_str(), compilation_flags, 0, &shader_code, &error_msg));
-
-		// validate compilation errors
-		if(error_msg != nullptr)
-		{
-			ERROR_LOG((char*)error_msg->GetBufferPointer());
-			error_msg->Release();
-			MessageBox(NULL, "Failed To Compile Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
-			throw std::exception("Failed To Compile Shader");
-		}
-
-		this->m_shader_code.Reset();
-		this->m_shader_code = WRL::ComPtr<ID3DBlob>(shader_code);
+		auto code = ShaderCompiler::CompileFromFile(filename,entryPoint,this->m_shader_type_name);
+		this->m_shader_code = WRL::ComPtr<IDxcBlob>(code);
 	}
 
-	void Shader::Compile(const std::string& shaderCode, const std::string& entryPoint)
+	void Shader::Compile(const std::wstring& shaderCode, const std::wstring& entryPoint)
 	{
+		/*
 		ID3DBlob* shader_code;
 		ID3DBlob* error_msg;
 		UINT compilation_flags = 0;
@@ -68,11 +53,12 @@ namespace DXR
 		}
 
 		this->m_shader_code.Reset();
-		this->m_shader_code = WRL::ComPtr<ID3DBlob>(shader_code);
+		this->m_shader_code = WRL::ComPtr<ID3DBlob>(shader_code);*/
 	}
 
 	Shader::Shader(ShaderType shaderType)
 	{
+		auto inst = ShaderCompiler::GetInstance();
 		this->m_shader_type = shaderType;
 		switch(this->m_shader_type)
 		{
@@ -111,9 +97,53 @@ namespace DXR
 		}
 	}
 	
+	ShaderCompiler ShaderCompiler::m_instance = ShaderCompiler::ShaderCompiler();
+
+	ShaderCompiler ShaderCompiler::GetInstance()
+	{
+		return ShaderCompiler::m_instance;
+	}
+
+	IDxcBlob* ShaderCompiler::CompileFromFile(const std::wstring& Filepath, const std::wstring& Entrypoint, const std::wstring ShaderType)
+	{
+		auto encoding = m_shader_encoding;
+		auto instance = ShaderCompiler::GetInstance();
+
+		ComPtr<IDxcBlobEncoding> shader_code_blob;
+		DXCall(instance.m_library->CreateBlobFromFile(Filepath.c_str(),&encoding,&shader_code_blob));
+
+		ComPtr<IDxcOperationResult> result;
+#ifndef NDEBUG
+		//Note(Tiago): Include Handler Is Not Used ATM but it might be needed in the future
+		ComPtr<IDxcBlob> debug_blob;
+		LPWSTR debug_file = L"ShaderDebug";
+		HRESULT hr = (instance.m_compiler->CompileWithDebug(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), NULL, 0, NULL, 0, NULL, &result, &debug_file, debug_blob.GetAddressOf()));
+
+		ComPtr<IDxcBlobEncoding> pErrors = nullptr;
+		result->GetErrorBuffer(&pErrors);
+		if(pErrors != nullptr)
+		{
+			if(pErrors->GetBufferSize() != 0)
+			{
+				ERROR_LOG((char*)pErrors->GetBufferPointer());
+				MessageBox(NULL, "Failed To Compile Shader", "Error", MB_ICONEXCLAMATION | MB_OK);
+				throw std::exception("Failed To Compile Shader");
+			}
+		}
+#else
+		//Note(Tiago): Include Handler Is Not Used ATM but it might be needed in the future
+		DXCall(instance.m_compiler->Compile(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), NULL, 0, NULL, 0, NULL, &result));
+#endif
+		IDxcBlob* code;
+		result->GetResult(&code);
+		auto ptr  = code->GetBufferPointer();
+		return code;
+	}
+
 	ShaderCompiler::ShaderCompiler()
 	{		
-		DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&this->m_compiler));
-		DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&this->m_library));
+		DXCall(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&this->m_compiler)));
+		DXCall(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&this->m_library)));
+
 	}
 }

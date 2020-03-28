@@ -7,7 +7,7 @@ namespace DXR
 	{
 	}
 
-	VertexShader VertexShader::CompileShaderFromFile(const std::wstring& filename, const std::string& entryPoint)
+	VertexShader VertexShader::CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint)
 	{
 		INFO_LOG(L"Starting Vertex Shader Compilation");
 		VertexShader shader;
@@ -16,7 +16,7 @@ namespace DXR
 		return shader;
 	}
 
-	VertexShader VertexShader::CompileShader(const std::string& shaderCode, const std::string& entryPoint)
+	VertexShader VertexShader::CompileShader(const std::wstring& shaderCode, const std::wstring& entryPoint)
 	{
 		INFO_LOG(L"Starting Vertex Shader Compilation");
 		VertexShader shader;

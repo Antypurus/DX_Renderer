@@ -11,12 +11,12 @@ namespace DXR
 
 	using namespace Microsoft;
 
-#define VERTEX_SHADER "vs_5_1"
-#define HULL_SHADER "hs_5_1"
-#define DOMAIN_SHADER "ds_5_1"
-#define GEOMETRY_SHADER "gs_5_1"
-#define PIXEL_SHADER "ps_5_1"
-#define COMPUTE_SHADER "cs_5_1"
+#define VERTEX_SHADER		L"vs_6_4"
+#define HULL_SHADER			L"hs_6_4"
+#define DOMAIN_SHADER		L"ds_6_4"
+#define GEOMETRY_SHADER		L"gs_6_4"
+#define PIXEL_SHADER		L"ps_6_4"
+#define COMPUTE_SHADER		L"cs_6_4"
 
 	enum class ShaderType
 	{
@@ -34,15 +34,15 @@ namespace DXR
 	public:
 		virtual ~Shader() = default;
 	protected:
-		WRL::ComPtr<ID3DBlob> m_shader_code;
+		WRL::ComPtr<IDxcBlob> m_shader_code;
 		ShaderType m_shader_type = ShaderType::None;
-		std::string m_shader_type_name = "";
+		std::wstring m_shader_type_name = L"";
 	public:
 		D3D12_SHADER_BYTECODE GetShaderBytecode();
 		static D3D12_SHADER_BYTECODE NoShaderBytecode(); 
 	protected:
-		virtual void CompileFromFile(const std::wstring& filename, const std::string& entryPoint);
-		virtual void Compile(const std::string& shaderCode, const std::string& entryPoint);
+		virtual void CompileFromFile(const std::wstring& filename, const std::wstring& entryPoint);
+		virtual void Compile(const std::wstring& shaderCode, const std::wstring& entryPoint);
 		Shader(ShaderType shaderType);
 	};
 
@@ -50,10 +50,13 @@ namespace DXR
 	struct ShaderCompiler
 	{
 	private:
+		const static uint32_t m_shader_encoding = CP_UTF8;
+		static ShaderCompiler m_instance;
 		WRL::ComPtr<IDxcCompiler2> m_compiler;
 		WRL::ComPtr<IDxcLibrary> m_library;
-		WRL::ComPtr<IDxcIncludeHandler> m_include_handler;
 	public:
+		static ShaderCompiler GetInstance();
+		static IDxcBlob* CompileFromFile(const std::wstring& Filepath, const std::wstring& Entrypoint, const std::wstring ShaderType);
 	private:
 		ShaderCompiler();
 	};

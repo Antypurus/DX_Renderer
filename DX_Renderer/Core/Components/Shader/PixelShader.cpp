@@ -3,7 +3,7 @@
 
 namespace DXR
 {
-	PixelShader PixelShader::CompileShaderFromFile(const std::wstring& filename, const std::string& entryPoint)
+	PixelShader PixelShader::CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint)
 	{
 		PixelShader shader;
 		INFO_LOG(L"Started Compiling Pixel Shader");
@@ -12,7 +12,7 @@ namespace DXR
 		return shader;
 	}
 
-	PixelShader PixelShader::CompileShader(const std::string& shaderCode, const std::string& entryPoint)
+	PixelShader PixelShader::CompileShader(const std::wstring& shaderCode, const std::wstring& entryPoint)
 	{
 		PixelShader shader;
 		INFO_LOG(L"Started Compiling Pixel Shader");
