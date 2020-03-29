@@ -99,7 +99,6 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::GUI gui(device, window, swapchain);
 
 	DXR::BLAS blas(device,commandList,vertex_buffer,index_buffer,true);
-	Sleep(10000);
 	DXR::TLAS tlas;
 	tlas.AddInstance(blas,DirectX::XMMatrixIdentity(),0);
 	tlas.BuildTLAS(device,commandList);

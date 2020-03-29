@@ -2,6 +2,7 @@
 #include "AccelerationStructure.hpp"
 #include  "../Resource/GPU Buffers/GPUDefaultBuffer.hpp"
 #include "../Command List/GraphicsCommandList.hpp"
+#include "../Resource/ResourceBarrier.hpp"
 
 namespace DXR
 {
@@ -34,7 +35,9 @@ namespace DXR
 
 		commandList->BuildRaytracingAccelerationStructure(&blas, 0, nullptr);
 
-		//TODO(Tiago): Add UAV Barrier Here To Wait For BLAS Creation
+		//Barrier to wait for the buffer creation to finish
+		UAVResourceBarrier barrier(*this->m_blas_buffer->GetResource());
+		barrier.ExecuteResourceBarrier(commandList);
 	}
 
 	BLASInstance::BLASInstance(const BLAS& blas, const XMMATRIX& Transform, UINT HitGroup, UINT InstanceID)
@@ -95,5 +98,9 @@ namespace DXR
 		tlas.ScratchAccelerationStructureData = this->m_scratch_buffer->GetGPUAddress();
 		tlas.DestAccelerationStructureData = this->m_tlas_buffer->GetGPUAddress();
 		CommandList->BuildRaytracingAccelerationStructure(&tlas, 0, nullptr);
+
+		//Barrier to wait for the buffer creation to finish
+		UAVResourceBarrier barrier(*this->m_tlas_buffer->GetResource());
+		barrier.ExecuteResourceBarrier(CommandList);
 	}
 }

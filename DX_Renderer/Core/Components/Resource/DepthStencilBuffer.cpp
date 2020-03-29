@@ -20,7 +20,7 @@ namespace DXR
 		device->CreateDepthStencilView(this->m_resource.Get(),nullptr,(*this->m_descriptor_heap)[0]);
 		SUCCESS_LOG(L"Depth Stencil Buffer GPU Resource And CPU Descriptor Created");
 
-		const ResourceBarrier resource_barrier = {*this->m_resource.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_DEPTH_WRITE};
+		const TransitionResourceBarrier resource_barrier = {*this->m_resource.Get(),D3D12_RESOURCE_STATE_COMMON,D3D12_RESOURCE_STATE_DEPTH_WRITE};
 		resource_barrier.ExecuteResourceBarrier(commandList);
 		INFO_LOG(L"Queued Resource Barrier Into Command List For Execution");
 	}
