@@ -39,12 +39,13 @@ namespace DXR
 		BLAS() = default;
 
 		template<typename T>
-		BLAS(const GraphicsDevice& Device, const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque = true);
+		BLAS(GraphicsDevice& Device, const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque = true);
 	private:
+		void BuildBLAS(GraphicsDevice& Device);
 	};
 
 	template<typename T>
-	inline BLAS::BLAS(const GraphicsDevice& Device, const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque = true)
+	inline BLAS::BLAS(GraphicsDevice& Device, const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque)
 	{
 		m_blas_descripiton.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 		m_blas_descripiton.Triangles.VertexBuffer.StartAddress = vb.GetVertexBufferGPUAddress();
@@ -62,6 +63,7 @@ namespace DXR
 		{
 			m_blas_descripiton.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
 		}
+		this->BuildBLAS(Device);
 	}
 
 }

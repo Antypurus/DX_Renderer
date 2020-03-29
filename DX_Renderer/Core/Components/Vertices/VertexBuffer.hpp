@@ -58,7 +58,7 @@ namespace DXR
 
 		UINT GetVertexCount() const
 		{
-			this->m_vertices.size();
+			return this->m_vertices.size();
 		}
 
 		DXGI_FORMAT GetVertexPositionFormat() const

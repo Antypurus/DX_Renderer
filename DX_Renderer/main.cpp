@@ -98,7 +98,7 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::GUI gui(device, window, swapchain);
 
-	DXR::BLAS blas(vertex_buffer);
+	DXR::BLAS blas(device,vertex_buffer,index_buffer,true);
 
 	while (window.ShouldContinue)
 	{
