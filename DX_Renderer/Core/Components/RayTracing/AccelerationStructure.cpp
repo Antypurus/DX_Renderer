@@ -20,7 +20,7 @@ namespace DXR
 
 		//Allocate the scratch and result buffers
 		this->m_scratch_buffer = std::make_unique<GPUDefaultBuffer>(Device, commandList, 1, blas_mem_requirements.ScratchDataSizeInBytes, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
-		this->m_blas_buffer = std::make_unique<GPUDefaultBuffer>(Device, commandList, 1, blas_mem_requirements.ScratchDataSizeInBytes, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+		this->m_blas_buffer = std::make_unique<GPUDefaultBuffer>(Device, commandList, 1, blas_mem_requirements.ResultDataMaxSizeInBytes, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC blas = {};
 		blas.Inputs = blas_inputs;
