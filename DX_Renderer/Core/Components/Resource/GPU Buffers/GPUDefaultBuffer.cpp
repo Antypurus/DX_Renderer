@@ -6,44 +6,37 @@
 
 namespace DXR
 {
-	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize)
+	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize, D3D12_RESOURCE_STATES InitialState, D3D12_HEAP_FLAGS HeapFlags)
 		:m_element_count(elementCount), m_element_size(elementSize)
 	{
 		this->m_resource_description = this->GPUDefaultBuffer::CreateResourceDescription();
 		this->m_optimized_clear_value = {};
 		this->m_resource_heap_description = this->GPUDefaultBuffer::CreateResourceHeapDescription();
 
-		this->CreateResource(device, commandList);
+		this->CreateResource(device, commandList, InitialState, HeapFlags);
 	}
 
 	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount,
-		UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription) :m_element_count(elementCount), m_element_size(elementSize)
+		UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription, D3D12_RESOURCE_STATES InitialState, D3D12_HEAP_FLAGS HeapFlags) :m_element_count(elementCount), m_element_size(elementSize)
 	{
 		this->m_resource_description = ResourceDescription;
 		this->m_optimized_clear_value = {};
 		this->m_resource_heap_description = this->GPUDefaultBuffer::CreateResourceHeapDescription();
 
-		this->CreateResource(device, commandList);
+		this->CreateResource(device, commandList, InitialState, HeapFlags);
 	}
 
-	void GPUDefaultBuffer::CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList)
+	void GPUDefaultBuffer::CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList, D3D12_RESOURCE_STATES InitialState, D3D12_HEAP_FLAGS HeapFlags)
 	{
 		INFO_LOG(L"Creating GPU Buffer Resource");
 		DXCall(device->CreateCommittedResource(
 			&this->m_resource_heap_description,
-			D3D12_HEAP_FLAG_NONE,
+			HeapFlags,
 			&this->m_resource_description,
-			D3D12_RESOURCE_STATE_COMMON,
+			InitialState,
 			nullptr,
 			IID_PPV_ARGS(&this->m_resource)));
 		SUCCESS_LOG(L"GPU Buffer Resource Created");
-
-		const ResourceBarrier resource_barrier = {
-			*this->m_resource.Get(),
-			D3D12_RESOURCE_STATE_COMMON,
-			D3D12_RESOURCE_STATE_COPY_DEST };
-		resource_barrier.ExecuteResourceBarrier(commandList);
-		INFO_LOG(L"Queued GPU Resource State Transition From Common To Generic Read");
 	}
 
 	D3D12_RESOURCE_DESC GPUDefaultBuffer::CreateResourceDescription()

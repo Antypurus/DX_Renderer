@@ -7,6 +7,7 @@ namespace DXR
 {
 	struct GraphicsDevice;
 	template<typename VertexStruct> struct VertexBuffer;
+	struct GPUDefaultBuffer;
 
 	struct AccelerationStructure;
 	struct TLAS;
@@ -34,6 +35,8 @@ namespace DXR
 	{
 	public:
 	private:
+		std::unique_ptr<GPUDefaultBuffer> m_scratch_buffer;
+		std::unique_ptr<GPUDefaultBuffer> m_blas_buffer;
 		D3D12_RAYTRACING_GEOMETRY_DESC m_blas_descripiton;
 	public:
 		BLAS() = default;
