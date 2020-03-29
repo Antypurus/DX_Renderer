@@ -9,7 +9,7 @@ namespace DXR
 	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize, D3D12_RESOURCE_STATES InitialState, D3D12_RESOURCE_FLAGS ResourceFlags)
 		:m_element_count(elementCount), m_element_size(elementSize)
 	{
-		this->m_resource_description = this->GPUDefaultBuffer::CreateResourceDescription();
+		this->m_resource_description = this->GPUDefaultBuffer::CreateResourceDescription(ResourceFlags);
 		this->m_optimized_clear_value = {};
 		this->m_resource_heap_description = this->GPUDefaultBuffer::CreateResourceHeapDescription();
 
@@ -17,7 +17,7 @@ namespace DXR
 	}
 
 	GPUDefaultBuffer::GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount,
-		UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription, D3D12_RESOURCE_STATES InitialState, D3D12_RESOURCE_FLAGS ResourceFlags) :m_element_count(elementCount), m_element_size(elementSize)
+		UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription, D3D12_RESOURCE_STATES InitialState) :m_element_count(elementCount), m_element_size(elementSize)
 	{
 		this->m_resource_description = ResourceDescription;
 		this->m_optimized_clear_value = {};
