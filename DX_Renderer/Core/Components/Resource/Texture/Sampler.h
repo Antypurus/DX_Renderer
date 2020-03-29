@@ -48,7 +48,7 @@ namespace DXR
 		void CreateSampler(GraphicsDevice& device, const SamplerSettings& settings) const;
 		void CreateDescriptorHeap(GraphicsDevice& Device);
 	protected:
-		D3D12_RESOURCE_DESC CreateResourceDescription() override {return {};}
+		D3D12_RESOURCE_DESC CreateResourceDescription(D3D12_RESOURCE_FLAGS ResourceFlags = D3D12_RESOURCE_FLAG_NONE) override {return {};}
 		D3D12_CLEAR_VALUE CreateOptimizedClearValue() override {return {};}
 		D3D12_HEAP_PROPERTIES CreateResourceHeapDescription() override {return {};}
 	};

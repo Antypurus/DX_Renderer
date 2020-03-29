@@ -23,7 +23,7 @@ namespace DXR
 		void Evict(GraphicsDevice& device);
 	protected:
 		void CreateResource(GraphicsDevice& device);
-		D3D12_RESOURCE_DESC CreateResourceDescription() override;
+		D3D12_RESOURCE_DESC CreateResourceDescription(D3D12_RESOURCE_FLAGS ResourceFlags = D3D12_RESOURCE_FLAG_NONE) override;
 		D3D12_CLEAR_VALUE CreateOptimizedClearValue() override;
 		D3D12_HEAP_PROPERTIES CreateResourceHeapDescription() override;
 	};

@@ -5,6 +5,7 @@
 
 namespace DXR
 {
+	struct GraphicsCommandList;
 	struct GraphicsDevice;
 	template<typename VertexStruct> struct VertexBuffer;
 	struct GPUDefaultBuffer;
@@ -35,20 +36,20 @@ namespace DXR
 	{
 	public:
 	private:
-		std::unique_ptr<GPUDefaultBuffer> m_scratch_buffer;
-		std::unique_ptr<GPUDefaultBuffer> m_blas_buffer;
+		std::unique_ptr<GPUDefaultBuffer> m_scratch_buffer = nullptr;
+		std::unique_ptr<GPUDefaultBuffer> m_blas_buffer = nullptr;
 		D3D12_RAYTRACING_GEOMETRY_DESC m_blas_descripiton;
 	public:
 		BLAS() = default;
 
 		template<typename T>
-		BLAS(GraphicsDevice& Device, const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque = true);
+		BLAS(GraphicsDevice& Device, GraphicsCommandList& commandList,const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque = true);
 	private:
-		void BuildBLAS(GraphicsDevice& Device);
+		void BuildBLAS(GraphicsDevice& Device, GraphicsCommandList& commandList);
 	};
 
 	template<typename T>
-	inline BLAS::BLAS(GraphicsDevice& Device, const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque)
+	inline BLAS::BLAS(GraphicsDevice& Device, GraphicsCommandList& commandList,const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque)
 	{
 		m_blas_descripiton.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 		m_blas_descripiton.Triangles.VertexBuffer.StartAddress = vb.GetVertexBufferGPUAddress();
@@ -66,7 +67,7 @@ namespace DXR
 		{
 			m_blas_descripiton.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
 		}
-		this->BuildBLAS(Device);
+		this->BuildBLAS(Device,commandList);
 	}
 
 }

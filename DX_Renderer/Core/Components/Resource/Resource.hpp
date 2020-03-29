@@ -30,7 +30,7 @@ namespace DXR
 	protected:
 		Resource(DescriptorHeap& heap, size_t HeapIndex);
 		Resource();
-		virtual D3D12_RESOURCE_DESC CreateResourceDescription() = 0;
+		virtual D3D12_RESOURCE_DESC CreateResourceDescription(D3D12_RESOURCE_FLAGS ResourceFlags = D3D12_RESOURCE_FLAG_NONE) = 0;
 		virtual D3D12_CLEAR_VALUE CreateOptimizedClearValue() = 0;
 		virtual D3D12_HEAP_PROPERTIES CreateResourceHeapDescription() = 0;
 	};
