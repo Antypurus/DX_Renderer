@@ -9,28 +9,10 @@ namespace DXR
 	struct GraphicsDevice;
 	template<typename VertexStruct> struct VertexBuffer;
 	struct GPUDefaultBuffer;
+	struct GPUUploadBuffer;
 
-	struct AccelerationStructure;
 	struct TLAS;
 	struct BLAS;
-
-	struct AccelerationStructure
-	{
-	public:
-	private:
-	public:
-	private:
-	};
-
-	struct TLAS
-	{
-	public:
-	private:
-		std::vector<BLAS> m_blas_instances;
-	public:
-		TLAS() = default;
-	private:
-	};
 
 	struct BLAS
 	{
@@ -41,7 +23,7 @@ namespace DXR
 		D3D12_RAYTRACING_GEOMETRY_DESC m_blas_descripiton;
 	public:
 		BLAS() = default;
-
+		D3D12_GPU_VIRTUAL_ADDRESS GetBLASGPUAddress() const;
 		template<typename T>
 		BLAS(GraphicsDevice& Device, GraphicsCommandList& commandList,const DXR::VertexBuffer<T>& vb, const IndexBuffer& ib, const bool IsOpaque = true);
 	private:
@@ -69,5 +51,31 @@ namespace DXR
 		}
 		this->BuildBLAS(Device,commandList);
 	}
+
+	struct BLASInstance
+	{
+	private:
+		D3D12_RAYTRACING_INSTANCE_DESC m_instance_description = {};
+		XMFLOAT4 m_transform_matrix;
+		D3D12_GPU_VIRTUAL_ADDRESS m_blas_address;
+	public:
+		BLASInstance(const BLAS& blas, const XMMATRIX& Transform, UINT HitGroup, UINT InstanceID);
+		D3D12_RAYTRACING_INSTANCE_DESC GetInstanceDescription() const;
+	};
+
+	struct TLAS
+	{
+	public:
+	private:
+		std::vector<BLASInstance> m_blas_instances;
+		std::unique_ptr<GPUUploadBuffer> m_instance_descriptor_buffer;
+		std::unique_ptr<GPUDefaultBuffer> m_scratch_buffer;
+		std::unique_ptr<GPUDefaultBuffer> m_tlas_buffer;
+	public:
+		TLAS() = default;
+		void BuildTLAS(GraphicsDevice& Device, GraphicsCommandList& CommandList);
+		void AddInstance(const BLAS& blas, const XMMATRIX& Transform, UINT HitGroup);
+	private:
+	};
 
 }
