@@ -25,6 +25,11 @@ namespace DXR
 		return this->m_indices.size();
 	}
 
+	D3D12_GPU_VIRTUAL_ADDRESS IndexBuffer::GetIndexBufferGPUAddress() const
+	{
+		return this->m_index_buffer->GetGPUAddress();
+	}
+
 	void IndexBuffer::CreateIndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
 		this->m_index_buffer = std::make_unique<GPUDefaultBuffer>(device, commandList, this->m_indices.size(), sizeof(UINT));
@@ -54,7 +59,7 @@ namespace DXR
 	{
 		D3D12_INDEX_BUFFER_VIEW index_buffer_descriptor = {};
 		index_buffer_descriptor.BufferLocation = (*this->m_index_buffer)->GetGPUVirtualAddress();
-		index_buffer_descriptor.Format = DXGI_FORMAT_R32_UINT;
+		index_buffer_descriptor.Format = IndexFormat;
 		index_buffer_descriptor.SizeInBytes = (UINT)(this->m_indices.size() * sizeof(UINT));
 
 		this->m_index_buffer_descriptor = index_buffer_descriptor;
