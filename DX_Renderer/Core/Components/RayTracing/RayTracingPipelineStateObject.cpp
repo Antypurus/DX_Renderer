@@ -62,5 +62,17 @@ namespace DXR
 		return export_association;
 	}
 
+	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreatePipelineConfig()
+	{
+		D3D12_RAYTRACING_PIPELINE_CONFIG config_desc = {};
+		config_desc.MaxTraceRecursionDepth = RayTracingPipelineStateObject::MaxRayBounces;
+
+		D3D12_STATE_SUBOBJECT config = {};
+		config.Type = D3D12_STATE_SUBOBJECT_TYPE_RAYTRACING_PIPELINE_CONFIG;
+		config.pDesc = &config_desc;
+
+		return config;
+	}
+
 
 }
