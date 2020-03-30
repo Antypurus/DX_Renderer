@@ -4,8 +4,8 @@ namespace DXR
 {
 	AnyHitShader AnyHitShader::CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint)
 	{
-		AnyHitShader Shader(filename,entryPoint);
-		Shader.CompileFromFile(filename,entryPoint);
+		AnyHitShader Shader(filename, entryPoint);
+		Shader.CompileFromFile(filename, entryPoint);
 		return Shader;
 	}
 
@@ -13,7 +13,7 @@ namespace DXR
 	{
 		D3D12_EXPORT_DESC shader_export = {};
 		shader_export.Name = this->UniqueID.c_str();
-		shader_export.ExportToRename = L"AnyHitShader";
+		shader_export.ExportToRename = this->entryPoint.c_str();
 		shader_export.Flags = D3D12_EXPORT_FLAG_NONE;
 
 		D3D12_DXIL_LIBRARY_DESC lib_desc = {};
@@ -29,7 +29,12 @@ namespace DXR
 		return ahs;
 	}
 
-	AnyHitShader::AnyHitShader(const std::wstring& filepath, const std::wstring& entryPoint):Shader(ShaderType::RayTracingShader)
+	std::wstring& AnyHitShader::GetUniqueID()
+	{
+		return this->UniqueID;
+	}
+
+	AnyHitShader::AnyHitShader(const std::wstring& filepath, const std::wstring& entryPoint) :Shader(ShaderType::RayTracingShader)
 	{
 		this->filepath = filepath;
 		this->entryPoint = entryPoint;

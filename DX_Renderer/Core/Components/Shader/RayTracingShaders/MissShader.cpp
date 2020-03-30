@@ -4,8 +4,8 @@ namespace DXR
 {
 	MissShader MissShader::CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint)
 	{
-		MissShader shader(filename,entryPoint);
-		shader.CompileFromFile(filename,entryPoint);
+		MissShader shader(filename, entryPoint);
+		shader.CompileFromFile(filename, entryPoint);
 		return shader;
 	}
 
@@ -13,7 +13,7 @@ namespace DXR
 	{
 		D3D12_EXPORT_DESC shader_export = {};
 		shader_export.Name = this->UniqueID.c_str();
-		shader_export.ExportToRename = L"MissShader";
+		shader_export.ExportToRename = this->entryPoint.c_str();
 		shader_export.Flags = D3D12_EXPORT_FLAG_NONE;
 
 		D3D12_DXIL_LIBRARY_DESC lib_desc = {};
@@ -29,7 +29,12 @@ namespace DXR
 		return ms;
 	}
 
-	MissShader::MissShader(const std::wstring& filepath, const std::wstring& entryPoint):Shader(ShaderType::RayTracingShader)
+	std::wstring& MissShader::GetUniqueID()
+	{
+		return this->UniqueID;
+	}
+
+	MissShader::MissShader(const std::wstring& filepath, const std::wstring& entryPoint) :Shader(ShaderType::RayTracingShader)
 	{
 		this->filepath = filepath;
 		this->entryPoint = entryPoint;
