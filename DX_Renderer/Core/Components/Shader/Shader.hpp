@@ -17,6 +17,7 @@ namespace DXR
 #define GEOMETRY_SHADER		L"gs_6_4"
 #define PIXEL_SHADER		L"ps_6_4"
 #define COMPUTE_SHADER		L"cs_6_4"
+#define RAYTRACING_SHADER	L"lib_6_4"
 
 	enum class ShaderType
 	{
@@ -26,7 +27,8 @@ namespace DXR
 		DomainShader = 2,
 		GeometryShader = 3,
 		PixelShader = 4,
-		ComputerShader = 5
+		ComputerShader = 5,
+		RayTracingShader = 6
 	};
 
 	struct Shader

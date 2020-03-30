@@ -66,6 +66,11 @@ namespace DXR
 				this->m_shader_type_name = COMPUTE_SHADER;
 				break;
 			}
+			case ShaderType::RayTracingShader:
+			{
+				this->m_shader_type_name = RAYTRACING_SHADER;
+				break;
+			}
 			default:
 				break;
 		}
