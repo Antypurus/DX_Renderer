@@ -32,5 +32,6 @@ namespace DXR
 		RayTracingPipelineStateObject(GraphicsDevice& Device ,RootSignature& rootSignature, RayGenShader& raygenShader, IntersectionShader& intersectionShader, AnyHitShader& anyHitShader, ClosestHitShader& closestHitShader, MissShader& missShader);
 	private:
 		D3D12_STATE_SUBOBJECT CreateShaderConfiguration();
+		D3D12_STATE_SUBOBJECT CreateHitGroup();
 	};
 }

@@ -26,4 +26,18 @@ namespace DXR
 
 		return shader_config;
 	}
+	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateHitGroup()
+	{
+		D3D12_HIT_GROUP_DESC hit_group_desc = {};
+		hit_group_desc.AnyHitShaderImport = this->m_any_hit_shader->GetUniqueID().c_str();
+		hit_group_desc.ClosestHitShaderImport = this->m_closest_hit_shader->GetUniqueID().c_str();
+		hit_group_desc.IntersectionShaderImport = this->m_intersection_shader->GetUniqueID().c_str();
+		hit_group_desc.HitGroupExport = L"HitGroup";
+
+		D3D12_STATE_SUBOBJECT hit_group = {};
+		hit_group.Type = D3D12_STATE_SUBOBJECT_TYPE_HIT_GROUP;
+		hit_group.pDesc = &hit_group_desc;
+
+		return hit_group;
+	}
 }
