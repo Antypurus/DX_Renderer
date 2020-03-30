@@ -26,6 +26,7 @@ namespace DXR
 
 		return shader_config;
 	}
+
 	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateHitGroup()
 	{
 		D3D12_HIT_GROUP_DESC hit_group_desc = {};
@@ -40,4 +41,26 @@ namespace DXR
 
 		return hit_group;
 	}
+
+	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateShaderAssociation(D3D12_STATE_SUBOBJECT& ShaderConfig)
+	{
+		//For Now We Assume that all shaders use the paylaod
+		const wchar_t* ShaderExports[3];
+		ShaderExports[0] = this->m_ray_gen_shader->GetUniqueID().c_str();
+		ShaderExports[1] = this->m_miss_shader->GetUniqueID().c_str();
+		ShaderExports[2] = L"HitGroup";
+
+		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION export_associations_desc = {};
+		export_associations_desc.NumExports = 3;
+		export_associations_desc.pExports = ShaderExports;
+		export_associations_desc.pSubobjectToAssociate = &ShaderConfig;
+
+		D3D12_STATE_SUBOBJECT export_association = {};
+		export_association.Type = D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION;
+		export_association.pDesc = &export_associations_desc;
+
+		return export_association;
+	}
+
+
 }

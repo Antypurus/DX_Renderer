@@ -33,5 +33,6 @@ namespace DXR
 	private:
 		D3D12_STATE_SUBOBJECT CreateShaderConfiguration();
 		D3D12_STATE_SUBOBJECT CreateHitGroup();
+		D3D12_STATE_SUBOBJECT CreateShaderAssociation(D3D12_STATE_SUBOBJECT ShaderConfig);
 	};
 }
