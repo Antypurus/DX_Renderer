@@ -65,8 +65,9 @@ namespace DXR
 	{
 		hit_group_desc.AnyHitShaderImport = this->m_any_hit_shader->GetUniqueID().c_str();
 		hit_group_desc.ClosestHitShaderImport = this->m_closest_hit_shader->GetUniqueID().c_str();
-		hit_group_desc.IntersectionShaderImport = this->m_intersection_shader->GetUniqueID().c_str();
+		//hit_group_desc.IntersectionShaderImport = this->m_intersection_shader->GetUniqueID().c_str();
 		hit_group_desc.HitGroupExport = L"HitGroup";
+		//hit_group_desc.Type = D3D12_HIT_GROUP_TYPE_PROCEDURAL_PRIMITIVE;
 
 		hit_group.Type = D3D12_STATE_SUBOBJECT_TYPE_HIT_GROUP;
 		hit_group.pDesc = &hit_group_desc;
