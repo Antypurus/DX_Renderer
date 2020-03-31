@@ -50,6 +50,9 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV, 0);
 	root_signature.AddDescriptorRootParameter(rp);
 
+	DXR::DescriptorRootParameter as(DXR::RootParameterDescriptorType::SRV, 1);
+	root_signature.AddDescriptorRootParameter(as);
+
 	root_signature.CreateRootSignature(device);
 
 	DXR::RayTracingPipelineStateObject rtpso = {

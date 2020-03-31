@@ -133,8 +133,8 @@ namespace DXR
 
 	void GraphicsCommandList::BindTexture(Texture& texture, UINT slot)
 	{
-		this->m_command_list->SetGraphicsRootDescriptorTable(2,texture.m_sampler.GetGPUHandle());
-		this->m_command_list->SetGraphicsRootDescriptorTable(1,texture.GetGPUHandle());
+		this->m_command_list->SetGraphicsRootDescriptorTable(3,texture.m_sampler.GetGPUHandle());
+		this->m_command_list->SetGraphicsRootDescriptorTable(2,texture.GetGPUHandle());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
