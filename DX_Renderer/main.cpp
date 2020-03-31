@@ -18,6 +18,7 @@
 #include "Interface/GUI.hpp"
 #include "Core/Components/RayTracing/AccelerationStructure.hpp"
 #include "Core/Components/RayTracing/RayTracingPipelineStateObject.hpp"
+#include "Core/Components/RayTracing/RayTracingOutput.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -84,6 +85,7 @@ void MainDirectXThread(DXR::Window& window)
 		});
 
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
+	DXR::RayTracingOutput rt_out(device,commandList,swapchain);
 
 	commandList->Close();
 

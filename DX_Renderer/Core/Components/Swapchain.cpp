@@ -158,4 +158,8 @@ namespace DXR
 		TransitionResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
+	Resolution Swapchain::GetBackbufferResolution()
+	{
+		return this->m_resolution;
+	}
 }

@@ -45,6 +45,7 @@ namespace DXR
 		DepthStencilBuffer& GetDepthStencilBuffer();
 		RenderTargetView& GetCurrentBackBuffer();
 		void PrepareBackbufferForPresentation(GraphicsCommandList& commandList);
+		Resolution GetBackbufferResolution();
 	private:
 		Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList);
 		Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList, DXGI_FORMAT backbufferFormat);
