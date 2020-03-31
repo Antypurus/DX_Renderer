@@ -74,5 +74,17 @@ namespace DXR
 		return config;
 	}
 
+	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateRootSignatureAssociation()
+	{
+		D3D12_GLOBAL_ROOT_SIGNATURE global_rs_desc= {};
+		global_rs_desc.pGlobalRootSignature = this->m_root_signature->GetRootSignature();
+		
+		D3D12_STATE_SUBOBJECT root_signature = {};
+		root_signature.Type = D3D12_STATE_SUBOBJECT_TYPE_GLOBAL_ROOT_SIGNATURE;
+		root_signature.pDesc = &global_rs_desc;
+		
+		return root_signature;
+	}
+
 
 }

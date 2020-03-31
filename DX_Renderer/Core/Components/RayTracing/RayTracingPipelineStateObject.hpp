@@ -19,7 +19,7 @@ namespace DXR
 	{
 	public:
 		const static UINT PayloadMaxSize = 64 * 1024;//64K For Payload Size
-		const static UINT MaxRayBoundes = 1;
+		const static UINT MaxRayBounces = 1;
 	private:
 		ComPtr<ID3D12StateObject> m_rtpso = nullptr;
 		ComPtr<ID3D12StateObjectProperties> m_rtpso_properties = nullptr;
@@ -36,5 +36,6 @@ namespace DXR
 		D3D12_STATE_SUBOBJECT CreateHitGroup();
 		D3D12_STATE_SUBOBJECT CreateShaderAssociation(D3D12_STATE_SUBOBJECT& ShaderConfig);
 		D3D12_STATE_SUBOBJECT CreatePipelineConfig();
+		D3D12_STATE_SUBOBJECT CreateRootSignatureAssociation();
 	};
 }
