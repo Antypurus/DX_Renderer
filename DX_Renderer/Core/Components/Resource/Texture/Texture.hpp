@@ -14,7 +14,7 @@ namespace  DXR
 	struct GPUUploadBuffer;
 	//struct TextureUploadBuffer;
 
-	struct Texture: public Resource
+	struct Texture : public Resource
 	{
 	public:
 		friend GraphicsCommandList;
@@ -28,10 +28,11 @@ namespace  DXR
 		std::unique_ptr<TextureUploadBuffer> m_upload_buffer = nullptr;
 		std::unique_ptr<GPUDefaultBuffer> m_texture_buffer = nullptr;
 	public:
+		Texture() = default;
 		Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
 		DescriptorHeap* GetSRVHeap();
 		DescriptorHeap* GetSamplerHeap();
-	private:
+	protected:
 		void CreateShaderResourceViewDescription(GraphicsDevice& Device) const;
 		void CreateDescriptorHeap(GraphicsDevice& Device);
 		void QueueUploadBufferForEviction(GraphicsDevice& Device) const;
