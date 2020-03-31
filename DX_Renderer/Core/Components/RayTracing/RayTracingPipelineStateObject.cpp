@@ -16,22 +16,23 @@ namespace DXR
 		ShaderExports[1] = this->m_miss_shader->GetUniqueID().c_str();
 		ShaderExports[2] = L"HitGroup";
 
-		D3D12_STATE_SUBOBJECT subobjects[11];
+		D3D12_STATE_SUBOBJECT subobjects[12];
 		subobjects[0] = this->m_ray_gen_shader->GenerateShaderExport();
 		subobjects[1] = this->m_intersection_shader->GenerateShaderExport();
 		subobjects[2] = this->m_any_hit_shader->GenerateShaderExport();
 		subobjects[3] = this->m_closest_hit_shader->GenerateShaderExport();
 		subobjects[4] = this->m_miss_shader->GenerateShaderExport();
-		subobjects[5] = this->shader_config;
-		subobjects[6] = this->hit_group;
-		subobjects[7] = this->export_association;
-		subobjects[8] = this->pipeline_config;
-		subobjects[9] = this->root_signature;
-		subobjects[10] = this->rs_association;
+		subobjects[5] = CreateShaderConfiguration();
+		subobjects[6] = CreateHitGroup();
+		subobjects[7] = CreateShaderConfigAssociation();
+		subobjects[8] = CreatePipelineConfig();
+		subobjects[9] = CreateRootSignatureSubobject();
+		subobjects[10] = CreateRootSignatureAssociation();
+		subobjects[11] = CreatePipelineConfigAssociation();
 
 		D3D12_STATE_OBJECT_DESC rtpso_desc = {};
 		rtpso_desc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
-		rtpso_desc.NumSubobjects = 11;
+		rtpso_desc.NumSubobjects = 12;
 		rtpso_desc.pSubobjects = subobjects;
 
 		Device->CreateStateObject(&rtpso_desc,IID_PPV_ARGS(&this->m_rtpso));
@@ -48,6 +49,18 @@ namespace DXR
 		return shader_config;
 	}
 
+	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateShaderConfigAssociation()
+	{
+		shader_config_association_desc.NumExports = 3;
+		shader_config_association_desc.pExports = this->ShaderExports;
+		shader_config_association_desc.pSubobjectToAssociate = &this->shader_config;
+
+		shader_config_association.Type = D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION;
+		shader_config_association.pDesc = &shader_config_association_desc;
+
+		return shader_config_association;
+	}
+
 	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateHitGroup()
 	{
 		hit_group_desc.AnyHitShaderImport = this->m_any_hit_shader->GetUniqueID().c_str();
@@ -61,18 +74,6 @@ namespace DXR
 		return hit_group;
 	}
 
-	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateShaderAssociation(D3D12_STATE_SUBOBJECT& ShaderConfig)
-	{
-		export_associations_desc.NumExports = 3;
-		export_associations_desc.pExports = ShaderExports;
-		export_associations_desc.pSubobjectToAssociate = &ShaderConfig;
-
-		export_association.Type = D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION;
-		export_association.pDesc = &export_associations_desc;
-
-		return export_association;
-	}
-
 	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreatePipelineConfig()
 	{
 		config_desc.MaxTraceRecursionDepth = RayTracingPipelineStateObject::MaxRayBounces;
@@ -81,6 +82,18 @@ namespace DXR
 		pipeline_config.pDesc = &config_desc;
 
 		return pipeline_config;
+	}
+
+	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreatePipelineConfigAssociation()
+	{
+		pipeline_association_desc.NumExports = 3;
+		pipeline_association_desc.pExports = ShaderExports;
+		pipeline_association_desc.pSubobjectToAssociate = &pipeline_config;
+
+		pipeline_association.Type = D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION;
+		pipeline_association.pDesc = &pipeline_association_desc;
+
+		return pipeline_association;
 	}
 
 	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateRootSignatureSubobject()

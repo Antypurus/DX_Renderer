@@ -40,9 +40,6 @@ namespace DXR
 		//For Now We Assume that all shaders use the paylaod
 		const wchar_t* ShaderExports[3];
 
-		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION export_associations_desc = {};
-		D3D12_STATE_SUBOBJECT export_association = {};
-
 		D3D12_RAYTRACING_PIPELINE_CONFIG config_desc = {};
 		D3D12_STATE_SUBOBJECT pipeline_config = {};
 
@@ -51,13 +48,20 @@ namespace DXR
 
 		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION rs_association_desc = {};
 		D3D12_STATE_SUBOBJECT rs_association = {};
+
+		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION shader_config_association_desc = {};
+		D3D12_STATE_SUBOBJECT shader_config_association = {};
+
+		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION pipeline_association_desc = {};
+		D3D12_STATE_SUBOBJECT pipeline_association = {};
 	public:
 		RayTracingPipelineStateObject(GraphicsDevice& Device, RootSignature& rootSignature, RayGenShader& raygenShader, IntersectionShader& intersectionShader, AnyHitShader& anyHitShader, ClosestHitShader& closestHitShader, MissShader& missShader);
 	private:
 		D3D12_STATE_SUBOBJECT CreateShaderConfiguration();
+		D3D12_STATE_SUBOBJECT CreateShaderConfigAssociation();
 		D3D12_STATE_SUBOBJECT CreateHitGroup();
-		D3D12_STATE_SUBOBJECT CreateShaderAssociation(D3D12_STATE_SUBOBJECT& ShaderConfig);
 		D3D12_STATE_SUBOBJECT CreatePipelineConfig();
+		D3D12_STATE_SUBOBJECT CreatePipelineConfigAssociation();
 		D3D12_STATE_SUBOBJECT CreateRootSignatureSubobject();
 		D3D12_STATE_SUBOBJECT CreateRootSignatureAssociation();
 	};
