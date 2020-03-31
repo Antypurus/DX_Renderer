@@ -29,13 +29,32 @@ namespace DXR
 		ClosestHitShader* m_closest_hit_shader;
 		MissShader* m_miss_shader;
 		RootSignature* m_root_signature;
+
+		//SUBOBJECTS IN MEMORY
+		D3D12_RAYTRACING_SHADER_CONFIG shader_config_desc = {};
+		D3D12_STATE_SUBOBJECT shader_config = {};
+
+		D3D12_HIT_GROUP_DESC hit_group_desc = {};
+		D3D12_STATE_SUBOBJECT hit_group = {};
+
+		//For Now We Assume that all shaders use the paylaod
+		const wchar_t* ShaderExports[3];
+
+		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION export_associations_desc = {};
+		D3D12_STATE_SUBOBJECT export_association = {};
+
+		D3D12_RAYTRACING_PIPELINE_CONFIG config_desc = {};
+		D3D12_STATE_SUBOBJECT pipeline_config = {};
+
+		D3D12_GLOBAL_ROOT_SIGNATURE global_rs_desc = {};
+		D3D12_STATE_SUBOBJECT root_signature = {};
 	public:
-		RayTracingPipelineStateObject(GraphicsDevice& Device ,RootSignature& rootSignature, RayGenShader& raygenShader, IntersectionShader& intersectionShader, AnyHitShader& anyHitShader, ClosestHitShader& closestHitShader, MissShader& missShader);
+		RayTracingPipelineStateObject(GraphicsDevice& Device, RootSignature& rootSignature, RayGenShader& raygenShader, IntersectionShader& intersectionShader, AnyHitShader& anyHitShader, ClosestHitShader& closestHitShader, MissShader& missShader);
 	private:
 		D3D12_STATE_SUBOBJECT CreateShaderConfiguration();
 		D3D12_STATE_SUBOBJECT CreateHitGroup();
 		D3D12_STATE_SUBOBJECT CreateShaderAssociation(D3D12_STATE_SUBOBJECT& ShaderConfig);
 		D3D12_STATE_SUBOBJECT CreatePipelineConfig();
-		D3D12_STATE_SUBOBJECT CreateRootSignatureAssociation();
+		D3D12_STATE_SUBOBJECT CreateRootSignatureSubobject();
 	};
 }
