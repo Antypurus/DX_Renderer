@@ -40,12 +40,12 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::DescriptorTableRootParameter srv_desc_table;
 	srv_desc_table.AddSRVEntry(1);
 
-	DXR::DescriptorTableRootParameter sampler_desc_table;
-	sampler_desc_table.AddSamplerEntry(1);
+	//DXR::DescriptorTableRootParameter sampler_desc_table;
+	//sampler_desc_table.AddSamplerEntry(1);
 
 	//root_signature.AddDescriptorTableRootParameter(desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
-	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
+	//root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
 
 	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV, 0);
 	root_signature.AddDescriptorRootParameter(rp);
@@ -141,7 +141,7 @@ void MainDirectXThread(DXR::Window& window)
 		}
 
 		commandList.SetGraphicsRootSignature(root_signature);
-		commandList->SetComputeRootSignature(root_signature.GetRootSignature());
+		commandList->SetComputeRootSignature(root_signature.GetRootSignature());//NOTE(Tiago):Placeholder
 		swapchain.Prepare(commandList);
 
 		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
@@ -155,7 +155,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);
-		commandList.BindTexture(texture, 1);
+		//commandList.BindTexture(texture, 1);
 
 		commandList.SendDrawCall();
 
