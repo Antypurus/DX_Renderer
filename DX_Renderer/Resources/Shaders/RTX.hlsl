@@ -1,4 +1,10 @@
 
+struct BuiltinIntersectionAttribs
+{ // Barycentric coordinates of hit in
+    float2 barycentrics; // the triangle are: (1-x-y, x, y)
+};
+
+
 struct RayPayload
 {
     float3 color;
@@ -21,12 +27,12 @@ void miss(inout RayPayload data)
 }
 
 [shader("anyhit")]
-void anyhit(inout RayPayload data, IntersectAttribs attribs)
+void anyhit(inout RayPayload data, BuiltinIntersectionAttribs attribs)
 {
     data.color = float3(1.0f, 0, 0.0f);
 }
 
 [shader("closesthit")]
-void closesthit(inout RayPayload data, IntersectAttribs attribs)
+void closesthit(inout RayPayload data, BuiltinIntersectionAttribs attribs)
 {
 }
