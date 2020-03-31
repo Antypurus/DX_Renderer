@@ -61,6 +61,11 @@ namespace DXR
 		this->m_blas_instances.push_back(instance);
 	}
 
+	D3D12_GPU_VIRTUAL_ADDRESS TLAS::GetTLASGPUAddress()
+	{
+		return this->m_tlas_buffer->GetGPUAddress();
+	}
+
 	void TLAS::BuildTLAS(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
 		D3D12_RAYTRACING_INSTANCE_DESC* instances = new D3D12_RAYTRACING_INSTANCE_DESC[this->m_blas_instances.size()];

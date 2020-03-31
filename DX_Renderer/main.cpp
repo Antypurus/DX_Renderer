@@ -141,6 +141,7 @@ void MainDirectXThread(DXR::Window& window)
 		}
 
 		commandList.SetGraphicsRootSignature(root_signature);
+		commandList->SetComputeRootSignature(root_signature.GetRootSignature());
 		swapchain.Prepare(commandList);
 
 		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
@@ -148,6 +149,8 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 
 		commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
+		
+		commandList.BindTLAS(tlas,1);
 
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);

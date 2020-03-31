@@ -17,6 +17,7 @@ namespace DXR
 	struct RenderTargetView;
 	struct PipelineStateObject;
 	struct RootSignature;
+	struct TLAS;
 	template<typename VertexStruct> struct VertexBuffer;
 	using namespace Microsoft;
 
@@ -55,6 +56,7 @@ namespace DXR
 		void SendDrawCall();
 		void Close() const;
 		void BindTexture(Texture& texture, UINT slot);
+		void BindTLAS(TLAS& tlas, UINT slot);
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);

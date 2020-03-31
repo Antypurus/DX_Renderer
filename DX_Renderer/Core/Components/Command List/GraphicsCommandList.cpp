@@ -6,6 +6,7 @@
 #include "../Vertices/IndexBuffer.hpp"
 #include <vector>
 #include "../Resource/Texture/Texture.hpp"
+#include "../RayTracing/AccelerationStructure.hpp"
 
 namespace DXR
 {
@@ -135,6 +136,11 @@ namespace DXR
 	{
 		this->m_command_list->SetGraphicsRootDescriptorTable(3,texture.m_sampler.GetGPUHandle());
 		this->m_command_list->SetGraphicsRootDescriptorTable(2,texture.GetGPUHandle());
+	}
+
+	void GraphicsCommandList::BindTLAS(TLAS& tlas, UINT slot)
+	{
+		this->m_command_list->SetComputeRootShaderResourceView(slot,tlas.GetTLASGPUAddress());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)
