@@ -48,6 +48,9 @@ namespace DXR
 
 		D3D12_GLOBAL_ROOT_SIGNATURE global_rs_desc = {};
 		D3D12_STATE_SUBOBJECT root_signature = {};
+
+		D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION rs_association_desc = {};
+		D3D12_STATE_SUBOBJECT rs_association = {};
 	public:
 		RayTracingPipelineStateObject(GraphicsDevice& Device, RootSignature& rootSignature, RayGenShader& raygenShader, IntersectionShader& intersectionShader, AnyHitShader& anyHitShader, ClosestHitShader& closestHitShader, MissShader& missShader);
 	private:
@@ -56,5 +59,6 @@ namespace DXR
 		D3D12_STATE_SUBOBJECT CreateShaderAssociation(D3D12_STATE_SUBOBJECT& ShaderConfig);
 		D3D12_STATE_SUBOBJECT CreatePipelineConfig();
 		D3D12_STATE_SUBOBJECT CreateRootSignatureSubobject();
+		D3D12_STATE_SUBOBJECT CreateRootSignatureAssociation();
 	};
 }

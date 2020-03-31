@@ -72,5 +72,17 @@ namespace DXR
 		return root_signature;
 	}
 
+	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateRootSignatureAssociation()
+	{
+		rs_association_desc.NumExports = 3;
+		rs_association_desc.pExports = ShaderExports;
+		rs_association_desc.pSubobjectToAssociate = &root_signature;
+
+		rs_association.Type = D3D12_STATE_SUBOBJECT_TYPE_SUBOBJECT_TO_EXPORTS_ASSOCIATION;
+		rs_association.pDesc = &rs_association_desc;
+
+		return rs_association;
+	}
+
 
 }
