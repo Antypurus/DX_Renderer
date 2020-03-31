@@ -11,22 +11,22 @@ namespace DXR
 
 	D3D12_STATE_SUBOBJECT RayGenShader::GenerateShaderExport()
 	{
-		D3D12_EXPORT_DESC shader_export = {};
-		shader_export.Name = this->UniqueID.c_str();
-		shader_export.ExportToRename = this->entryPoint.c_str();
-		shader_export.Flags = D3D12_EXPORT_FLAG_NONE;
+		this->shader_export_desc = {};
+		shader_export_desc.Name = this->UniqueID.c_str();
+		shader_export_desc.ExportToRename = this->entryPoint.c_str();
+		shader_export_desc.Flags = D3D12_EXPORT_FLAG_NONE;
 
-		D3D12_DXIL_LIBRARY_DESC lib_desc = {};
-		lib_desc.DXILLibrary.BytecodeLength = this->m_shader_code->GetBufferSize();
-		lib_desc.DXILLibrary.pShaderBytecode = this->m_shader_code->GetBufferPointer();
-		lib_desc.NumExports = 1;
-		lib_desc.pExports = &shader_export;
+		this->library_desc = {};
+		library_desc.DXILLibrary.BytecodeLength = this->m_shader_code->GetBufferSize();
+		library_desc.DXILLibrary.pShaderBytecode = this->m_shader_code->GetBufferPointer();
+		library_desc.NumExports = 1;
+		library_desc.pExports = &this->shader_export_desc;
 
-		D3D12_STATE_SUBOBJECT rgs = {};
-		rgs.pDesc = &lib_desc;
-		rgs.Type = D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY;
+		this->shader = {};
+		shader.pDesc = &this->library_desc;
+		shader.Type = D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY;
 
-		return rgs;
+		return shader;
 	}
 
 	std::wstring& RayGenShader::GetUniqueID()

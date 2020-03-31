@@ -10,6 +10,11 @@ namespace DXR
 		std::wstring filepath;
 		std::wstring entryPoint;
 		std::wstring UniqueID;
+
+		//SUBOBJECT Structures
+		D3D12_EXPORT_DESC shader_export_desc = {};
+		D3D12_DXIL_LIBRARY_DESC library_desc = {};
+		D3D12_STATE_SUBOBJECT shader = {};
 	public:
 		static ClosestHitShader CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint);
 		D3D12_STATE_SUBOBJECT GenerateShaderExport();
