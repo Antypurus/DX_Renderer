@@ -25,6 +25,8 @@ namespace DXR
 	public:
 		RayTracingOutput(GraphicsDevice& Device, GraphicsCommandList& CommandList, Swapchain& swapchain);
 		void CopyToBackbuffer(GraphicsCommandList& CommandList, Swapchain& swapchain);
+		DescriptorHeap* GetDescriptorHeap();
+		D3D12_GPU_VIRTUAL_ADDRESS GetGPUAddress();
 	private:
 		void CreateResourceDescription();
 		void CreateShaderResourceViewDescription(GraphicsDevice& Device) const;

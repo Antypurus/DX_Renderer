@@ -38,6 +38,16 @@ namespace DXR
 		barrier4.ExecuteResourceBarrier(CommandList);
 	}
 
+	DescriptorHeap* RayTracingOutput::GetDescriptorHeap()
+	{
+		return &this->m_heap;
+	}
+
+	D3D12_GPU_VIRTUAL_ADDRESS RayTracingOutput::GetGPUAddress()
+	{
+		return this->m_texture_buffer->GetGPUAddress();
+	}
+
 	void RayTracingOutput::CreateResourceDescription()
 	{
 		m_texture_desc.Format = this->m_texture_format;

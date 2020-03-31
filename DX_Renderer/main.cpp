@@ -148,9 +148,11 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 
-		commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
-		
+		//commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
+		commandList.BindDescriptorHeaps({ rt_out.GetDescriptorHeap()});
+
 		commandList.BindTLAS(tlas,1);
+		commandList->SetComputeRootDescriptorTable(2,rt_out.GetDescriptorHeap()->Get(0));
 
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
