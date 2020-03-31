@@ -158,6 +158,7 @@ void MainDirectXThread(DXR::Window& window)
 		//commandList.BindTexture(texture, 1);
 
 		commandList.SendDrawCall();
+		//rt_out.CopyToBackbuffer(commandList,swapchain);
 
 		gui.Render(commandList);
 

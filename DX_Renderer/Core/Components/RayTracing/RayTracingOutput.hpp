@@ -24,6 +24,7 @@ namespace DXR
 		std::unique_ptr<GPUDefaultBuffer> m_texture_buffer;
 	public:
 		RayTracingOutput(GraphicsDevice& Device, GraphicsCommandList& CommandList, Swapchain& swapchain);
+		void CopyToBackbuffer(GraphicsCommandList& CommandList, Swapchain& swapchain);
 	private:
 		void CreateResourceDescription();
 		void CreateShaderResourceViewDescription(GraphicsDevice& Device) const;

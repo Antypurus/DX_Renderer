@@ -3,6 +3,7 @@
 #include "../Command List/GraphicsCommandList.hpp"
 #include "../Swapchain.hpp"
 #include "../Resource/GPU Buffers/GPUDefaultBuffer.hpp"
+#include "../Resource/ResourceBarrier.hpp"
 
 namespace DXR
 {
@@ -17,6 +18,24 @@ namespace DXR
 		this->CreateTextureBuffer(Device,CommandList);
 		this->CreateUAVDescriptor(Device);
 		this->m_texture_buffer->GetResource()->SetName(L"RT Output Buffer");
+	}
+
+	//TODO(Tiago): Variables Need To Be Cleaned Up A Bit
+	void RayTracingOutput::CopyToBackbuffer(GraphicsCommandList& CommandList, Swapchain& swapchain)
+	{
+		TransitionResourceBarrier barrier1(*swapchain.GetCurrentBackbufferResource(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_COPY_DEST);
+		TransitionResourceBarrier barrier2(*this->m_texture_buffer->GetResource(),D3D12_RESOURCE_STATE_UNORDERED_ACCESS,D3D12_RESOURCE_STATE_COPY_SOURCE);
+
+		barrier1.ExecuteResourceBarrier(CommandList);
+		barrier2.ExecuteResourceBarrier(CommandList);
+
+		CommandList->CopyResource(swapchain.GetCurrentBackbufferResource(),this->m_texture_buffer->GetResource());
+
+		TransitionResourceBarrier barrier3(*swapchain.GetCurrentBackbufferResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		TransitionResourceBarrier barrier4(*this->m_texture_buffer->GetResource(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+		barrier3.ExecuteResourceBarrier(CommandList);
+		barrier4.ExecuteResourceBarrier(CommandList);
 	}
 
 	void RayTracingOutput::CreateResourceDescription()
