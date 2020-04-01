@@ -32,10 +32,12 @@ namespace DXR
 	struct MissSBTEntry
 	{
 	private:
+		friend ShaderBindingTable;
+
 		MissShader* shader;
 		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> resources;
 	public:
-		MissSBTEntry(RayGenShader& Shader);
+		MissSBTEntry(MissShader& Shader);
 		void AddResource(D3D12_GPU_DESCRIPTOR_HANDLE& Handle);
 		UINT CalculateEntrySize();
 	};
@@ -43,6 +45,8 @@ namespace DXR
 	struct HitGroupSBTEntry
 	{
 	private:
+		friend ShaderBindingTable;
+
 		std::wstring HitGroupName;
 		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> resources;
 	public:
@@ -53,6 +57,15 @@ namespace DXR
 
 	struct ShaderBindingTable
 	{
+	private:
+		RayGenSBTEntry* RGS;
+		MissSBTEntry* MS;
+		HitGroupSBTEntry* HG;
+		UINT64 table_size = 0;
+	public:
+		ShaderBindingTable(GraphicsDevice& Device, RayTracingPipelineStateObject& RTpso, RayGenSBTEntry& raygen, MissSBTEntry& Miss, HitGroupSBTEntry& HitGroup);
+	private:
+		void CalculateTableSize();
 	};
 
 }
