@@ -154,9 +154,6 @@ void MainDirectXThread(DXR::Window& window)
 		//commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
 		commandList.BindDescriptorHeaps({ rt_out.GetDescriptorHeap() });
 
-		commandList.BindTLAS(tlas, 1);
-		commandList->SetComputeRootDescriptorTable(2, rt_out.GetDescriptorHeap()->Get(0));
-
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);
@@ -166,6 +163,10 @@ void MainDirectXThread(DXR::Window& window)
 
 		{
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
+
+			commandList.BindTLAS(tlas, 1);
+			commandList->SetComputeRootDescriptorTable(2, rt_out.GetDescriptorHeap()->Get(0));
+
 			D3D12_DISPATCH_RAYS_DESC rays = {};
 			rays.CallableShaderTable.SizeInBytes = 0;
 			rays.CallableShaderTable.StartAddress = table->GetGPUVirtualAddress();
@@ -186,7 +187,7 @@ void MainDirectXThread(DXR::Window& window)
 			rays.Depth = 1;
 			rays.Width = swapchain.GetBackbufferResolution().Width;
 			rays.Height = swapchain.GetBackbufferResolution().Height;
-			commandList->DispatchRays(&rays);
+			//commandList->DispatchRays(&rays);
 
 			//rt_out.CopyToBackbuffer(commandList,swapchain);
 		}

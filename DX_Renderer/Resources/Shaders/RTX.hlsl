@@ -35,19 +35,19 @@ void intersection()
 }
 
 [shader("miss")]
-void miss(inout RayPayload data)
+void miss(inout RayPayload data : SV_RayPayload)
 {
     data.color = float4(0, 0, 1.0f,1.0f);
 }
 
 [shader("anyhit")]
-void anyhit(inout RayPayload data, BuiltinIntersectionAttribs attribs)
+void anyhit(inout RayPayload data, BuiltinIntersectionAttribs hit)
 {
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
 
 [shader("closesthit")]
-void closesthit(inout RayPayload data, BuiltinIntersectionAttribs attribs)
+void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
 {
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
