@@ -1,13 +1,12 @@
 #include "ShaderBindingTable.hpp"
-#include "../Shader/RayTracingShaders/RayGenShader.hpp"
-#include "../Shader/RayTracingShaders/MissShader.hpp"
 #include "../GraphicsDevice.hpp"
+#include "RayTracingPipelineStateObject.hpp"
 
 namespace DXR
 {
 	RayGenSBTEntry::RayGenSBTEntry(RayGenShader& Shader)
 	{
-		this->shader = shader;
+		this->shader = &Shader;
 	}
 
 	void RayGenSBTEntry::AddResource(D3D12_GPU_DESCRIPTOR_HANDLE& Handle)
@@ -35,7 +34,7 @@ namespace DXR
 
 	MissSBTEntry::MissSBTEntry(MissShader& Shader)
 	{
-		this->shader = shader;
+		this->shader = &Shader;
 	}
 
 	void MissSBTEntry::AddResource(D3D12_GPU_DESCRIPTOR_HANDLE& Handle)
@@ -96,6 +95,53 @@ namespace DXR
 		this->MS = &Miss;
 		this->CalculateTableSize();
 		this->AllocateDataBuffer();
+		this->CopyTableDataToBuffer(RTpso);
+		this->AllocateAndCopyGPUBuffer(Device);
+	}
+
+	UINT ShaderBindingTable::GetRayGenSectionSize()
+	{
+		return this->RGS->CalculateEntrySize();
+	}
+
+	UINT ShaderBindingTable::GetRayGenEntrySize()
+	{
+		return this->RGS->CalculateEntrySize();
+	}
+
+	UINT ShaderBindingTable::GetMissSectionSize()
+	{
+		return this->HG->CalculateEntrySize();
+	}
+
+	UINT ShaderBindingTable::GetMissEntrySize()
+	{
+		return this->HG->CalculateEntrySize();
+	}
+
+	UINT ShaderBindingTable::GetHitGroupSectionSize()
+	{
+		return this->MS->CalculateEntrySize();
+	}
+
+	UINT ShaderBindingTable::GetHitGroupEntrySize()
+	{
+		return this->MS->CalculateEntrySize();
+	}
+
+	D3D12_GPU_VIRTUAL_ADDRESS ShaderBindingTable::GetRayGenEntryAddress()
+	{
+		return this->m_table_buffer->GetGPUAddress();
+	}
+
+	D3D12_GPU_VIRTUAL_ADDRESS ShaderBindingTable::GetMissEntryAddress()
+	{
+		return this->m_table_buffer->GetGPUAddress() + this->RGS->CalculateEntrySize();
+	}
+
+	D3D12_GPU_VIRTUAL_ADDRESS ShaderBindingTable::GetHitGroupEntryAddress()
+	{
+		return this->m_table_buffer->GetGPUAddress() + this->RGS->CalculateEntrySize() + this->MS->CalculateEntrySize();
 	}
 
 	void ShaderBindingTable::CalculateTableSize()
@@ -122,5 +168,11 @@ namespace DXR
 
 		offset += this->MS->CalculateEntrySize();
 		this->HG->CopyDataToBuffer(this->m_data_buffer.get()+offset,RTpso);
+	}
+
+	void ShaderBindingTable::AllocateAndCopyGPUBuffer(GraphicsDevice& device)
+	{
+		this->m_table_buffer = std::make_unique<GPUUploadBuffer>(device,1,this->table_size,this->m_data_buffer.get());
+		this->m_table_buffer->GetResource()->SetName(L"Shader Binding Table");
 	}
 }

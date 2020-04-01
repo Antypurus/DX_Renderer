@@ -38,6 +38,6 @@ namespace DXR
 	{
 		this->filepath = filepath;
 		this->entryPoint = entryPoint;
-		this->UniqueID = filepath + entryPoint;
+		this->UniqueID = entryPoint;
 	}
 }

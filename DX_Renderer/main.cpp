@@ -119,9 +119,6 @@ void MainDirectXThread(DXR::Window& window)
 	tlas.AddInstance(blas, DirectX::XMMatrixIdentity(), 0);
 	tlas.BuildTLAS(device, commandList);
 
-	char data = 'A';
-	DXR::GPUUploadBuffer table(device, 1, 1, &data);
-
 	DXR::RayGenSBTEntry raygen(rgs);
 	raygen.AddResource(rt_out.GetDescriptorHeap()->Get(0));
 	DXR::MissSBTEntry miss(ms);
@@ -176,21 +173,17 @@ void MainDirectXThread(DXR::Window& window)
 			commandList->SetComputeRootDescriptorTable(2, rt_out.GetDescriptorHeap()->Get(0));
 
 			D3D12_DISPATCH_RAYS_DESC rays = {};
-			rays.CallableShaderTable.SizeInBytes = 0;
-			rays.CallableShaderTable.StartAddress = table->GetGPUVirtualAddress();
-			rays.CallableShaderTable.SizeInBytes = 0;
 			
-			rays.HitGroupTable.SizeInBytes = 0;
-			rays.HitGroupTable.StartAddress = table->GetGPUVirtualAddress();
-			rays.HitGroupTable.SizeInBytes = 0;
+			rays.HitGroupTable.StartAddress = sbtable.GetHitGroupEntryAddress();
+			rays.HitGroupTable.StrideInBytes = sbtable.GetHitGroupSectionSize();
+			rays.HitGroupTable.SizeInBytes = sbtable.GetHitGroupEntrySize();
 			
-			rays.MissShaderTable.SizeInBytes = 0;
-			rays.MissShaderTable.StartAddress = table->GetGPUVirtualAddress();
-			rays.MissShaderTable.SizeInBytes = 0;
+			rays.MissShaderTable.StartAddress = sbtable.GetMissEntryAddress();
+			rays.MissShaderTable.StrideInBytes = sbtable.GetMissEntrySize();
+			rays.MissShaderTable.SizeInBytes = sbtable.GetMissEntrySize();
 			
-			rays.RayGenerationShaderRecord.SizeInBytes = 0;
-			rays.RayGenerationShaderRecord.StartAddress = table->GetGPUVirtualAddress();
-			rays.RayGenerationShaderRecord.SizeInBytes = 0;
+			rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
+			rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
 			
 			rays.Depth = 1;
 			rays.Width = swapchain.GetBackbufferResolution().Width;
