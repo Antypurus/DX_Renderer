@@ -122,7 +122,12 @@ void MainDirectXThread(DXR::Window& window)
 	char data = 'A';
 	DXR::GPUUploadBuffer table(device, 1, 1, &data);
 
-	DXR::ShaderBindingTable sbtable;
+	DXR::RayGenSBTEntry raygen(rgs);
+	raygen.AddResource(rt_out.GetDescriptorHeap()->Get(0));
+	DXR::MissSBTEntry miss(ms);
+	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
+
+	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
 
 	while (window.ShouldContinue)
 	{
