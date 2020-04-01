@@ -118,6 +118,9 @@ void MainDirectXThread(DXR::Window& window)
 	tlas.AddInstance(blas, DirectX::XMMatrixIdentity(), 0);
 	tlas.BuildTLAS(device, commandList);
 
+	char data = 'A';
+	DXR::GPUUploadBuffer table(device, 1, 1, &data);
+
 	while (window.ShouldContinue)
 	{
 
@@ -164,6 +167,22 @@ void MainDirectXThread(DXR::Window& window)
 		{
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
 			D3D12_DISPATCH_RAYS_DESC rays = {};
+			rays.CallableShaderTable.SizeInBytes = 0;
+			rays.CallableShaderTable.StartAddress = table->GetGPUVirtualAddress();
+			rays.CallableShaderTable.SizeInBytes = 0;
+			
+			rays.HitGroupTable.SizeInBytes = 0;
+			rays.HitGroupTable.StartAddress = table->GetGPUVirtualAddress();
+			rays.HitGroupTable.SizeInBytes = 0;
+			
+			rays.MissShaderTable.SizeInBytes = 0;
+			rays.MissShaderTable.StartAddress = table->GetGPUVirtualAddress();
+			rays.MissShaderTable.SizeInBytes = 0;
+			
+			rays.RayGenerationShaderRecord.SizeInBytes = 0;
+			rays.RayGenerationShaderRecord.StartAddress = table->GetGPUVirtualAddress();
+			rays.RayGenerationShaderRecord.SizeInBytes = 0;
+			
 			rays.Depth = 1;
 			rays.Width = swapchain.GetBackbufferResolution().Width;
 			rays.Height = swapchain.GetBackbufferResolution().Height;

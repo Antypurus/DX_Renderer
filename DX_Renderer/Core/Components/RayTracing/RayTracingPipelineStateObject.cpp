@@ -16,23 +16,23 @@ namespace DXR
 		ShaderExports[1] = this->m_miss_shader->GetUniqueID().c_str();
 		ShaderExports[2] = L"HitGroup";
 
-		D3D12_STATE_SUBOBJECT subobjects[12];
+		D3D12_STATE_SUBOBJECT subobjects[10];
 		subobjects[0] = this->m_ray_gen_shader->GenerateShaderExport();
-		subobjects[1] = this->m_intersection_shader->GenerateShaderExport();
-		subobjects[2] = this->m_any_hit_shader->GenerateShaderExport();
-		subobjects[3] = this->m_closest_hit_shader->GenerateShaderExport();
-		subobjects[4] = this->m_miss_shader->GenerateShaderExport();
-		subobjects[5] = CreateShaderConfiguration();
-		subobjects[6] = CreateHitGroup();
-		subobjects[7] = CreateShaderConfigAssociation();
-		subobjects[8] = CreatePipelineConfig();
-		subobjects[9] = CreateRootSignatureSubobject();
-		subobjects[10] = CreateRootSignatureAssociation();
-		subobjects[11] = CreatePipelineConfigAssociation();
+		//subobjects[1] = this->m_intersection_shader->GenerateShaderExport();
+		//subobjects[2] = this->m_any_hit_shader->GenerateShaderExport();
+		subobjects[1] = this->m_closest_hit_shader->GenerateShaderExport();
+		subobjects[2] = this->m_miss_shader->GenerateShaderExport();
+		subobjects[3] = CreateShaderConfiguration();
+		subobjects[4] = CreateHitGroup();
+		subobjects[5] = CreateShaderConfigAssociation();
+		subobjects[6] = CreatePipelineConfig();
+		subobjects[7] = CreateRootSignatureSubobject();
+		subobjects[8] = CreateRootSignatureAssociation();
+		subobjects[9] = CreatePipelineConfigAssociation();
 
 		D3D12_STATE_OBJECT_DESC rtpso_desc = {};
 		rtpso_desc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
-		rtpso_desc.NumSubobjects = 12;
+		rtpso_desc.NumSubobjects = 10;
 		rtpso_desc.pSubobjects = subobjects;
 
 		Device->CreateStateObject(&rtpso_desc,IID_PPV_ARGS(&this->m_rtpso));
@@ -68,7 +68,7 @@ namespace DXR
 
 	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateHitGroup()
 	{
-		hit_group_desc.AnyHitShaderImport = this->m_any_hit_shader->GetUniqueID().c_str();
+		//hit_group_desc.AnyHitShaderImport = this->m_any_hit_shader->GetUniqueID().c_str();
 		hit_group_desc.ClosestHitShaderImport = this->m_closest_hit_shader->GetUniqueID().c_str();
 		//hit_group_desc.IntersectionShaderImport = this->m_intersection_shader->GetUniqueID().c_str();
 		hit_group_desc.HitGroupExport = L"HitGroup";

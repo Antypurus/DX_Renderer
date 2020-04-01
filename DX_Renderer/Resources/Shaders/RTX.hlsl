@@ -49,4 +49,5 @@ void anyhit(inout RayPayload data, BuiltinIntersectionAttribs attribs)
 [shader("closesthit")]
 void closesthit(inout RayPayload data, BuiltinIntersectionAttribs attribs)
 {
+    data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
