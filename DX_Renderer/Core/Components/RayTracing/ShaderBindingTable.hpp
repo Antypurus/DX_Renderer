@@ -27,6 +27,7 @@ namespace DXR
 		RayGenSBTEntry(RayGenShader& Shader);
 		void AddResource(D3D12_GPU_DESCRIPTOR_HANDLE& Handle);
 		UINT CalculateEntrySize();
+		void CopyDataToBuffer(uint8_t* buffer,RayTracingPipelineStateObject& rtpso);
 	};
 
 	struct MissSBTEntry
@@ -40,6 +41,7 @@ namespace DXR
 		MissSBTEntry(MissShader& Shader);
 		void AddResource(D3D12_GPU_DESCRIPTOR_HANDLE& Handle);
 		UINT CalculateEntrySize();
+		void CopyDataToBuffer(uint8_t* buffer,RayTracingPipelineStateObject& rtpso);
 	};
 
 	struct HitGroupSBTEntry
@@ -53,6 +55,7 @@ namespace DXR
 		HitGroupSBTEntry(const std::wstring& HitGroupName);
 		void AddResource(D3D12_GPU_DESCRIPTOR_HANDLE& Handle);
 		UINT CalculateEntrySize();
+		void CopyDataToBuffer(uint8_t* buffer,RayTracingPipelineStateObject& rtpso);
 	};
 
 	struct ShaderBindingTable
@@ -62,10 +65,13 @@ namespace DXR
 		MissSBTEntry* MS;
 		HitGroupSBTEntry* HG;
 		UINT64 table_size = 0;
+		std::unique_ptr<uint8_t[]> m_data_buffer;
 	public:
 		ShaderBindingTable(GraphicsDevice& Device, RayTracingPipelineStateObject& RTpso, RayGenSBTEntry& raygen, MissSBTEntry& Miss, HitGroupSBTEntry& HitGroup);
 	private:
 		void CalculateTableSize();
+		void AllocateDataBuffer();
+		void CopyTableDataToBuffer(RayTracingPipelineStateObject& RTpso);
 	};
 
 }
