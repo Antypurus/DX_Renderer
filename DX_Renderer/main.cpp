@@ -16,6 +16,7 @@
 #include "Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
 #include "Core/Components/Resource/Texture/Texture.hpp"
 #include "Interface/GUI.hpp"
+#include "Core/Components/RayTracing/ShaderBindingTable.hpp"
 #include "Core/Components/RayTracing/AccelerationStructure.hpp"
 #include "Core/Components/RayTracing/RayTracingPipelineStateObject.hpp"
 #include "Core/Components/RayTracing/RayTracingOutput.hpp"
@@ -120,6 +121,8 @@ void MainDirectXThread(DXR::Window& window)
 
 	char data = 'A';
 	DXR::GPUUploadBuffer table(device, 1, 1, &data);
+
+	DXR::ShaderBindingTable sbtable;
 
 	while (window.ShouldContinue)
 	{

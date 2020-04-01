@@ -44,6 +44,11 @@ namespace DXR
 		return this->m_rtpso.Get();
 	}
 
+	ID3D12StateObjectProperties* RayTracingPipelineStateObject::GetRTPSOInfo()
+	{
+		return this->m_rtpso_properties.Get();
+	}
+
 	D3D12_STATE_SUBOBJECT RayTracingPipelineStateObject::CreateShaderConfiguration()
 	{
 		shader_config_desc.MaxAttributeSizeInBytes = D3D12_RAYTRACING_MAX_ATTRIBUTE_SIZE_IN_BYTES;

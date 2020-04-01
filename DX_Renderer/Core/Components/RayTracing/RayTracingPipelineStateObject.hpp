@@ -57,6 +57,7 @@ namespace DXR
 	public:
 		RayTracingPipelineStateObject(GraphicsDevice& Device, RootSignature& rootSignature, RayGenShader& raygenShader, IntersectionShader& intersectionShader, AnyHitShader& anyHitShader, ClosestHitShader& closestHitShader, MissShader& missShader);
 		ID3D12StateObject* GetRTPSO();
+		ID3D12StateObjectProperties* GetRTPSOInfo();
 	private:
 		D3D12_STATE_SUBOBJECT CreateShaderConfiguration();
 		D3D12_STATE_SUBOBJECT CreateShaderConfigAssociation();
