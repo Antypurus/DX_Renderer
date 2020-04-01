@@ -15,16 +15,23 @@ struct RayPayload
 [shader("raygeneration")]
 void raygen()
 {
-    float3 rayDir = float3(0, 0, 1);
-    float3 rayOrigin = float3(640.0f, 360.0f, 0.0f);
+// Initialize the ray payload
+    RayPayload payload;
+    payload.color = float4(0, 0, 0, 0);
+
+// Get the location within the dispatched 2D grid of work items
+// (often maps to pixels, so this could represent a pixel coordinate).
+    uint2 launchIndex = DispatchRaysIndex().xy;
+    float2 dims = float2(DispatchRaysDimensions().xy);
+    float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    ray.Origin = rayOrigin;
-    ray.Direction = rayDir;
-    ray.TMin = 0.001;
-    ray.TMax = 10000.0;
-    RayPayload payload = { float4(0, 0, 0, 0) };
-    TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
+    ray.Origin = float3(d.x, -d.y, 1);
+    ray.Direction = float3(0, 0, -1);
+    ray.TMin = 0;
+    ray.TMax = 100000;
+    
+    TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
     
     RenderTarget[DispatchRaysIndex().xy] = payload.color;
 }

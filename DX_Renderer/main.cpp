@@ -78,10 +78,10 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 		{
-			{{-1.0f, -1.0f,  0.0f},	{0.0f,1.0f}},
-			{{1.0f, -1.0f,  0.0f},	{1.0f,1.0f}},
-			{{-1.0f, 1.0f,  0.0f},	{0.0f,0.0f}},
-			{{1.0f, 1.0f,  0.0f},	{1.0f,0.0f}},
+			{{-0.5f, -0.5f,  -1.0f},	{0.0f,1.0f}},
+			{{0.5f, -0.5f,  -1.0f},	{1.0f,1.0f}},
+			{{-0.5f, 0.5f,  -1.0f},	{0.0f,0.0f}},
+			{{0.5f, 0.5f,  -1.0f},	{1.0f,0.0f}},
 		});
 	DXR::IndexBuffer index_buffer(device, commandList,
 		{ 0,2,1,
