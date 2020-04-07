@@ -15,6 +15,7 @@ namespace DXR
 		UINT64 m_element_count = 0;
 		UINT64 m_element_size = 0;
 	public:
+		GPUUploadBuffer() = default;//null constructor
 		GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data);
 		GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data, D3D12_RESOURCE_DESC ResourceDescription);
 		void CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer);

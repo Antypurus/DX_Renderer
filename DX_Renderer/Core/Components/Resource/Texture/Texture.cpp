@@ -73,10 +73,10 @@ namespace DXR
 
 	void Texture::CreateTextureBuffers(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
-		this->m_upload_buffer = std::make_unique<TextureUploadBuffer>(Device, this->m_texture_data.GetTextureSize(), (void*)this->m_texture_data.GetTextureData());
-		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1, CalculateBufferSize(this->m_texture_data), this->m_resource_description);
+		this->m_upload_buffer = std::make_unique<TextureUploadBuffer>(Device, CalculateBufferSize(this->m_texture_data), this->m_texture_data);
+		this->m_texture_buffer = std::make_unique<GPUDefaultBuffer>(Device, CommandList, 1,this->m_texture_data.GetTextureSize(), this->m_resource_description);
 
-		this->m_upload_buffer->UploadTextureDataToDefaultBuffer(CommandList, *this->m_texture_buffer, this->m_resource_description, this->m_texture_data.CalculateRowPitch());
+		this->m_upload_buffer->UploadTextureDataToDefaultBuffer(CommandList, *this->m_texture_buffer, this->m_resource_description, this->m_texture_data.CalculateAlignedRowPitch());
 	}
 
 	DXGI_FORMAT Texture::DetermineTextureDataFormat() const

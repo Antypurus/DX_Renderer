@@ -1,5 +1,6 @@
 ﻿#include "../../Tooling/Validate.hpp"
 #include "TextureFS.hpp"
+#include <cmath>
 
 namespace DXR
 {
@@ -104,6 +105,12 @@ namespace DXR
 		return this->m_width * this->GetBytesPerPixel();
 	}
 
+
+	UINT64 TextureData::CalculateAlignedRowPitch() const
+	{
+		return std::lround(std::ceil(this->m_width * this->GetBytesPerPixel() / (double)256)) * 256;
+	}
+	
 	UINT16 TextureData::GetMipLevelCount() const
 	{
 		return this->m_mip_levels;
