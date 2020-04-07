@@ -31,17 +31,17 @@ void MainDirectXThread(DXR::Window& window)
 	//desc_table.AddCBVEntry(1);
 	DXR::DescriptorTableRootParameter srv_desc_table;
 	srv_desc_table.AddSRVEntry(1);
-	
+
 	DXR::DescriptorTableRootParameter sampler_desc_table;
 	sampler_desc_table.AddSamplerEntry(1);
-	
+
 	//root_signature.AddDescriptorTableRootParameter(desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
-	
-	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV,0);
+
+	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV, 0);
 	root_signature.AddDescriptorRootParameter(rp);
-	
+
 	root_signature.CreateRootSignature(device);
 
 	DXR::PipelineStateObject pso = {
@@ -108,14 +108,14 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::SliderAngle("X Rotation", &x_rotation_angle);
 		ImGui::SliderAngle("Y Rotation", &y_rotation_angle);
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
-		ImGui::SliderFloat("Model Scale",&scale,0,10);
+		ImGui::SliderFloat("Model Scale", &scale, 0, 10);
 		ImGui::End();
 
 		{
-			model  = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
+			model = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,0.0f,1.0f }, z_rotation_angle);
-			model *= DirectX::XMMatrixScaling(scale,scale,scale);
+			model *= DirectX::XMMatrixScaling(scale, scale, scale);
 			mvp = model * view * projection;
 			constant_buffer.UpdateData({ mvp });
 		}
@@ -127,7 +127,7 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 
-		commandList.BindDescriptorHeaps({texture.GetSRVHeap(),texture.GetSamplerHeap()});
+		commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
 
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
