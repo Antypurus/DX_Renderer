@@ -15,6 +15,7 @@ namespace DXR
 		UINT64 m_element_size = 0;
 	public:
 		GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize);
+		GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription);
 	protected:
 		void CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList);
 		D3D12_RESOURCE_DESC CreateResourceDescription() override;

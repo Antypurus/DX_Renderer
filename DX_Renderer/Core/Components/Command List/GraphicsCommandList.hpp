@@ -11,6 +11,7 @@
 
 namespace DXR
 {
+	struct Texture;
 	struct IndexBuffer;
 	struct DepthStencilBuffer;
 	struct RenderTargetView;
@@ -52,6 +53,7 @@ namespace DXR
 		void SetPrimitiveTopology(PrimitiveTopology Topology);
 		void SendDrawCall();
 		void Close() const;
+		void BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot);
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);
@@ -73,6 +75,7 @@ namespace DXR
 	template <typename T>
 	void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
 	{
-		this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
+		//this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
+		this->m_command_list->SetGraphicsRootConstantBufferView(Slot,ConstantBuffer.m_resource->GetGPUVirtualAddress());
 	}
 }

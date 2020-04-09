@@ -5,6 +5,7 @@
 #include "../Resource/DepthStencilBuffer.hpp"
 #include "../Vertices/IndexBuffer.hpp"
 #include <vector>
+#include "../Resource/Texture/Texture.hpp"
 
 namespace DXR
 {
@@ -128,6 +129,12 @@ namespace DXR
 	{
 		DXCall(this->m_command_list->Close());
 		this->m_current_primitive_topology = PrimitiveTopology::None;
+	}
+
+	void GraphicsCommandList::BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot)
+	{
+		this->m_command_list->SetGraphicsRootDescriptorTable(SamplerSlot,texture.m_sampler.GetGPUHandle());
+		this->m_command_list->SetGraphicsRootDescriptorTable(TexureSlot,texture.GetGPUHandle());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)

@@ -20,3 +20,6 @@ Debug
 x64
 Release
 RelWithDebInfo
+
+#Gui Files
+imgui.ini

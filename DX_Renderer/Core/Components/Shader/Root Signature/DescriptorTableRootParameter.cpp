@@ -7,49 +7,49 @@ namespace DXR
 	{
 	}
 
-	void DescriptorTableRootParameter::AddSRVEntry(UINT DescriptorCount)
+	void DescriptorTableRootParameter::AddSRVEntry(UINT Register,UINT Space, UINT DescriptorCount)
 	{
 		D3D12_DESCRIPTOR_RANGE table_entry = {};
 		table_entry.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		table_entry.BaseShaderRegister = 0;
+		table_entry.BaseShaderRegister = Register;
 		table_entry.NumDescriptors = DescriptorCount;
-		table_entry.RegisterSpace = 0;
+		table_entry.RegisterSpace = Space;
 		table_entry.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 		this->m_table_entries.emplace_back(table_entry);
 	}
 
-	void DescriptorTableRootParameter::AddUAVEntry(UINT DescriptorCount)
+	void DescriptorTableRootParameter::AddUAVEntry(UINT Register,UINT Space, UINT DescriptorCount)
 	{
 		D3D12_DESCRIPTOR_RANGE table_entry = {};
 		table_entry.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-		table_entry.BaseShaderRegister = 0;
+		table_entry.BaseShaderRegister = Register;
 		table_entry.NumDescriptors = DescriptorCount;
-		table_entry.RegisterSpace = 0;
+		table_entry.RegisterSpace = Space;
 		table_entry.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 		this->m_table_entries.emplace_back(table_entry);
 	}
 
-	void DescriptorTableRootParameter::AddCBVEntry(UINT DescriptorCount)
+	void DescriptorTableRootParameter::AddCBVEntry(UINT Register,UINT Space, UINT DescriptorCount)
 	{
 		D3D12_DESCRIPTOR_RANGE table_entry = {};
 		table_entry.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-		table_entry.BaseShaderRegister = 0;
+		table_entry.BaseShaderRegister = Register;
 		table_entry.NumDescriptors = DescriptorCount;
-		table_entry.RegisterSpace = 0;
+		table_entry.RegisterSpace = Space;
 		table_entry.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 		this->m_table_entries.emplace_back(table_entry);
 	}
 
-	void DescriptorTableRootParameter::AddSamplerEntry(UINT DescriptorCount)
+	void DescriptorTableRootParameter::AddSamplerEntry(UINT Register,UINT Space, UINT DescriptorCount)
 	{
 		D3D12_DESCRIPTOR_RANGE table_entry = {};
 		table_entry.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-		table_entry.BaseShaderRegister = 0;
+		table_entry.BaseShaderRegister = Register;
 		table_entry.NumDescriptors = DescriptorCount;
-		table_entry.RegisterSpace = 0;
+		table_entry.RegisterSpace = Space;
 		table_entry.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 		this->m_table_entries.emplace_back(table_entry);

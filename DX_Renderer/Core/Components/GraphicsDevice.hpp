@@ -31,7 +31,7 @@ namespace DXR
 	public:
 		std::vector<UINT8> supported_mssa_levels;
 	private:
-		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
+		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1;
 		WRL::ComPtr<IDXGIFactory2> m_dxgi_factory;
 		WRL::ComPtr <ID3D12Device> m_device;
 		DescriptorSizes descriptorSizes{};
@@ -51,6 +51,8 @@ namespace DXR
 		DescriptorHeap CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount);
 		DescriptorHeap CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount);
 		DescriptorHeap CreateConstantBufferDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+		DescriptorHeap CreateShaderResourceDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+		DescriptorHeap CreateSamplerDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 		ID3D12Device* GetRawInterface() const;
 	private:
 		void CreateDXGIFactory();

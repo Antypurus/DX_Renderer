@@ -28,6 +28,11 @@ namespace DXR
 		return (*this->m_descriptor_heap).Get(this->m_heap_index);
 	}
 
+	D3D12_GPU_VIRTUAL_ADDRESS Resource::GetGPUAddress() const
+	{
+		return this->m_resource->GetGPUVirtualAddress();
+	}
+
 	Resource::Resource(DescriptorHeap& heap, size_t HeapIndex) :m_descriptor_heap(&heap), m_heap_index(HeapIndex){}
 
 	Resource::Resource()

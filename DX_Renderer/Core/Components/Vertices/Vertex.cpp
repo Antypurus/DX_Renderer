@@ -2,10 +2,10 @@
 
 namespace DXR
 {
-	Vertex::Vertex(XMFLOAT3 position, XMFLOAT4 color)
+	Vertex::Vertex(XMFLOAT3 position, XMFLOAT2 UV)
 	{
 		this->m_position = position;
-		this->m_color = color;
+		this->m_uv = UV;
 	}
 
 	const XMFLOAT3& Vertex::GetPosition() const
@@ -24,22 +24,22 @@ namespace DXR
 		position_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		position_element_description.InstanceDataStepRate = 0;
 
-		D3D12_INPUT_ELEMENT_DESC color_element_description = {};
-		color_element_description.SemanticName = "COLOR";
-		color_element_description.SemanticIndex = 0;
-		color_element_description.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		color_element_description.InputSlot = 0;
-		color_element_description.AlignedByteOffset = 12;
-		color_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-		color_element_description.InstanceDataStepRate = 0;
+		D3D12_INPUT_ELEMENT_DESC UV_element_description = {};
+		UV_element_description.SemanticName = "UV";
+		UV_element_description.SemanticIndex = 0;
+		UV_element_description.Format = DXGI_FORMAT_R32G32_FLOAT;
+		UV_element_description.InputSlot = 0;
+		UV_element_description.AlignedByteOffset = 12;
+		UV_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+		UV_element_description.InstanceDataStepRate = 0;
 
-		std::vector<D3D12_INPUT_ELEMENT_DESC> input_elements_descriptions = {position_element_description,color_element_description};
+		std::vector<D3D12_INPUT_ELEMENT_DESC> input_elements_descriptions = {position_element_description,UV_element_description};
 		return input_elements_descriptions;
 	}
 
 	UINT64 Vertex::GetElementSize() const
 	{
-		return sizeof(m_position)+sizeof(m_color);
+		return sizeof(m_position)+sizeof(m_uv);
 	}
 
 	void Vertex::operator=(Vertex other)
@@ -62,19 +62,19 @@ namespace DXR
 		position_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		position_element_description.InstanceDataStepRate = 0;
 
-		D3D12_INPUT_ELEMENT_DESC color_element_description = {};
-		color_element_description.SemanticName = "COLOR";
-		color_element_description.SemanticIndex = 0;
-		color_element_description.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		color_element_description.InputSlot = 0;
-		color_element_description.AlignedByteOffset = 12;
-		color_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-		color_element_description.InstanceDataStepRate = 0;
+		D3D12_INPUT_ELEMENT_DESC UV_element_description = {};
+		UV_element_description.SemanticName = "UV";
+		UV_element_description.SemanticIndex = 0;
+		UV_element_description.Format = DXGI_FORMAT_R32G32_FLOAT;
+		UV_element_description.InputSlot = 0;
+		UV_element_description.AlignedByteOffset = 12;
+		UV_element_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+		UV_element_description.InstanceDataStepRate = 0;
 
 
 		std::vector<D3D12_INPUT_ELEMENT_DESC>* input_elements_descriptions = new std::vector<D3D12_INPUT_ELEMENT_DESC>();
 		input_elements_descriptions->push_back(position_element_description);
-		input_elements_descriptions->push_back(color_element_description);
+		input_elements_descriptions->push_back(UV_element_description);
 		D3D12_INPUT_LAYOUT_DESC input_layout = {};
 		input_layout.NumElements = (UINT)(input_elements_descriptions->size());
 		input_layout.pInputElementDescs = input_elements_descriptions->data();

@@ -13,6 +13,7 @@ namespace DXR
 	struct ConstantBuffer : public Resource
 	{
 	public:
+		friend GraphicsCommandList;
 		const short ConstantBufferSizeMultiplier = 256;
 	private:
 		DescriptorHeap m_heap;

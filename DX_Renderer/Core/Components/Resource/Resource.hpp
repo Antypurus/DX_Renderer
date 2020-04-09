@@ -26,6 +26,7 @@ namespace DXR
 		DescriptorHeap* GetDescriptorHeap();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const;
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const;
+		D3D12_GPU_VIRTUAL_ADDRESS GetGPUAddress() const;
 	protected:
 		Resource(DescriptorHeap& heap, size_t HeapIndex);
 		Resource();

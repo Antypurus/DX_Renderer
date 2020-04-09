@@ -19,6 +19,17 @@ namespace DXR
 		this->UploadDataFromCPUBuffer(Data);
 	}
 
+	GPUUploadBuffer::GPUUploadBuffer(GraphicsDevice& device, UINT64 elementCount, UINT64 elementSize, void* Data,
+		D3D12_RESOURCE_DESC ResourceDescription)
+	{
+		this->m_resource_description = ResourceDescription;
+		this->m_optimized_clear_value = {};
+		this->m_resource_heap_description = this->GPUUploadBuffer::CreateResourceHeapDescription();
+
+		this->CreateResource(device);
+		this->UploadDataFromCPUBuffer(Data);
+	}
+
 	void GPUUploadBuffer::CopyDataToGPUBuffer(GraphicsCommandList& commandList, GPUDefaultBuffer& buffer)
 	{
 		commandList->CopyBufferRegion(buffer.GetResource(), 0, this->m_resource.Get(), 0, this->m_element_count * this->m_element_size);
@@ -73,6 +84,12 @@ namespace DXR
 		INFO_LOG(L"Unmapped GPU Upload Buffer Data Adress From CPU Data Address");
 
 		return std::make_unique<BYTE>(*data);
+	}
+
+	void GPUUploadBuffer::Evict(GraphicsDevice& device)
+	{
+		ID3D12Pageable* const data = *this->m_resource.GetAddressOf();
+		DXCall(device->Evict(1,&data));
 	}
 
 	void GPUUploadBuffer::CreateResource(GraphicsDevice& device)
