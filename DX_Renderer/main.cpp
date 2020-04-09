@@ -30,10 +30,10 @@ void MainDirectXThread(DXR::Window& window)
 	//DXR::DescriptorTableRootParameter desc_table;
 	//desc_table.AddCBVEntry(1);
 	DXR::DescriptorTableRootParameter srv_desc_table;
-	srv_desc_table.AddSRVEntry(1);
+	srv_desc_table.AddSRVEntry(0);
 
 	DXR::DescriptorTableRootParameter sampler_desc_table;
-	sampler_desc_table.AddSamplerEntry(1);
+	sampler_desc_table.AddSamplerEntry(0);
 
 	//root_signature.AddDescriptorTableRootParameter(desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
@@ -67,6 +67,7 @@ void MainDirectXThread(DXR::Window& window)
 			{{-1.0f, 1.0f,  0.0f},	{0.0f,0.0f}},
 			{{1.0f, 1.0f,  0.0f},	{1.0f,0.0f}},
 		});
+
 	DXR::IndexBuffer index_buffer(device, commandList,
 		{ 0,2,1,
 			1,3,2,
