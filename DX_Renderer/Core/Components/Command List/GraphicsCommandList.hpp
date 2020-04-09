@@ -53,7 +53,7 @@ namespace DXR
 		void SetPrimitiveTopology(PrimitiveTopology Topology);
 		void SendDrawCall();
 		void Close() const;
-		void BindTexture(Texture& texture,UINT slot);
+		void BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot);
 
 		template<typename T>
 		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);

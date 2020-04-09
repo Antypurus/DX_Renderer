@@ -131,10 +131,10 @@ namespace DXR
 		this->m_current_primitive_topology = PrimitiveTopology::None;
 	}
 
-	void GraphicsCommandList::BindTexture(Texture& texture, UINT slot)
+	void GraphicsCommandList::BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot)
 	{
-		this->m_command_list->SetGraphicsRootDescriptorTable(2,texture.m_sampler.GetGPUHandle());
-		this->m_command_list->SetGraphicsRootDescriptorTable(1,texture.GetGPUHandle());
+		this->m_command_list->SetGraphicsRootDescriptorTable(SamplerSlot,texture.m_sampler.GetGPUHandle());
+		this->m_command_list->SetGraphicsRootDescriptorTable(TexureSlot,texture.GetGPUHandle());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)

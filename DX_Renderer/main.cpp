@@ -133,7 +133,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
 		commandList.BindConstantBuffer(constant_buffer, 0);
-		commandList.BindTexture(texture, 1);
+		commandList.BindTexture(texture, 1,2);
 
 		commandList.SendDrawCall();
 
