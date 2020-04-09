@@ -16,15 +16,15 @@ namespace DXR
 
 	UINT RayGenSBTEntry::CalculateEntrySize()
 	{
-		UINT shader_id_size = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+		UINT shader_id_size = Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES,32);
 		UINT resource_count = this->resources.size();
 		UINT resource_size = resource_count * 8;
-		return Align(shader_id_size + resource_size, 16);
+		return Align(shader_id_size + resource_size, 32);
 	}
 
 	void RayGenSBTEntry::CopyDataToBuffer(uint8_t* buffer, RayTracingPipelineStateObject& rtpso)
 	{
-		UINT shader_id_size = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+		UINT shader_id_size = Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES,64);
 
 		void* shader_id = rtpso.GetRTPSOInfo()->GetShaderIdentifier(shader->GetUniqueID().c_str());
 		memcpy(buffer,shader_id,shader_id_size);
@@ -44,15 +44,15 @@ namespace DXR
 
 	UINT MissSBTEntry::CalculateEntrySize()
 	{
-		UINT shader_id_size = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+		UINT shader_id_size = Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES,64);
 		UINT resource_count = this->resources.size();
 		UINT resource_size = resource_count * 8;
-		return Align(shader_id_size + resource_size, 16);
+		return Align(shader_id_size + resource_size, 32);
 	}
 
 	void MissSBTEntry::CopyDataToBuffer(uint8_t* buffer, RayTracingPipelineStateObject& rtpso)
 	{
-		UINT shader_id_size = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+		UINT shader_id_size = Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES,64);
 
 		void* shader_id = rtpso.GetRTPSOInfo()->GetShaderIdentifier(shader->GetUniqueID().c_str());
 		memcpy(buffer, shader_id, shader_id_size);
@@ -72,15 +72,15 @@ namespace DXR
 
 	UINT HitGroupSBTEntry::CalculateEntrySize()
 	{
-		UINT shader_id_size = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+		UINT shader_id_size = Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES,64);
 		UINT resource_count = this->resources.size();
 		UINT resource_size = resource_count * 8;
-		return Align(shader_id_size + resource_size, 16);
+		return Align(shader_id_size + resource_size, 32);
 	}
 
 	void HitGroupSBTEntry::CopyDataToBuffer(uint8_t* buffer, RayTracingPipelineStateObject& rtpso)
 	{
-		UINT shader_id_size = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+		UINT shader_id_size = Align(D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES,64);
 
 		void* shader_id = rtpso.GetRTPSOInfo()->GetShaderIdentifier(this->HitGroupName.c_str());
 		memcpy(buffer, shader_id, shader_id_size);
