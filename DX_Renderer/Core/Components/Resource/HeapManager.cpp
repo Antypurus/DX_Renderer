@@ -65,9 +65,28 @@ namespace DXR
 		this->heap_size = HeapSize;
 		this->submanager_count = SubManagerCount;
 
+		if(this->heap_size % this->submanager_count != 0)
+		{
+			ERROR_LOG("Heap Is Not Equaly Divisible By All Submanagers");
+#ifndef NDEBUG
+			__debugbreak();
+#endif
+			exit(-1);
+		}
+
 		this->descriptor_heap = GraphicsDevice::Device->CreateConstantBufferDescriptorHeap(HeapSize);
 
 		//Divide indices about the managers
+		UINT indices_per_manager = this->heap_size / this->submanager_count;
+		for(size_t manager = 0;manager < managers.size(); ++manager)
+		{
+			std::vector<uint32_t> indices;
+			for(size_t i = 0;i<indices_per_manager;++i)
+			{
+				indices.push_back(manager * indices_per_manager + i);
+			}
+			managers.emplace_back(indices);
+		}
 	}
 
 	uint32_t HeapManager::Allocate()
