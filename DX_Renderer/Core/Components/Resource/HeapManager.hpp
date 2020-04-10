@@ -20,6 +20,7 @@ namespace DXR
 		std::mutex m_mutex;
 	public:
 		SubHeapManager() = default;
+		SubHeapManager(const SubHeapManager& other);
 		SubHeapManager(const std::vector<uint32_t>& HeapIndices);
 		uint32_t Allocate();
 		void Free(uint32_t index);

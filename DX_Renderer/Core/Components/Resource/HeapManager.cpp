@@ -4,6 +4,13 @@
 
 namespace DXR
 {
+	SubHeapManager::SubHeapManager(const SubHeapManager& other)
+	{
+		uint32_t value = other.free_index_count;
+		this->free_index_count = value;
+		this->allocated_indices = other.allocated_indices;
+		this->m_free_heap_indices = other.m_free_heap_indices;
+	}
 
 	SubHeapManager::SubHeapManager(const std::vector<uint32_t>& HeapIndices)
 	{
@@ -78,14 +85,14 @@ namespace DXR
 
 		//Divide indices about the managers
 		UINT indices_per_manager = this->heap_size / this->submanager_count;
-		for(size_t manager = 0;manager < managers.size(); ++manager)
+		for(size_t manager = 0;manager < this->submanager_count; ++manager)
 		{
 			std::vector<uint32_t> indices;
 			for(size_t i = 0;i<indices_per_manager;++i)
 			{
 				indices.push_back(manager * indices_per_manager + i);
 			}
-			managers.emplace_back(indices);
+			this->managers.emplace_back(indices);
 		}
 	}
 
