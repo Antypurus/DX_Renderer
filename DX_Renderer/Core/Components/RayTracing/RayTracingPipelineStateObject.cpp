@@ -1,5 +1,6 @@
 #include "RayTracingPipelineStateObject.hpp"
 #include "../GraphicsDevice.hpp"
+#include "../../../Tooling/Validate.hpp"
 
 namespace DXR
 {
@@ -35,8 +36,8 @@ namespace DXR
 		rtpso_desc.NumSubobjects = 10;
 		rtpso_desc.pSubobjects = subobjects;
 
-		Device->CreateStateObject(&rtpso_desc,IID_PPV_ARGS(&this->m_rtpso));
-		this->m_rtpso->QueryInterface(IID_PPV_ARGS(&this->m_rtpso_properties));
+		DXCall(Device->CreateStateObject(&rtpso_desc,IID_PPV_ARGS(&this->m_rtpso)));
+		DXCall(this->m_rtpso->QueryInterface(IID_PPV_ARGS(&this->m_rtpso_properties)));
 	}
 
 	ID3D12StateObject* RayTracingPipelineStateObject::GetRTPSO()

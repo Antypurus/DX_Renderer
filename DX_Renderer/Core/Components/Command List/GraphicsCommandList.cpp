@@ -132,15 +132,15 @@ namespace DXR
 		this->m_current_primitive_topology = PrimitiveTopology::None;
 	}
 
-	void GraphicsCommandList::BindTexture(Texture& texture, UINT slot)
-	{
-		this->m_command_list->SetGraphicsRootDescriptorTable(3,texture.m_sampler.GetGPUHandle());
-		this->m_command_list->SetGraphicsRootDescriptorTable(2,texture.GetGPUHandle());
-	}
-
 	void GraphicsCommandList::BindTLAS(TLAS& tlas, UINT slot)
 	{
 		this->m_command_list->SetComputeRootShaderResourceView(slot,tlas.GetTLASGPUAddress());
+	}
+	
+	void GraphicsCommandList::BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot)
+	{
+		this->m_command_list->SetGraphicsRootDescriptorTable(SamplerSlot,texture.m_sampler.GetGPUHandle());
+		this->m_command_list->SetGraphicsRootDescriptorTable(TexureSlot,texture.GetGPUHandle());
 	}
 
 	inline void GraphicsCommandList::CreateCommandAllocator(GraphicsDevice& device)

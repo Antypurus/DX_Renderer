@@ -39,7 +39,7 @@ void MainDirectXThread(DXR::Window& window)
 	//DXR::DescriptorTableRootParameter desc_table;
 	//desc_table.AddCBVEntry(1);
 	DXR::DescriptorTableRootParameter srv_desc_table;
-	srv_desc_table.AddUAVEntry(1);
+	srv_desc_table.AddUAVEntry(0);
 
 	//DXR::DescriptorTableRootParameter sampler_desc_table;
 	//sampler_desc_table.AddSamplerEntry(1);
@@ -190,7 +190,7 @@ void MainDirectXThread(DXR::Window& window)
 			rays.Height = swapchain.GetBackbufferResolution().Height;
 			commandList->DispatchRays(&rays);
 
-			rt_out.CopyToBackbuffer(commandList,swapchain);
+			//rt_out.CopyToBackbuffer(commandList,swapchain);
 		}
 
 		gui.Render(commandList);
