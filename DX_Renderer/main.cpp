@@ -21,6 +21,8 @@
 #include "Core/Components/RayTracing/RayTracingPipelineStateObject.hpp"
 #include "Core/Components/RayTracing/RayTracingOutput.hpp"
 
+#include "Core/Components/Resource/HeapManager.hpp"
+
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
