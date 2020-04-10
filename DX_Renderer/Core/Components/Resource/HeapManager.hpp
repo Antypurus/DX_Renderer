@@ -46,4 +46,23 @@ namespace DXR
 		void Free(uint32_t index);
 	};
 
+	struct SRHeapManager:HeapManager
+	{
+	public:
+		static SRHeapManager Manager;
+		const static UINT srv_uav_cbv_heap_size = 100000;
+		const static UINT submanager_ammount = 16;//can be substituted by some kind of core/thread check
+	protected:
+		SRHeapManager();
+	};
+
+	struct SamplerHeapManager:HeapManager
+	{
+	public:
+		static SamplerHeapManager Manager;
+		const static UINT sampler_heap_size = 2048;
+		const static UINT submanager_ammount = 16;//can be substituted by some kind of core/thread check
+	protected:
+		SamplerHeapManager();
+	};
 }

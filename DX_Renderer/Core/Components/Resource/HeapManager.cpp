@@ -118,4 +118,16 @@ namespace DXR
 		}
 	}
 
+	SRHeapManager SRHeapManager::Manager;
+
+	SRHeapManager::SRHeapManager():HeapManager(srv_uav_cbv_heap_size,submanager_ammount)
+	{
+	}
+
+	SamplerHeapManager SamplerHeapManager::Manager;
+
+	SamplerHeapManager::SamplerHeapManager():HeapManager(sampler_heap_size,submanager_ammount)
+	{
+	}
+
 }
