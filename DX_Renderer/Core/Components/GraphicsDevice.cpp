@@ -8,12 +8,16 @@
 namespace DXR
 {
 
+	GraphicsDevice* GraphicsDevice::Device = nullptr;
+
 	GraphicsDevice::GraphicsDevice(UINT8 DeviceIndex)
 	{
 		this->CreateDXGIFactory();
 		this->CreateD3D12Device(DeviceIndex);
 		this->QueryAllDescriptorSizes();
 		this->CreateGraphicsCommandQueue();
+
+		GraphicsDevice::Device = this;
 
 		this->supports_ray_tracing = this->QueryRayTracingSupport();
 		if(this->supports_ray_tracing)
