@@ -1,5 +1,6 @@
 ﻿#include "Sampler.h"
 #include "../../GraphicsDevice.hpp"
+#include "../HeapManager.hpp"
 
 namespace DXR
 {
@@ -75,13 +76,13 @@ namespace DXR
 		sampler_desc.MinLOD = 0;
 		sampler_desc.MaxLOD = settings.MipmapLevelCount - 1;
 
-		device->CreateSampler(&sampler_desc, this->m_heap[0]);
+		device->CreateSampler(&sampler_desc, this->m_heap[this->m_heap_index]);
 	}
 
 	void Sampler::CreateDescriptorHeap(GraphicsDevice& Device)
 	{
-		this->m_heap = Device.CreateSamplerDescriptorHeap(1);
+		this->m_heap = SamplerHeapManager::GetManager().descriptor_heap;
 		this->m_descriptor_heap = &this->m_heap;
-		this->m_heap_index = 0;
+		this->m_heap_index = SamplerHeapManager::GetManager().Allocate();
 	}
 }

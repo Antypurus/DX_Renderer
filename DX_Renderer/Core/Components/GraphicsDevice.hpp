@@ -31,6 +31,7 @@ namespace DXR
 	public:
 		std::vector<UINT8> supported_mssa_levels;
 		bool supports_ray_tracing = false;
+		static GraphicsDevice* Device;
 	private:
 		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1;
 		WRL::ComPtr<IDXGIFactory2> m_dxgi_factory;

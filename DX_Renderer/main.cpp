@@ -21,6 +21,8 @@
 #include "Core/Components/RayTracing/RayTracingPipelineStateObject.hpp"
 #include "Core/Components/RayTracing/RayTracingOutput.hpp"
 
+#include "Core/Components/Resource/HeapManager.hpp"
+
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
@@ -36,23 +38,25 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::MissShader ms = DXR::MissShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"miss");
 
 	DXR::RootSignature root_signature;
-	//DXR::DescriptorTableRootParameter desc_table;
-	//desc_table.AddCBVEntry(1);
+
+	DXR::DescriptorTableRootParameter uav_desc_table;
+	uav_desc_table.AddUAVEntry(0);
+
 	DXR::DescriptorTableRootParameter srv_desc_table;
-	srv_desc_table.AddUAVEntry(0);
+	srv_desc_table.AddSRVEntry(0);
 
-	//DXR::DescriptorTableRootParameter sampler_desc_table;
-	//sampler_desc_table.AddSamplerEntry(1);
+	DXR::DescriptorTableRootParameter sampler_desc_table;
+	sampler_desc_table.AddSamplerEntry(0);
 
-	//root_signature.AddDescriptorTableRootParameter(desc_table);
+	root_signature.AddDescriptorTableRootParameter(uav_desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
-	//root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
+	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
 
-	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV, 0);
-	root_signature.AddDescriptorRootParameter(rp);
+	DXR::DescriptorRootParameter cbv_root_parameter(DXR::RootParameterDescriptorType::CBV, 0);
+	root_signature.AddDescriptorRootParameter(cbv_root_parameter);
 
-	DXR::DescriptorRootParameter as(DXR::RootParameterDescriptorType::SRV, 1);
-	root_signature.AddDescriptorRootParameter(as);
+	DXR::DescriptorRootParameter acceleration_structure_root_parameter(DXR::RootParameterDescriptorType::SRV, 1);
+	root_signature.AddDescriptorRootParameter(acceleration_structure_root_parameter);
 
 	root_signature.CreateRootSignature(device);
 
@@ -89,7 +93,6 @@ void MainDirectXThread(DXR::Window& window)
 		});
 
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
-	DXR::RayTracingOutput rt_out(device, commandList, swapchain);
 
 	commandList->Close();
 
@@ -114,13 +117,15 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::GUI gui(device, window, swapchain);
 
+	DXR::RayTracingOutput rt_out(device, commandList, swapchain);
+
 	DXR::BLAS blas(device, commandList, vertex_buffer, index_buffer, true);
 	DXR::TLAS tlas;
 	tlas.AddInstance(blas, DirectX::XMMatrixIdentity(), 0);
 	tlas.BuildTLAS(device, commandList);
 
 	DXR::RayGenSBTEntry raygen(rgs);
-	raygen.AddResource(rt_out.GetDescriptorHeap()->Get(0));
+	raygen.AddResource(rt_out.GetGPUHandle());
 	DXR::MissSBTEntry miss(ms);
 	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
 
@@ -156,13 +161,13 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 
-		//commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
-		commandList.BindDescriptorHeaps({ rt_out.GetDescriptorHeap() });
+		commandList.BindDescriptorHeaps({ &DXR::SRHeapManager::GetManager().descriptor_heap, &DXR::SamplerHeapManager::GetManager().descriptor_heap });
 
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
+
 		commandList.BindConstantBuffer(constant_buffer, 0);
-		//commandList.BindTexture(texture, 1);
+		commandList.BindTexture(texture, 3, 4);
 
 		commandList.SendDrawCall();
 
@@ -170,7 +175,7 @@ void MainDirectXThread(DXR::Window& window)
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
 
 			commandList.BindTLAS(tlas, 1);
-			commandList->SetComputeRootDescriptorTable(2, rt_out.GetDescriptorHeap()->Get(0));
+			rt_out.Bind(commandList,2);
 
 			D3D12_DISPATCH_RAYS_DESC rays = {};
 			

@@ -6,6 +6,7 @@
 #include "../../GraphicsDevice.hpp"
 #include "../DescriptorHeap.hpp"
 #include "../../../../Tooling/Validate.hpp"
+#include "../HeapManager.hpp"
 
 namespace DXR
 {
@@ -16,14 +17,12 @@ namespace DXR
 		friend GraphicsCommandList;
 		const short ConstantBufferSizeMultiplier = 256;
 	private:
-		DescriptorHeap m_heap;
 		std::vector<T> m_data;
 	public:
 		ConstantBuffer(GraphicsDevice& device, const std::vector<T> data) :m_data(data)
 		{
-			this->m_heap = device.CreateConstantBufferDescriptorHeap(1);
-			this->m_descriptor_heap = &this->m_heap;
-			this->m_heap_index = 0;
+			this->m_descriptor_heap = &SRHeapManager::GetManager().descriptor_heap;
+			this->m_heap_index = SRHeapManager::GetManager().Allocate();
 
 			this->m_resource_description = this->ConstantBuffer<T>::CreateResourceDescription();
 			this->m_optimized_clear_value = {};
@@ -46,7 +45,7 @@ namespace DXR
 			constant_buffer_description.BufferLocation = this->m_resource->GetGPUVirtualAddress();
 			constant_buffer_description.SizeInBytes = this->CalculateBufferSize();
 
-			device->CreateConstantBufferView(&constant_buffer_description, (*this->m_descriptor_heap)[0]);
+			device->CreateConstantBufferView(&constant_buffer_description, (*this->m_descriptor_heap)[this->m_heap_index]);
 			INFO_LOG(L"Created Constant Buffer Descriptor");
 		}
 
