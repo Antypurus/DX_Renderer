@@ -160,7 +160,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 
 		//commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
-		commandList.BindDescriptorHeaps({ rt_out.GetDescriptorHeap() });
+		commandList.BindDescriptorHeaps({ &DXR::SRHeapManager::GetManager().descriptor_heap });
 
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);

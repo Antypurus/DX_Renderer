@@ -52,14 +52,14 @@ namespace DXR
 		srv_desc.Texture2D.ResourceMinLODClamp = 0;
 		srv_desc.Texture2D.PlaneSlice = 0;
 
-		Device->CreateShaderResourceView(this->m_texture_buffer->GetResource(),&srv_desc,this->m_heap[0]);
+		Device->CreateShaderResourceView(this->m_texture_buffer->GetResource(),&srv_desc,this->m_heap[this->m_heap_index]);
 	}
 
 	void Texture::CreateDescriptorHeap(GraphicsDevice& device)
 	{
-		this->m_heap = device.CreateShaderResourceDescriptorHeap(1);
+		this->m_heap = SRHeapManager::GetManager().descriptor_heap;
 		this->m_descriptor_heap = &this->m_heap;
-		this->m_heap_index = 0;
+		this->m_heap_index = SRHeapManager::GetManager().Allocate();
 	}
 
 	void Texture::QueueUploadBufferForEviction(GraphicsDevice& Device) const
