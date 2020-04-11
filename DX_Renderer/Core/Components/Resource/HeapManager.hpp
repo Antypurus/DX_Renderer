@@ -49,9 +49,12 @@ namespace DXR
 	struct SRHeapManager:HeapManager
 	{
 	public:
-		static SRHeapManager Manager;
+		static std::mutex mutex;
+		static SRHeapManager* Manager;
 		const static UINT srv_uav_cbv_heap_size = 100000;
 		const static UINT submanager_ammount = 16;//can be substituted by some kind of core/thread check
+	public:
+		static SRHeapManager& GetManager();
 	protected:
 		SRHeapManager();
 	};
@@ -59,9 +62,12 @@ namespace DXR
 	struct SamplerHeapManager:HeapManager
 	{
 	public:
-		static SamplerHeapManager Manager;
+		static std::mutex mutex;
+		static SamplerHeapManager* Manager;
 		const static UINT sampler_heap_size = 2048;
-		const static UINT submanager_ammount = 16;//can be substituted by some kind of core/thread check
+		const static UINT submanager_ammount = 1;//can be substituted by some kind of core/thread check
+	public:
+		static SamplerHeapManager& GetManager();
 	protected:
 		SamplerHeapManager();
 	};

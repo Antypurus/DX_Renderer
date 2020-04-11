@@ -15,7 +15,7 @@ namespace DXR
 	SubHeapManager::SubHeapManager(const std::vector<uint32_t>& HeapIndices)
 	{
 		const size_t heap_size = HeapIndices.size();
-		for(size_t index = 0;index < heap_size;++index)
+		for (size_t index = 0; index < heap_size; ++index)
 		{
 			this->m_free_heap_indices.push_back(HeapIndices[heap_size - index - 1]);
 		}
@@ -31,7 +31,7 @@ namespace DXR
 	*/
 	uint32_t SubHeapManager::Allocate()
 	{
-		if(free_index_count <= 0) return 0xFF;//Note(Tiago): Log attempt to allocate on empty manager?
+		if (free_index_count <= 0) return 0xFF;//Note(Tiago): Log attempt to allocate on empty manager?
 
 		uint32_t index = 0xFF;
 		m_mutex.lock();
@@ -52,11 +52,12 @@ namespace DXR
 
 		//validate that index belongs to heap
 		auto allocation = this->allocated_indices.find(index);
-		if(allocation == this->allocated_indices.end())
+		if (allocation == this->allocated_indices.end())
 		{
 			//Index does not belong to this manager
 			WARNING_LOG("Attempt To Free Index That Is Not Managed By This Heap SubManager");
-		}else
+		}
+		else
 		{
 			this->allocated_indices.erase(allocation);
 		}
@@ -72,7 +73,7 @@ namespace DXR
 		this->heap_size = HeapSize;
 		this->submanager_count = SubManagerCount;
 
-		if(this->heap_size % this->submanager_count != 0)
+		if (this->heap_size % this->submanager_count != 0)
 		{
 			ERROR_LOG("Heap Is Not Equaly Divisible By All Submanagers");
 #ifndef NDEBUG
@@ -81,14 +82,14 @@ namespace DXR
 			exit(-1);
 		}
 
-		this->descriptor_heap = GraphicsDevice::Device->CreateConstantBufferDescriptorHeap(HeapSize);
+		this->descriptor_heap = GraphicsDevice::Device->CreateConstantBufferDescriptorHeap(this->heap_size);
 
 		//Divide indices about the managers
 		UINT indices_per_manager = this->heap_size / this->submanager_count;
-		for(size_t manager = 0;manager < this->submanager_count; ++manager)
+		for (size_t manager = 0; manager < this->submanager_count; ++manager)
 		{
 			std::vector<uint32_t> indices;
-			for(size_t i = 0;i<indices_per_manager;++i)
+			for (size_t i = 0; i < indices_per_manager; ++i)
 			{
 				indices.push_back(manager * indices_per_manager + i);
 			}
@@ -106,7 +107,7 @@ namespace DXR
 	void HeapManager::Free(uint32_t index)
 	{
 		auto manager = this->index_mapping.find(index);
-		if(manager == this->index_mapping.end())
+		if (manager == this->index_mapping.end())
 		{
 			//Out of Bound Descriptor Heap Index
 			WARNING_LOG("Attempt To Free Out Of Bound Deacriptor Heap Index");
@@ -118,15 +119,45 @@ namespace DXR
 		}
 	}
 
-	SRHeapManager SRHeapManager::Manager;
+	std::mutex SRHeapManager::mutex;	
+	SRHeapManager* SRHeapManager::Manager = nullptr;
 
-	SRHeapManager::SRHeapManager():HeapManager(srv_uav_cbv_heap_size,submanager_ammount)
+	SRHeapManager& SRHeapManager::GetManager()
+	{
+		if(SRHeapManager::Manager == nullptr)
+		{
+			SRHeapManager::mutex.lock();
+
+			if(SRHeapManager::Manager != nullptr) return *SRHeapManager::Manager;
+			SRHeapManager::Manager = new SRHeapManager();//Note(Tiago): These managers must always be alive so its fine if they are not cleaned up
+
+			SRHeapManager::mutex.unlock();
+		}
+		return *SRHeapManager::Manager;
+	}
+
+	SRHeapManager::SRHeapManager() :HeapManager(srv_uav_cbv_heap_size, submanager_ammount)
 	{
 	}
 
-	SamplerHeapManager SamplerHeapManager::Manager;
+	std::mutex SamplerHeapManager::mutex;
+	SamplerHeapManager* SamplerHeapManager::Manager = nullptr;
 
-	SamplerHeapManager::SamplerHeapManager():HeapManager(sampler_heap_size,submanager_ammount)
+	SamplerHeapManager& SamplerHeapManager::GetManager()
+	{
+		if (SamplerHeapManager::Manager == nullptr)
+		{
+			SamplerHeapManager::mutex.lock();
+
+			if (SamplerHeapManager::Manager != nullptr) return *SamplerHeapManager::Manager;
+			SamplerHeapManager::Manager = new SamplerHeapManager();//Note(Tiago): These managers must always be alive so its fine if they are not cleaned up
+
+			SamplerHeapManager::mutex.unlock();
+		}
+		return *SamplerHeapManager::Manager;
+	}
+
+	SamplerHeapManager::SamplerHeapManager() :HeapManager(sampler_heap_size, submanager_ammount)
 	{
 	}
 

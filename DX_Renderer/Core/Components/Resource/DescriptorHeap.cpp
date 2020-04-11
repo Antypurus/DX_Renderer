@@ -45,7 +45,7 @@ namespace DXR
 		return this->m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();
 	}
 
-	DescriptorHeap::DescriptorHeap(GraphicsDevice& device, UINT8 descriptorCount, DescriptorType type, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
+	DescriptorHeap::DescriptorHeap(GraphicsDevice& device, UINT descriptorCount, DescriptorType type, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
 		:ContainedDescriptorType(type), DescriptorCount(descriptorCount)
 	{
 		const DescriptorSizes descriptor_sizes = device.GetDescriptorSizes();
