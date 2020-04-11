@@ -38,23 +38,25 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::MissShader ms = DXR::MissShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"miss");
 
 	DXR::RootSignature root_signature;
-	//DXR::DescriptorTableRootParameter desc_table;
-	//desc_table.AddCBVEntry(1);
+
+	DXR::DescriptorTableRootParameter uav_desc_table;
+	uav_desc_table.AddUAVEntry(0);
+
 	DXR::DescriptorTableRootParameter srv_desc_table;
-	srv_desc_table.AddUAVEntry(0);
+	srv_desc_table.AddSRVEntry(0);
 
-	//DXR::DescriptorTableRootParameter sampler_desc_table;
-	//sampler_desc_table.AddSamplerEntry(1);
+	DXR::DescriptorTableRootParameter sampler_desc_table;
+	sampler_desc_table.AddSamplerEntry(0);
 
-	//root_signature.AddDescriptorTableRootParameter(desc_table);
+	root_signature.AddDescriptorTableRootParameter(uav_desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
-	//root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
+	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
 
-	DXR::DescriptorRootParameter rp(DXR::RootParameterDescriptorType::CBV, 0);
-	root_signature.AddDescriptorRootParameter(rp);
+	DXR::DescriptorRootParameter cbv_root_parameter(DXR::RootParameterDescriptorType::CBV, 0);
+	root_signature.AddDescriptorRootParameter(cbv_root_parameter);
 
-	DXR::DescriptorRootParameter as(DXR::RootParameterDescriptorType::SRV, 1);
-	root_signature.AddDescriptorRootParameter(as);
+	DXR::DescriptorRootParameter acceleration_structure_root_parameter(DXR::RootParameterDescriptorType::SRV, 1);
+	root_signature.AddDescriptorRootParameter(acceleration_structure_root_parameter);
 
 	root_signature.CreateRootSignature(device);
 
@@ -159,13 +161,13 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
 
-		//commandList.BindDescriptorHeaps({ texture.GetSRVHeap(),texture.GetSamplerHeap() });
-		commandList.BindDescriptorHeaps({ &DXR::SRHeapManager::GetManager().descriptor_heap });
+		commandList.BindDescriptorHeaps({ &DXR::SRHeapManager::GetManager().descriptor_heap, &DXR::SamplerHeapManager::GetManager().descriptor_heap });
 
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
+
 		commandList.BindConstantBuffer(constant_buffer, 0);
-		//commandList.BindTexture(texture, 1);
+		commandList.BindTexture(texture, 3, 4);
 
 		commandList.SendDrawCall();
 
