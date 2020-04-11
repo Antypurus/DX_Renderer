@@ -35,7 +35,7 @@ namespace DXR
 		commandList->CopyBufferRegion(buffer.GetResource(), 0, this->m_resource.Get(), 0, this->m_element_count * this->m_element_size);
 		INFO_LOG(L"Queued Data Transfer From GPU Upload Buffer To GPU Default Buffer");
 
-		const ResourceBarrier resource_barrier = {
+		const TransitionResourceBarrier resource_barrier = {
 			*buffer.GetResource(),
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			D3D12_RESOURCE_STATE_GENERIC_READ};
@@ -105,7 +105,7 @@ namespace DXR
 		SUCCESS_LOG(L"GPU Upload Buffer Resource Created");
 	}
 
-	D3D12_RESOURCE_DESC GPUUploadBuffer::CreateResourceDescription()
+	D3D12_RESOURCE_DESC GPUUploadBuffer::CreateResourceDescription(D3D12_RESOURCE_FLAGS ResourceFlags)
 	{
 		D3D12_RESOURCE_DESC resource_description = {};
 		resource_description.SampleDesc.Count = 1;

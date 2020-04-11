@@ -18,4 +18,21 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32 DX_Renderer/main.cpp ${SRCS})
 
 set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
-target_link_libraries(DX_Renderer PRIVATE "d3d12.lib" "dxgi.lib" "d3dcompiler.lib" "windowscodecs.lib")
+target_link_libraries(DX_Renderer PRIVATE 
+        "d3d12.lib" 
+        "dxgi.lib" 
+        "d3dcompiler.lib" 
+        "windowscodecs.lib"
+        "dxcompiler.lib")
+		
+add_custom_command(
+	TARGET DX_Renderer PRE_BUILD #Adds a post-build event
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	"${PROJECT_SOURCE_DIR}/DX_Renderer/ThirdParty/DXC/dxcompiler.dll"
+	$<TARGET_FILE_DIR:DX_Renderer>)
+	
+add_custom_command(
+	TARGET DX_Renderer PRE_BUILD #Adds a post-build event
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	"${PROJECT_SOURCE_DIR}/DX_Renderer/ThirdParty/DXC/dxil.dll"
+	$<TARGET_FILE_DIR:DX_Renderer>) 

@@ -30,17 +30,17 @@ namespace DXR
 		// public and private data fields
 	public:
 		std::vector<UINT8> supported_mssa_levels;
+		bool supports_ray_tracing = false;
 	private:
 		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1;
 		WRL::ComPtr<IDXGIFactory2> m_dxgi_factory;
-		WRL::ComPtr <ID3D12Device> m_device;
+		WRL::ComPtr <ID3D12Device5> m_device;
 		DescriptorSizes descriptorSizes{};
 		GraphicsCommandQueue* m_graphics_command_queue{};
-		// public and privte methods
+		// public and private methods
 	public:
-		GraphicsDevice();
-		GraphicsDevice(UINT8 DeviceIndex);
-		ID3D12Device* operator->() const;
+		GraphicsDevice(UINT8 DeviceIndex = 0);
+		ID3D12Device5* operator->() const;
 		IDXGIFactory2* GetDXGIFactory() const;
 		DescriptorSizes GetDescriptorSizes()const;
 		void CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat);
@@ -53,8 +53,9 @@ namespace DXR
 		DescriptorHeap CreateConstantBufferDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 		DescriptorHeap CreateShaderResourceDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 		DescriptorHeap CreateSamplerDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
-		ID3D12Device* GetRawInterface() const;
+		ID3D12Device5* GetRawInterface() const;
 	private:
+		bool QueryRayTracingSupport() const;
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();
 		void CreateD3D12Device(UINT8 deviceIndex);

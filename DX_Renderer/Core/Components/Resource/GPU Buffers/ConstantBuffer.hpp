@@ -82,7 +82,7 @@ namespace DXR
 			SUCCESS_LOG(L"Constant Buffer GPU Resource Created");
 		}
 
-		D3D12_RESOURCE_DESC CreateResourceDescription() override
+		D3D12_RESOURCE_DESC CreateResourceDescription(D3D12_RESOURCE_FLAGS ResourceFlags = D3D12_RESOURCE_FLAG_NONE) override
 		{
 			D3D12_RESOURCE_DESC resource_description = {};
 			resource_description.SampleDesc.Count = 1;

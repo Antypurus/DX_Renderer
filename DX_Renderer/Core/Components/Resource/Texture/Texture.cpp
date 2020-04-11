@@ -106,7 +106,7 @@ namespace DXR
 		return {};
 	}
 
-	D3D12_RESOURCE_DESC Texture::CreateResourceDescription()
+	D3D12_RESOURCE_DESC Texture::CreateResourceDescription(D3D12_RESOURCE_FLAGS ResourceFlags)
 	{
 		D3D12_RESOURCE_DESC resource = {};
 		resource.Alignment = 0;

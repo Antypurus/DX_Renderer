@@ -8,8 +8,7 @@ namespace DXR
 	public:
 	private:
 	public:
-		static VertexShader CompileShaderFromFile(const std::wstring& filename, const std::string& entryPoint);
-		static VertexShader CompileShader(const std::string& shaderCode, const std::string& entryPoint);
+		static VertexShader CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint);
 	protected:
 		VertexShader();
 	};

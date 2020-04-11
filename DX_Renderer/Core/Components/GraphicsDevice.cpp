@@ -7,13 +7,6 @@
 
 namespace DXR
 {
-	GraphicsDevice::GraphicsDevice()
-	{
-		this->CreateDXGIFactory();
-		this->CreateDefaultD3D12Device();
-		this->QueryAllDescriptorSizes();
-		this->CreateGraphicsCommandQueue();
-	}
 
 	GraphicsDevice::GraphicsDevice(UINT8 DeviceIndex)
 	{
@@ -21,9 +14,19 @@ namespace DXR
 		this->CreateD3D12Device(DeviceIndex);
 		this->QueryAllDescriptorSizes();
 		this->CreateGraphicsCommandQueue();
+
+		this->supports_ray_tracing = this->QueryRayTracingSupport();
+		if(this->supports_ray_tracing)
+		{
+			SUCCESS_LOG(L"Device Supports DirectX Ray Tracing");
+		}
+		else
+		{
+			WARNING_LOG(L"Device Does Not Support DirectX Ray Tracing");
+		}
 	}
 
-	ID3D12Device* GraphicsDevice::operator->() const
+	ID3D12Device5* GraphicsDevice::operator->() const
 	{
 		return this->m_device.Get();
 	}
@@ -79,11 +82,22 @@ namespace DXR
 		return DescriptorHeap(*this,descriptorCount,DescriptorType::Sampler,flags);
 	}
 
-	ID3D12Device* GraphicsDevice::GetRawInterface() const
+	ID3D12Device5* GraphicsDevice::GetRawInterface() const
 	{
 		return this->m_device.Get();
 	}
 
+
+	bool GraphicsDevice::QueryRayTracingSupport() const
+	{
+		D3D12_FEATURE_DATA_D3D12_OPTIONS5 opts = {};
+		this->m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &opts, sizeof(opts));
+		if(opts.RaytracingTier < D3D12_RAYTRACING_TIER_1_0)
+		{
+			return false;
+		}
+		return true;
+	}
 
 	void GraphicsDevice::CreateDXGIFactory()
 	{
@@ -140,7 +154,7 @@ namespace DXR
 		SUCCESS_LOG(L"Finished Fetching Descriptor Handle Increment Sizes");
 	}
 
-	UINT64 GraphicsDevice::QueryDescriptorSize(enum D3D12_DESCRIPTOR_HEAP_TYPE descriptorType) const
+	UINT64 GraphicsDevice::QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType) const
 	{
 		return this->m_device->GetDescriptorHandleIncrementSize(descriptorType);
 	}

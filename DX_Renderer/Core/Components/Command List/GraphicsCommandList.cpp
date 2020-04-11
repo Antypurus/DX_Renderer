@@ -6,6 +6,7 @@
 #include "../Vertices/IndexBuffer.hpp"
 #include <vector>
 #include "../Resource/Texture/Texture.hpp"
+#include "../RayTracing/AccelerationStructure.hpp"
 
 namespace DXR
 {
@@ -15,12 +16,12 @@ namespace DXR
 		this->CreateCommandList(device);
 	}
 
-	ID3D12GraphicsCommandList* GraphicsCommandList::operator->() const
+	ID3D12GraphicsCommandList4* GraphicsCommandList::operator->() const
 	{
 		return this->m_command_list.Get();
 	}
 
-	ID3D12GraphicsCommandList* GraphicsCommandList::GetRAWInterface() const
+	ID3D12GraphicsCommandList4* GraphicsCommandList::GetRAWInterface() const
 	{
 		return this->m_command_list.Get();
 	}
@@ -131,6 +132,11 @@ namespace DXR
 		this->m_current_primitive_topology = PrimitiveTopology::None;
 	}
 
+	void GraphicsCommandList::BindTLAS(TLAS& tlas, UINT slot)
+	{
+		this->m_command_list->SetComputeRootShaderResourceView(slot,tlas.GetTLASGPUAddress());
+	}
+	
 	void GraphicsCommandList::BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot)
 	{
 		this->m_command_list->SetGraphicsRootDescriptorTable(SamplerSlot,texture.m_sampler.GetGPUHandle());

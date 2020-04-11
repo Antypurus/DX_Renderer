@@ -8,8 +8,7 @@ namespace DXR
 	public:
 	private:
 	public:
-		static PixelShader CompileShaderFromFile(const std::wstring& filename, const std::string& entryPoint);
-		static PixelShader CompileShader(const std::string& shaderCode, const std::string& entryPoint);
+		static PixelShader CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint);
 	private:
 		PixelShader();
 	};

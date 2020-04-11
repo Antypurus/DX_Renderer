@@ -46,6 +46,27 @@ namespace DXR
 			return this->m_input_layout;
 		}
 
+		D3D12_GPU_VIRTUAL_ADDRESS GetVertexBufferGPUAddress() const
+		{
+			return this->m_vertex_buffer->GetGPUAddress();
+		}
+
+		UINT64 GetVertexStride() const
+		{
+			return this->m_vertices[0].GetElementSize();
+		}
+
+		UINT GetVertexCount() const
+		{
+			return this->m_vertices.size();
+		}
+
+		DXGI_FORMAT GetVertexPositionFormat() const
+		{
+			//Note(Tiago): Position is assumed to be the 0-th element, however we might need to do a search for it in practice
+			return this->m_input_elements[0].Format;
+		}
+
 	private:
 
 		void GenerateInputLayoutDescription()
@@ -61,10 +82,10 @@ namespace DXR
 
 		void CreateUploadBuffer(GraphicsDevice& device)
 		{
-			UINT8* vertices = new UINT8[this->m_vertices.size()*m_vertices[0].GetElementSize()];
-			for(size_t i = 0;i < this->m_vertices.size();++i)
+			UINT8* vertices = new UINT8[this->m_vertices.size() * m_vertices[0].GetElementSize()];
+			for (size_t i = 0; i < this->m_vertices.size(); ++i)
 			{
-				memcpy(&vertices[i*m_vertices[i].GetElementSize()],this->m_vertices[i].GetData(),m_vertices[i].GetElementSize());
+				memcpy(&vertices[i * m_vertices[i].GetElementSize()], this->m_vertices[i].GetData(), m_vertices[i].GetElementSize());
 			}
 			this->m_upload_buffer = std::make_unique<GPUUploadBuffer>(device, this->m_vertices.size(), this->m_vertices[0].GetElementSize(), vertices);
 			delete[] vertices;
@@ -86,7 +107,7 @@ namespace DXR
 		void CreateVertexBufferDescriptor()
 		{
 			D3D12_VERTEX_BUFFER_VIEW vertex_buffer_descriptor = {};
-			vertex_buffer_descriptor.BufferLocation = (*this->m_vertex_buffer)->GetGPUVirtualAddress();
+			vertex_buffer_descriptor.BufferLocation = this->m_vertex_buffer->GetGPUAddress();
 			vertex_buffer_descriptor.SizeInBytes = (UINT)(this->m_vertices.size() * this->m_vertices[0].GetElementSize());
 			vertex_buffer_descriptor.StrideInBytes = (UINT)(this->m_vertices[0].GetElementSize());
 

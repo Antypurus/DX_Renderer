@@ -13,6 +13,7 @@ namespace DXR
 	struct IndexBuffer
 	{
 	public:
+		const static DXGI_FORMAT IndexFormat = DXGI_FORMAT_R32_UINT;
 	private:
 		std::unique_ptr<GPUUploadBuffer> m_upload_buffer;
 		std::unique_ptr<GPUDefaultBuffer> m_index_buffer;
@@ -22,6 +23,7 @@ namespace DXR
 		IndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, const std::vector<UINT>& indices);
 		D3D12_INDEX_BUFFER_VIEW GetIndexBufferDescriptor() const;
 		[[nodiscard]]size_t GetIndexCount() const;
+		D3D12_GPU_VIRTUAL_ADDRESS GetIndexBufferGPUAddress() const;
 	private:
 		void CreateIndexBuffer(GraphicsDevice& device, GraphicsCommandList& commandList);
 		void CreateUploadBuffer(GraphicsDevice& device);

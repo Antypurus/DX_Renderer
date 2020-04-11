@@ -3,8 +3,8 @@ cbuffer MVPBuffer : register(b0)
 	float4x4 MVP;
 };
 
-Texture2D gText: register(t0);
-SamplerState gsampler: register(s0);
+//Texture2D gText: register(t0);
+//SamplerState gsampler: register(s0);
 
 struct VS_OUTPUT
 {
@@ -37,7 +37,7 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
 
-	output.color = gText.Sample(gsampler,input.uv);
+    output.color = float4(input.uv.r, input.uv.g,0.0f,1.0f);
 
 	return output;
 }

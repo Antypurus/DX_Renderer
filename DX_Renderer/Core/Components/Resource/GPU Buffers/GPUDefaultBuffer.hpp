@@ -14,11 +14,11 @@ namespace DXR
 		UINT64 m_element_count = 0;
 		UINT64 m_element_size = 0;
 	public:
-		GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize);
-		GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription);
+		GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize, D3D12_RESOURCE_STATES InitialState = D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_FLAGS ResourceFlags = D3D12_RESOURCE_FLAG_NONE);
+		GPUDefaultBuffer(GraphicsDevice& device, GraphicsCommandList& commandList, UINT64 elementCount, UINT64 elementSize, D3D12_RESOURCE_DESC ResourceDescription, D3D12_RESOURCE_STATES InitialState = D3D12_RESOURCE_STATE_COPY_DEST);
 	protected:
-		void CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList);
-		D3D12_RESOURCE_DESC CreateResourceDescription() override;
+		void CreateResource(GraphicsDevice& device, GraphicsCommandList& commandList, D3D12_RESOURCE_STATES InitialState);
+		D3D12_RESOURCE_DESC CreateResourceDescription(D3D12_RESOURCE_FLAGS ResourceFlags = D3D12_RESOURCE_FLAG_NONE) override;
 		D3D12_CLEAR_VALUE CreateOptimizedClearValue() override;
 		D3D12_HEAP_PROPERTIES CreateResourceHeapDescription() override;
 	};

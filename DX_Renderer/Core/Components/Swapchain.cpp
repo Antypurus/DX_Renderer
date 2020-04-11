@@ -118,7 +118,7 @@ namespace DXR
 		this->SetViewport(commandList, this->m_resolution, 0, 0);
 		this->SetScisorRect(commandList, this->m_resolution);
 
-		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};
+		TransitionResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
 
@@ -155,7 +155,11 @@ namespace DXR
 
 	void Swapchain::PrepareBackbufferForPresentation(GraphicsCommandList& commandList)
 	{
-		ResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
+		TransitionResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
 		barrier.ExecuteResourceBarrier(commandList);
+	}
+	Resolution Swapchain::GetBackbufferResolution()
+	{
+		return this->m_resolution;
 	}
 }

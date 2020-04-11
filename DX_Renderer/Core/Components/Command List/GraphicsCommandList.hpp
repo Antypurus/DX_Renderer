@@ -17,6 +17,8 @@ namespace DXR
 	struct RenderTargetView;
 	struct PipelineStateObject;
 	struct RootSignature;
+	struct TLAS;
+	template<typename VertexStruct> struct VertexBuffer;
 	using namespace Microsoft;
 
 	enum class PrimitiveTopology
@@ -34,12 +36,12 @@ namespace DXR
 		friend GraphicsDevice;
 	private:
 		WRL::ComPtr<ID3D12CommandAllocator> m_command_allocator;
-		WRL::ComPtr<ID3D12GraphicsCommandList> m_command_list;
+		WRL::ComPtr<ID3D12GraphicsCommandList4> m_command_list;
 		IndexBuffer* m_current_index_buffer = nullptr;
 		mutable PrimitiveTopology m_current_primitive_topology = PrimitiveTopology::None;
 	public:
-		ID3D12GraphicsCommandList* operator->() const;
-		[[nodiscard]] ID3D12GraphicsCommandList* GetRAWInterface() const;
+		ID3D12GraphicsCommandList4* operator->() const;
+		[[nodiscard]] ID3D12GraphicsCommandList4* GetRAWInterface() const;
 		[[nodiscard]] ID3D12CommandAllocator* GetCommandAllocator() const;
 		void ResetCommandAllocator() const;
 		void ResetCommandList(PipelineStateObject& pso) const;
@@ -53,6 +55,7 @@ namespace DXR
 		void SetPrimitiveTopology(PrimitiveTopology Topology);
 		void SendDrawCall();
 		void Close() const;
+		void BindTLAS(TLAS& tlas, UINT slot);
 		void BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot);
 
 		template<typename T>
@@ -69,13 +72,13 @@ namespace DXR
 	template <typename T>
 	void GraphicsCommandList::BindVertexBuffer(VertexBuffer<T>& VertexBuffer)
 	{
-		this->m_command_list->IASetVertexBuffers(0,1,&VertexBuffer.GetVertexBufferDescriptor());
+		this->m_command_list->IASetVertexBuffers(0, 1, &VertexBuffer.GetVertexBufferDescriptor());
 	}
 
 	template <typename T>
 	void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
 	{
 		//this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
-		this->m_command_list->SetGraphicsRootConstantBufferView(Slot,ConstantBuffer.m_resource->GetGPUVirtualAddress());
+		this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
 	}
 }
