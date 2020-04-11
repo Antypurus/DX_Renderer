@@ -4,6 +4,7 @@
 #include "../Swapchain.hpp"
 #include "../Resource/GPU Buffers/GPUDefaultBuffer.hpp"
 #include "../Resource/ResourceBarrier.hpp"
+#include "../Resource/HeapManager.hpp"
 
 namespace DXR
 {
@@ -12,7 +13,8 @@ namespace DXR
 		this->m_texture_format = swapchain.m_backbuffer_format;
 		this->m_height = swapchain.GetBackbufferResolution().Height;
 		this->m_width = swapchain.GetBackbufferResolution().Width;
-		this->m_heap = Device.CreateShaderResourceDescriptorHeap(1);
+		this->m_heap = SRHeapManager::GetManager().descriptor_heap;
+		this->m_heap_index = SRHeapManager::GetManager().Allocate();
 
 		this->CreateResourceDescription();
 		this->CreateTextureBuffer(Device,CommandList);
@@ -43,9 +45,19 @@ namespace DXR
 		return &this->m_heap;
 	}
 
+	D3D12_GPU_DESCRIPTOR_HANDLE RayTracingOutput::GetGPUHandle()
+	{
+		return this->m_heap.Get(this->m_heap_index);
+	}
+
 	D3D12_GPU_VIRTUAL_ADDRESS RayTracingOutput::GetGPUAddress()
 	{
 		return this->m_texture_buffer->GetGPUAddress();
+	}
+
+	void RayTracingOutput::Bind(GraphicsCommandList& CommandList, UINT slot)
+	{
+		CommandList->SetComputeRootDescriptorTable(slot,this->GetGPUHandle());
 	}
 
 	void RayTracingOutput::CreateResourceDescription()
@@ -73,8 +85,6 @@ namespace DXR
 		srv_desc.Texture2D.MostDetailedMip = 0;
 		srv_desc.Texture2D.ResourceMinLODClamp = 0;
 		srv_desc.Texture2D.PlaneSlice = 0;
-
-		//Device->CreateShaderResourceView(this->m_texture_buffer->GetResource(), &srv_desc, this->m_heap[0]);
 	}
 
 	void RayTracingOutput::CreateTextureBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
@@ -86,7 +96,7 @@ namespace DXR
 	{
 		D3D12_UNORDERED_ACCESS_VIEW_DESC uav = {};
 		uav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-		Device->CreateUnorderedAccessView(this->m_texture_buffer->GetResource(),nullptr,&uav,this->m_heap[0]);
+		Device->CreateUnorderedAccessView(this->m_texture_buffer->GetResource(),nullptr,&uav,(this->m_heap)[this->m_heap_index]);
 	}
 
 }

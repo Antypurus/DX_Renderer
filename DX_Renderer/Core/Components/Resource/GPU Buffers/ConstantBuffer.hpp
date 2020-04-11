@@ -45,7 +45,7 @@ namespace DXR
 			constant_buffer_description.BufferLocation = this->m_resource->GetGPUVirtualAddress();
 			constant_buffer_description.SizeInBytes = this->CalculateBufferSize();
 
-			device->CreateConstantBufferView(&constant_buffer_description, (*this->m_descriptor_heap)[0]);
+			device->CreateConstantBufferView(&constant_buffer_description, (*this->m_descriptor_heap)[this->m_heap_index]);
 			INFO_LOG(L"Created Constant Buffer Descriptor");
 		}
 

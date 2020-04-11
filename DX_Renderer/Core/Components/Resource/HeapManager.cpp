@@ -72,6 +72,7 @@ namespace DXR
 	{
 		this->heap_size = HeapSize;
 		this->submanager_count = SubManagerCount;
+		this->heap_type = Type;
 
 		if (this->heap_size % this->submanager_count != 0)
 		{
@@ -84,7 +85,7 @@ namespace DXR
 
 		if (Type == DescriptorType::ConstantBufferView)
 		{
-			this->descriptor_heap = GraphicsDevice::Device->CreateConstantBufferDescriptorHeap(this->heap_size);
+			this->descriptor_heap = GraphicsDevice::Device->CreateShaderResourceDescriptorHeap(this->heap_size);
 		}
 		else if (Type == DescriptorType::Sampler)
 		{

@@ -91,7 +91,6 @@ void MainDirectXThread(DXR::Window& window)
 		});
 
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
-	DXR::RayTracingOutput rt_out(device, commandList, swapchain);
 
 	commandList->Close();
 
@@ -116,19 +115,19 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::GUI gui(device, window, swapchain);
 
+	DXR::RayTracingOutput rt_out(device, commandList, swapchain);
+
 	DXR::BLAS blas(device, commandList, vertex_buffer, index_buffer, true);
 	DXR::TLAS tlas;
 	tlas.AddInstance(blas, DirectX::XMMatrixIdentity(), 0);
 	tlas.BuildTLAS(device, commandList);
 
 	DXR::RayGenSBTEntry raygen(rgs);
-	raygen.AddResource(rt_out.GetDescriptorHeap()->Get(0));
+	raygen.AddResource(rt_out.GetGPUHandle());
 	DXR::MissSBTEntry miss(ms);
 	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
 
 	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
-
-	auto value = DXR::SamplerHeapManager::GetManager().Allocate();
 
 	while (window.ShouldContinue)
 	{
@@ -174,7 +173,7 @@ void MainDirectXThread(DXR::Window& window)
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
 
 			commandList.BindTLAS(tlas, 1);
-			commandList->SetComputeRootDescriptorTable(2, rt_out.GetDescriptorHeap()->Get(0));
+			rt_out.Bind(commandList,2);
 
 			D3D12_DISPATCH_RAYS_DESC rays = {};
 			
@@ -194,7 +193,7 @@ void MainDirectXThread(DXR::Window& window)
 			rays.Height = swapchain.GetBackbufferResolution().Height;
 			commandList->DispatchRays(&rays);
 
-			//rt_out.CopyToBackbuffer(commandList,swapchain);
+			rt_out.CopyToBackbuffer(commandList,swapchain);
 		}
 
 		gui.Render(commandList);
