@@ -65,7 +65,7 @@ namespace DXR
 		static std::mutex mutex;
 		static SamplerHeapManager* Manager;
 		const static UINT sampler_heap_size = 2048;
-		const static UINT submanager_ammount = 1;//can be substituted by some kind of core/thread check
+		const static UINT submanager_ammount = 16;//can be substituted by some kind of core/thread check
 	public:
 		static SamplerHeapManager& GetManager();
 	protected:
