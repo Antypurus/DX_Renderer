@@ -20,8 +20,8 @@
 #include "Core/Components/RayTracing/AccelerationStructure.hpp"
 #include "Core/Components/RayTracing/RayTracingPipelineStateObject.hpp"
 #include "Core/Components/RayTracing/RayTracingOutput.hpp"
-
 #include "Core/Components/Resource/HeapManager.hpp"
+#include "ThirdParty/tiny_obj_loader/tiny_obj_loader.h"
 
 void MainDirectXThread(DXR::Window& window)
 {
