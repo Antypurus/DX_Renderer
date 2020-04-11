@@ -68,7 +68,7 @@ namespace DXR
 		m_mutex.unlock();
 	}
 
-	HeapManager::HeapManager(UINT HeapSize, UINT SubManagerCount)
+	HeapManager::HeapManager(UINT HeapSize, UINT SubManagerCount, DescriptorType Type)
 	{
 		this->heap_size = HeapSize;
 		this->submanager_count = SubManagerCount;
@@ -82,7 +82,14 @@ namespace DXR
 			exit(-1);
 		}
 
-		this->descriptor_heap = GraphicsDevice::Device->CreateConstantBufferDescriptorHeap(this->heap_size);
+		if (Type == DescriptorType::ConstantBufferView)
+		{
+			this->descriptor_heap = GraphicsDevice::Device->CreateConstantBufferDescriptorHeap(this->heap_size);
+		}
+		else if (Type == DescriptorType::Sampler)
+		{
+			this->descriptor_heap = GraphicsDevice::Device->CreateSamplerDescriptorHeap(this->heap_size);
+		}
 
 		//Divide indices about the managers
 		UINT indices_per_manager = this->heap_size / this->submanager_count;
@@ -119,16 +126,16 @@ namespace DXR
 		}
 	}
 
-	std::mutex SRHeapManager::mutex;	
+	std::mutex SRHeapManager::mutex;
 	SRHeapManager* SRHeapManager::Manager = nullptr;
 
 	SRHeapManager& SRHeapManager::GetManager()
 	{
-		if(SRHeapManager::Manager == nullptr)
+		if (SRHeapManager::Manager == nullptr)
 		{
 			SRHeapManager::mutex.lock();
 
-			if(SRHeapManager::Manager != nullptr) return *SRHeapManager::Manager;
+			if (SRHeapManager::Manager != nullptr) return *SRHeapManager::Manager;
 			SRHeapManager::Manager = new SRHeapManager();//Note(Tiago): These managers must always be alive so its fine if they are not cleaned up
 
 			SRHeapManager::mutex.unlock();
@@ -136,7 +143,7 @@ namespace DXR
 		return *SRHeapManager::Manager;
 	}
 
-	SRHeapManager::SRHeapManager() :HeapManager(srv_uav_cbv_heap_size, submanager_ammount)
+	SRHeapManager::SRHeapManager() :HeapManager(srv_uav_cbv_heap_size, submanager_ammount, DescriptorType::ConstantBufferView)
 	{
 	}
 
@@ -157,7 +164,7 @@ namespace DXR
 		return *SamplerHeapManager::Manager;
 	}
 
-	SamplerHeapManager::SamplerHeapManager() :HeapManager(sampler_heap_size, submanager_ammount)
+	SamplerHeapManager::SamplerHeapManager() :HeapManager(sampler_heap_size, submanager_ammount, DescriptorType::Sampler)
 	{
 	}
 

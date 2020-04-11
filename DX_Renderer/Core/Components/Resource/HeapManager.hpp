@@ -41,7 +41,7 @@ namespace DXR
 		IndexToSubManagerMap index_mapping;
 
 	public:
-		HeapManager(UINT HeapSize, UINT SubManagerCount);
+		HeapManager(UINT HeapSize, UINT SubManagerCount, DescriptorType Type);
 		uint32_t Allocate();
 		void Free(uint32_t index);
 	};

@@ -128,6 +128,8 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
 
+	auto value = DXR::SamplerHeapManager::GetManager().Allocate();
+
 	while (window.ShouldContinue)
 	{
 
