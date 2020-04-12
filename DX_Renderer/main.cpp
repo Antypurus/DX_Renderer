@@ -103,7 +103,7 @@ void MainDirectXThread(DXR::Window& window)
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({ 0.0f,0.0f,-10.0f,1.0f }, { 0.0f,0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f,0.0f });
-	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(1, 1, 1);
+	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.015f, 0.015f, 0.015f);
 
 	DirectX::XMMATRIX mvp = model * view * projection;
 	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, { mvp });
@@ -115,7 +115,7 @@ void MainDirectXThread(DXR::Window& window)
 	float x_rotation_angle = 0;
 	float y_rotation_angle = 1;
 	float z_rotation_angle = 0;
-	float scale = 1.0f;
+	float scale = 0.015f;
 
 	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sibenik/sibenik.obj");
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device,commandList);
@@ -127,7 +127,7 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::BLAS blas(device, commandList, vertex_buffer, index_buffer, true);
 	DXR::TLAS tlas;
-	tlas.AddInstance(blas, DirectX::XMMatrixIdentity(), 0);
+	tlas.AddInstance(blas, mvp, 0);
 	tlas.BuildTLAS(device, commandList);
 
 	DXR::RayGenSBTEntry raygen(rgs);
@@ -200,7 +200,7 @@ void MainDirectXThread(DXR::Window& window)
 			rays.Depth = 1;
 			rays.Width = swapchain.GetBackbufferResolution().Width;
 			rays.Height = swapchain.GetBackbufferResolution().Height;
-			//commandList->DispatchRays(&rays);
+			commandList->DispatchRays(&rays);
 
 			//rt_out.CopyToBackbuffer(commandList,swapchain);
 		}
