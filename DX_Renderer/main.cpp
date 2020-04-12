@@ -137,7 +137,9 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
 
 	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
-
+	
+	//VXGI::IGlobalIllumination::getVoxelizationViewParameters();
+	//VXGI::IGlobalIllumination::prepareForVoxelization();
 
 	while (window.ShouldContinue)
 	{
