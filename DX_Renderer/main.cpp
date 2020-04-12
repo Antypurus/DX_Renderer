@@ -23,6 +23,7 @@
 #include "Core/Components/Resource/HeapManager.hpp"
 #include "Model Loader/ModelLoader.hpp"
 #include "ThirdParty/VXGI/GFSDK_VXGI.h"
+#include "ThirdParty/VXGI/GFSDK_NVRHI_D3D12.h"
 
 void MainDirectXThread(DXR::Window& window)
 {
