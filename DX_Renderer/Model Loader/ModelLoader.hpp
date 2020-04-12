@@ -1,5 +1,5 @@
 #pragma once
-#include "../ThirdParty/tiny_obj_loader/tiny_obj_loader.h"
+
 #include "ModelVertex.hpp"
 #include <string>
 
@@ -15,13 +15,14 @@ namespace DXR
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
 	public:
-
+		OBJMesh() = default;
+		OBJMesh(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices);
 	};
 
 	struct OBJModelLoader
 	{
 	public:
-		static OBJMesh Load(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
+		static OBJMesh Load(const std::string& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
 	};
 
 }

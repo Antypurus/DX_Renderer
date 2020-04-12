@@ -21,7 +21,7 @@
 #include "Core/Components/RayTracing/RayTracingPipelineStateObject.hpp"
 #include "Core/Components/RayTracing/RayTracingOutput.hpp"
 #include "Core/Components/Resource/HeapManager.hpp"
-#include "ThirdParty/tiny_obj_loader/tiny_obj_loader.h"
+#include "Model Loader/ModelLoader.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -130,6 +130,8 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
 
 	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
+
+	auto model__load = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sibenik/sibenik.obj", device, commandList);
 
 	while (window.ShouldContinue)
 	{
