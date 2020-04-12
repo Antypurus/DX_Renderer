@@ -69,7 +69,7 @@ void MainDirectXThread(DXR::Window& window)
 		vs.GetShaderBytecode(),
 		ps.GetShaderBytecode(),
 		root_signature,
-		DXR::Vertex::GetInputLayout(),
+		DXR::OBJVertex::GetInputLayout(),
 		DXR::Swapchain::m_backbuffer_format,
 		DXR::DepthStencilBuffer::DepthStencilBufferFormat };
 
@@ -80,6 +80,7 @@ void MainDirectXThread(DXR::Window& window)
 	commandList.SetName(L"Main Command List");
 
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
+	/*
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
 		{
 			{{-0.5f, -0.5f,  -1.0f},	{0.0f,1.0f}},
@@ -91,6 +92,7 @@ void MainDirectXThread(DXR::Window& window)
 		{ 0,2,1,
 			1,3,2,
 		});
+		*/
 
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
 
@@ -115,6 +117,10 @@ void MainDirectXThread(DXR::Window& window)
 	float z_rotation_angle = 0;
 	float scale = 1.0f;
 
+	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sibenik/sibenik.obj");
+	auto vertex_buffer = sib_model.GenerateVertexBuffer(device,commandList);
+	auto index_buffer = sib_model.GenerateIndexBuffer(device,commandList);
+
 	DXR::GUI gui(device, window, swapchain);
 
 	DXR::RayTracingOutput rt_out(device, commandList, swapchain);
@@ -131,7 +137,6 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
 
-	auto model__load = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sibenik/sibenik.obj", device, commandList);
 
 	while (window.ShouldContinue)
 	{
@@ -195,7 +200,7 @@ void MainDirectXThread(DXR::Window& window)
 			rays.Depth = 1;
 			rays.Width = swapchain.GetBackbufferResolution().Width;
 			rays.Height = swapchain.GetBackbufferResolution().Height;
-			commandList->DispatchRays(&rays);
+			//commandList->DispatchRays(&rays);
 
 			//rt_out.CopyToBackbuffer(commandList,swapchain);
 		}

@@ -2,10 +2,13 @@
 
 #include "ModelLoader.hpp"
 #include "../ThirdParty/tiny_obj_loader/tiny_obj_loader.h"
+#include "../Core/Components/GraphicsDevice.hpp"
+#include "../Core/Components/Command List/GraphicsCommandList.hpp"
+#include "../Core/Components/Vertices/IndexBuffer.hpp"
 
 namespace DXR
 {
-	OBJMesh OBJModelLoader::Load(const std::string& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList)
+	OBJMesh OBJModelLoader::Load(const std::string& filepath)
 	{
 
 		tinyobj::attrib_t attrib;
@@ -16,49 +19,42 @@ namespace DXR
 		std::string err;
 
 		bool res = tinyobj::LoadObj(&attrib,&shapes,&materials,&warn,&err,filepath.c_str(),0,true);
-		if(!res || !warn.empty() || !err.empty())
+		if(!res || !err.empty())
 		{
 			//LOG LOAD FAIL
 			return OBJMesh();
 		}
 
+		if(!warn.empty())
+		{
+			//LOG Warning
+		}
+
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
 
-		// Loop over shapes
+		for(size_t vert = 0;vert<attrib.vertices.size()/3;++vert)
+		{
+			float pos_x = attrib.vertices[vert];
+			float pos_y = attrib.vertices[vert + 1];
+			float pos_z = attrib.vertices[vert + 2];
+
+			float normal_x = 0;
+			float normal_y = 0;
+			float normal_z = 0;
+
+			float tex_u = attrib.texcoords[vert];
+			float tex_v = attrib.texcoords[vert + 1];
+
+			float color_r = 0;
+			float color_g = 0;
+			float color_b = 0;
+
+			vertices.push_back({{pos_x,pos_y,pos_z},{normal_x,normal_y,normal_z},{tex_u,tex_v},{color_r,color_g,color_b}});
+		}
+
+		// Loop over shapes and get indices
 		for (size_t s = 0; s < shapes.size(); s++) {
-			// Loop over faces(polygon)
-			size_t index_offset = 0;
-			for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
-				int fv = shapes[s].mesh.num_face_vertices[f];
-
-				// Loop over vertices in the face.
-				for (size_t v = 0; v < fv; v++) {
-					// access to vertex
-					tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-					tinyobj::real_t vertex_x = attrib.vertices[3 * idx.vertex_index + 0];
-					tinyobj::real_t vertex_y = attrib.vertices[3 * idx.vertex_index + 1];
-					tinyobj::real_t vertex_z = attrib.vertices[3 * idx.vertex_index + 2];
-
-					tinyobj::real_t normal_x = attrib.normals[3 * idx.normal_index + 0];
-					tinyobj::real_t normal_y = attrib.normals[3 * idx.normal_index + 1];
-					tinyobj::real_t normal_z = attrib.normals[3 * idx.normal_index + 2];
-					
-					tinyobj::real_t tx = attrib.texcoords[2 * idx.texcoord_index + 0];
-					tinyobj::real_t ty = attrib.texcoords[2 * idx.texcoord_index + 1];
-					
-					tinyobj::real_t red = attrib.colors[3*idx.vertex_index+0];
-					tinyobj::real_t green = attrib.colors[3*idx.vertex_index+1];
-					tinyobj::real_t blue = attrib.colors[3*idx.vertex_index+2];
-
-					OBJVertex vertex = {{vertex_x,vertex_y,vertex_z},{normal_x,normal_y,normal_z},{tx,ty},{red,green,blue}};
-					vertices.push_back(vertex);
-				}
-				index_offset += fv;
-
-				// per-face material
-				shapes[s].mesh.material_ids[f];
-			}
 
 			for(size_t v = 0;v  < shapes[s].mesh.indices.size(); ++v)
 			{
@@ -75,5 +71,15 @@ namespace DXR
 	{
 		this->vertices = vertices;
 		this->indices = indices;
+	}
+
+	VertexBuffer<OBJVertex> OBJMesh::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
+	{
+		return VertexBuffer<OBJVertex>(Device,CommandList,this->vertices);
+	}
+
+	IndexBuffer OBJMesh::GenerateIndexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
+	{
+		return IndexBuffer(Device,CommandList,this->indices);
 	}
 }
