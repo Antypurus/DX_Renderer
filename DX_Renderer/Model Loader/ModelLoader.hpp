@@ -9,17 +9,19 @@ namespace DXR
 	struct GraphicsDevice;
 	struct GraphicsCommandList;
 
-	struct OBJModel
+	struct OBJMesh
 	{
 	public:
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
+	public:
+
 	};
 
 	struct OBJModelLoader
 	{
 	public:
-		static OBJModel Load(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
+		static OBJMesh Load(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
 	};
 
 }
