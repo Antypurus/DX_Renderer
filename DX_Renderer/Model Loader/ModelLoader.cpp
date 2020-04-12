@@ -18,14 +18,14 @@ namespace DXR
 		std::string warn;
 		std::string err;
 
-		bool res = tinyobj::LoadObj(&attrib,&shapes,&materials,&warn,&err,filepath.c_str(),0,true);
-		if(!res || !err.empty())
+		bool res = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str(), 0, true);
+		if (!res || !err.empty())
 		{
 			//LOG LOAD FAIL
 			return OBJMesh();
 		}
 
-		if(!warn.empty())
+		if (!warn.empty())
 		{
 			//LOG Warning
 		}
@@ -33,38 +33,33 @@ namespace DXR
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
 
-		for(size_t vert = 0;vert<attrib.vertices.size()/3;++vert)
+		for (const auto& shape : shapes)
 		{
-			float pos_x = attrib.vertices[vert];
-			float pos_y = attrib.vertices[vert + 1];
-			float pos_z = attrib.vertices[vert + 2];
-
-			float normal_x = 0;
-			float normal_y = 0;
-			float normal_z = 0;
-
-			float tex_u = attrib.texcoords[vert];
-			float tex_v = attrib.texcoords[vert + 1];
-
-			float color_r = 0;
-			float color_g = 0;
-			float color_b = 0;
-
-			vertices.push_back({{pos_x,pos_y,pos_z},{normal_x,normal_y,normal_z},{tex_u,tex_v},{color_r,color_g,color_b}});
-		}
-
-		// Loop over shapes and get indices
-		for (size_t s = 0; s < shapes.size(); s++) {
-
-			for(size_t v = 0;v  < shapes[s].mesh.indices.size(); ++v)
+			for (const auto& index : shape.mesh.indices)
 			{
-				tinyobj::index_t idx = shapes[s].mesh.indices[v];
-				indices.push_back(idx.vertex_index);
-			}
+				XMFLOAT3 pos = {
+					attrib.vertices[3 * index.vertex_index + 0],
+					attrib.vertices[3 * index.vertex_index + 1],
+					attrib.vertices[3 * index.vertex_index + 2]
+				};
 
+				XMFLOAT2 uv = {
+					attrib.texcoords[2 * index.texcoord_index + 0],
+					1.0f - attrib.texcoords[2 * index.texcoord_index + 1],
+				};
+
+				XMFLOAT3 normal = {
+					0,0,0
+				};
+
+				XMFLOAT3 color = {0.0f,0.0f,0.0f};
+
+				vertices.push_back({pos,normal,uv,color});
+				indices.push_back(indices.size());
+			}
 		}
 
-		return OBJMesh(vertices,indices);
+		return OBJMesh(vertices, indices);
 	}
 
 	OBJMesh::OBJMesh(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices)
@@ -75,11 +70,11 @@ namespace DXR
 
 	VertexBuffer<OBJVertex> OBJMesh::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
-		return VertexBuffer<OBJVertex>(Device,CommandList,this->vertices);
+		return VertexBuffer<OBJVertex>(Device, CommandList, this->vertices);
 	}
 
 	IndexBuffer OBJMesh::GenerateIndexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
-		return IndexBuffer(Device,CommandList,this->indices);
+		return IndexBuffer(Device, CommandList, this->indices);
 	}
 }
