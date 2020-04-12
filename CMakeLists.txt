@@ -24,7 +24,8 @@ target_link_libraries(DX_Renderer PRIVATE
         "d3dcompiler.lib" 
         "windowscodecs.lib"
         "dxcompiler.lib"
-		"./DX_Renderer/ThirdParty/VXGI/GFSDK_VXGI_x64")
+		"./DX_Renderer/ThirdParty/VXGI/GFSDK_VXGI_x64"
+		"./DX_Renderer/ThirdParty/NVAPI/nvapi64")
 		
 add_custom_command(
 	TARGET DX_Renderer PRE_BUILD #Adds a post-build event

@@ -22,6 +22,7 @@
 #include "Core/Components/RayTracing/RayTracingOutput.hpp"
 #include "Core/Components/Resource/HeapManager.hpp"
 #include "Model Loader/ModelLoader.hpp"
+#include "ThirdParty/VXGI/GFSDK_VXGI.h"
 
 void MainDirectXThread(DXR::Window& window)
 {
