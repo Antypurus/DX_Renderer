@@ -22,14 +22,15 @@
 #include "Core/Components/RayTracing/RayTracingOutput.hpp"
 #include "Core/Components/Resource/HeapManager.hpp"
 #include "Model Loader/ModelLoader.hpp"
-#include "ThirdParty/VXGI/GFSDK_VXGI.h"
-#include "ThirdParty/VXGI/GFSDK_NVRHI_D3D12.h"
+#include "Voxel/VXGI.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
-
+    
 	DXR::GraphicsDevice device;
+    
+	DXR::SceneVoxelizer voxelizer(device);
 
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", L"VSMain");
 	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", L"PSMain");
@@ -38,34 +39,34 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::AnyHitShader ah = DXR::AnyHitShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"anyhit");
 	DXR::ClosestHitShader chs = DXR::ClosestHitShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"closesthit");
 	DXR::MissShader ms = DXR::MissShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"miss");
-
+    
 	DXR::RootSignature root_signature;
-
+    
 	DXR::DescriptorTableRootParameter uav_desc_table;
 	uav_desc_table.AddUAVEntry(0);
-
+    
 	DXR::DescriptorTableRootParameter srv_desc_table;
 	srv_desc_table.AddSRVEntry(0);
-
+    
 	DXR::DescriptorTableRootParameter sampler_desc_table;
 	sampler_desc_table.AddSamplerEntry(0);
-
+    
 	root_signature.AddDescriptorTableRootParameter(uav_desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
-
+    
 	DXR::DescriptorRootParameter cbv_root_parameter(DXR::RootParameterDescriptorType::CBV, 0);
 	root_signature.AddDescriptorRootParameter(cbv_root_parameter);
-
+    
 	DXR::DescriptorRootParameter acceleration_structure_root_parameter(DXR::RootParameterDescriptorType::SRV, 1);
 	root_signature.AddDescriptorRootParameter(acceleration_structure_root_parameter);
-
+    
 	root_signature.CreateRootSignature(device);
-
+    
 	DXR::RayTracingPipelineStateObject rtpso = {
 		device,root_signature,rgs,ints,ah,chs,ms
 	};
-
+    
 	DXR::PipelineStateObject pso = {
 		device,
 		vs.GetShaderBytecode(),
@@ -74,13 +75,13 @@ void MainDirectXThread(DXR::Window& window)
 		DXR::OBJVertex::GetInputLayout(),
 		DXR::Swapchain::m_backbuffer_format,
 		DXR::DepthStencilBuffer::DepthStencilBufferFormat };
-
+    
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
-
+    
 	commandList.FullReset(pso);
 	commandList.SetName(L"Main Command List");
-
+    
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
 	/*
 	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
@@ -95,66 +96,66 @@ void MainDirectXThread(DXR::Window& window)
 			1,3,2,
 		});
 		*/
-
+    
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
-
+    
 	commandList->Close();
-
+    
 	device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 	device.GetGraphicsCommandQueue().Flush(fence);
-
+    
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({ 0.0f,0.0f,-10.0f,1.0f }, { 0.0f,0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f,0.0f });
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.015f, 0.015f, 0.015f);
-
+    
 	DirectX::XMMATRIX mvp = model * view * projection;
 	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, { mvp });
-
+    
 	commandList.FullReset(pso);
-
+    
 	FLOAT color[4] = { 0.4f, 0.6f, 0.9f, 1.0f };
-
+    
 	float x_rotation_angle = 0;
 	float y_rotation_angle = 1;
 	float z_rotation_angle = 0;
 	float scale = 0.015f;
-
+    
 	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sibenik/sibenik.obj");
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device,commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device,commandList);
-
+    
 	DXR::GUI gui(device, window, swapchain);
-
+    
 	DXR::RayTracingOutput rt_out(device, commandList, swapchain);
-
+    
 	DXR::BLAS blas(device, commandList, vertex_buffer, index_buffer, true);
 	DXR::TLAS tlas;
 	tlas.AddInstance(blas, mvp, 0);
 	tlas.BuildTLAS(device, commandList);
-
+    
 	DXR::RayGenSBTEntry raygen(rgs);
 	raygen.AddResource(rt_out.GetGPUHandle());
 	DXR::MissSBTEntry miss(ms);
 	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
-
+    
 	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
 	
 	//VXGI::IGlobalIllumination::getVoxelizationViewParameters();
 	//VXGI::IGlobalIllumination::prepareForVoxelization();
-
+    
 	while (window.ShouldContinue)
 	{
-
+        
 		// Start the Dear ImGui frame
 		gui.StartFrame();
-
+        
 		ImGui::Begin("Window");
 		ImGui::SliderAngle("X Rotation", &x_rotation_angle);
 		ImGui::SliderAngle("Y Rotation", &y_rotation_angle);
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
 		ImGui::SliderFloat("Model Scale", &scale, 0, 10);
 		ImGui::End();
-
+        
 		{
 			model = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
@@ -163,31 +164,31 @@ void MainDirectXThread(DXR::Window& window)
 			mvp = model * view * projection;
 			constant_buffer.UpdateData({ mvp });
 		}
-
+        
 		commandList.SetGraphicsRootSignature(root_signature);
-		commandList->SetComputeRootSignature(root_signature.GetRootSignature());//NOTE(Tiago):Placeholder
+		commandList->SetComputeRootSignature(root_signature.GetRootSignature());//NOTE(Tiago):Placeholder, need to create an light abstraction to bind the compute root signature, which in this case is used for the RT pipeline
 		swapchain.Prepare(commandList);
-
+        
 		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
 		swapchain.GetDepthStencilBuffer().Clear(commandList);
 		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
-
+        
 		commandList.BindDescriptorHeaps({ &DXR::SRHeapManager::GetManager().descriptor_heap, &DXR::SamplerHeapManager::GetManager().descriptor_heap });
-
+        
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
-
+        
 		commandList.BindConstantBuffer(constant_buffer, 0);
 		commandList.BindTexture(texture, 3, 4);
-
+        
 		commandList.SendDrawCall();
-
+        
 		{
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
-
+            
 			commandList.BindTLAS(tlas, 1);
 			rt_out.Bind(commandList,2);
-
+            
 			D3D12_DISPATCH_RAYS_DESC rays = {};
 			
 			rays.HitGroupTable.StartAddress = sbtable.GetHitGroupEntryAddress();
@@ -205,38 +206,38 @@ void MainDirectXThread(DXR::Window& window)
 			rays.Width = swapchain.GetBackbufferResolution().Width;
 			rays.Height = swapchain.GetBackbufferResolution().Height;
 			commandList->DispatchRays(&rays);
-
+            
 			//rt_out.CopyToBackbuffer(commandList,swapchain);
 		}
-
+        
 		gui.Render(commandList);
-
+        
 		swapchain.PrepareBackbufferForPresentation(commandList);
-
+        
 		commandList.Close();
 		device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
-
+        
 		swapchain.Present();
-
+        
 		device.GetGraphicsCommandQueue().Flush(fence);
-
+        
 		commandList.FullReset(pso);
 	}
-
+    
 }
 
 int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine, int nCmdShow)
+                            LPSTR lpCmdLine, int nCmdShow)
 {
 	DXR::Window window{ hInstance,nCmdShow,{1280,720},"DX Renderer" };
-
+    
 	std::thread main_dx12_thread(MainDirectXThread, std::ref(window));
-
+    
 	while (window.ShouldContinue)
 	{
 		window.UpdateWindow();
 	}
-
+    
 	main_dx12_thread.join();
 	return 0;
 }
