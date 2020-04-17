@@ -20,13 +20,19 @@ namespace DXR
         
         XMFLOAT3 right_direction = {0,0,0};
         
-        const float keyboard_intensity = 0.05;
+        const float keyboard_intensity = 0.05f;
+        const float mouse_intensity = 0.05f;
         
         mutable bool has_changed = true;
         mutable XMMATRIX view_matrix;
         
         float pitch = 0; //NOTE(Tiago): x-axis rotation
         float yaw = 0;   //NOTE(Tiago): y-axis rotation
+        
+        bool is_mouse_button_pressed = false; //NOTE(Tiago): Used to controll if the mouse button is down
+        bool is_first_capture = true; //NOTE(Tiago): Indicates weather this is the first time the mouse position is captured
+        int previous_mouse_x;
+        int previous_mouse_y;
         
         Camera(const XMFLOAT3& position = {0,0,1}, const XMFLOAT3& view_direction = {0,0,-1});
         XMMATRIX ViewMatrix() const;

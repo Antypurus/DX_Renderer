@@ -4,6 +4,7 @@
 #include "../Core/Windows Abstractions/Window.hpp"
 
 #include <cmath>
+#include <Windowsx.h>
 
 namespace DXR
 {
@@ -155,9 +156,9 @@ namespace DXR
     {
         has_changed = true;
         position = {
-            position.x - right_direction.x * intensity,
-            position.y - right_direction.y * intensity,
-            position.z - right_direction.z * intensity
+            position.x + right_direction.x * intensity,
+            position.y + right_direction.y * intensity,
+            position.z + right_direction.z * intensity
         };
     }
     
@@ -165,9 +166,9 @@ namespace DXR
     {
         has_changed = true;
         position = {
-            position.x + right_direction.x * intensity,
-            position.y + right_direction.y * intensity,
-            position.z + right_direction.z * intensity
+            position.x - right_direction.x * intensity,
+            position.y - right_direction.y * intensity,
+            position.z - right_direction.z * intensity
         };
     }
     
@@ -179,14 +180,50 @@ namespace DXR
     
     void Camera::HookMouseControlls()
     {
+        //TODO(Tiago): What is the point of having the callback receive the message type? It is just creating confusion! refactor this!
+        //NOTE(Tiago): Register callback for when left mouse button is pressed
 		Window* window = Window::GetCurrentWindowHandle();
-		WindowEventMessageCallback callback;
-		callback.message = WM_KEYDOWN;
+		WindowEventMessageCallback mouse_button_down_callback;
+		mouse_button_down_callback.message = WM_LBUTTONDOWN;
+		mouse_button_down_callback.module = "Camera";
+		mouse_button_down_callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
+		{
+            this->is_mouse_button_pressed = true;
+		};
+		window->RegisterWindowEventCallback(WM_LBUTTONDOWN, mouse_button_down_callback);
+        //NOTE(Tiago): Register callback for when left mouse button is lifted
+        WindowEventMessageCallback mouse_button_up_callback;
+		mouse_button_up_callback.message = WM_LBUTTONUP;
+		mouse_button_up_callback.module = "Camera";
+		mouse_button_up_callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
+		{
+            this->is_mouse_button_pressed = false;
+		};
+		window->RegisterWindowEventCallback(WM_LBUTTONUP, mouse_button_up_callback);
+        //NOTE(Tiago): Register Callback for mouse movement
+        WindowEventMessageCallback callback;
+		callback.message = WM_MOUSEMOVE;
 		callback.module = "Camera";
 		callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
 		{
+            int x_mouse_pos = GET_X_LPARAM(lParam);
+            int y_mouse_pos = GET_Y_LPARAM(lParam);
+            int x_delta = x_mouse_pos - this->previous_mouse_x;
+            int y_delta = y_mouse_pos - this->previous_mouse_y;
+            this->previous_mouse_x = x_mouse_pos;
+            this->previous_mouse_y = y_mouse_pos;
+            if(this->is_first_capture)
+            {
+                this->is_first_capture = false;
+                return;
+            }
+            if(this->is_mouse_button_pressed)
+            {
+                //TODO(Tiago): This way the ammount moved will depend on screen size i think, which is overall not good, so i might need to fix that
+                this->DeltaRotate(-y_delta * this->mouse_intensity,x_delta * this->mouse_intensity);
+            }
 		};
-		window->RegisterWindowEventCallback(WM_KEYDOWN, callback);
+		window->RegisterWindowEventCallback(WM_MOUSEMOVE, callback);
     }
     
     void Camera::HookKeyboardControlls()
