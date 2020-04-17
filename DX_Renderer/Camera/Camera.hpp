@@ -7,6 +7,11 @@ namespace DXR
     
     using namespace DirectX;
     
+#define W_KEY 0x57
+#define A_KEY 0x41
+#define S_KEY 0x53
+#define D_KEY 0x44
+    
     struct Camera
     {
         XMFLOAT3 position = {0,0,0};
@@ -14,6 +19,8 @@ namespace DXR
         XMFLOAT3 up_direction = {0,1,0};
         
         XMFLOAT3 right_direction = {0,0,0};
+        
+        const float keyboard_intensity = 0.05;
         
         mutable bool has_changed = true;
         mutable XMMATRIX view_matrix;
@@ -35,6 +42,9 @@ namespace DXR
         
         private:
         void UpdateRightDirection();
+        void HookControlls();
+        void HookMouseControlls();
+        void HookKeyboardControlls();
     };
     
 }

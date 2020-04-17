@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 
 #include "Camera.hpp"
+#include "../Core/Windows Abstractions/Window.hpp"
+
 #include <cmath>
 
 namespace DXR
@@ -13,6 +15,7 @@ namespace DXR
         this->position = position;
         this->view_direction = view_direction;
         UpdateRightDirection();
+        HookControlls();
     }
     
     XMMATRIX Camera::ViewMatrix() const
@@ -168,4 +171,41 @@ namespace DXR
         };
     }
     
+    void Camera::HookControlls()
+    {
+        this->HookMouseControlls();
+        this->HookKeyboardControlls();
+    }
+    
+    void Camera::HookMouseControlls()
+    {
+		Window* window = Window::GetCurrentWindowHandle();
+		WindowEventMessageCallback callback;
+		callback.message = WM_KEYDOWN;
+		callback.module = "Camera";
+		callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
+		{
+		};
+		window->RegisterWindowEventCallback(WM_KEYDOWN, callback);
+    }
+    
+    void Camera::HookKeyboardControlls()
+    {
+        Window* window = Window::GetCurrentWindowHandle();
+        WindowEventMessageCallback callback;
+        callback.message = WM_KEYDOWN;
+        callback.module = "Camera";
+        callback.callback = [this](HWND window_instance, UINT message, WPARAM key, LPARAM lParam)
+        {
+            switch(key)
+            {
+                case(W_KEY):this->Forward(this->keyboard_intensity);break;
+                case(S_KEY):this->Backward(this->keyboard_intensity);break;
+                case(A_KEY):this->Left(this->keyboard_intensity);break;
+                case(D_KEY):this->Right(this->keyboard_intensity);break;
+                default:break;
+            }
+        };
+        window->RegisterWindowEventCallback(WM_KEYDOWN,callback);
+    }
 }
