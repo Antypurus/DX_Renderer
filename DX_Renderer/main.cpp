@@ -23,6 +23,8 @@
 #include "Core/Components/Resource/HeapManager.hpp"
 #include "Model Loader/ModelLoader.hpp"
 #include "Voxel/VXGI.hpp"
+#include "Camera/Camera.hpp"
+
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -104,8 +106,10 @@ void MainDirectXThread(DXR::Window& window)
 	device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 	device.GetGraphicsCommandQueue().Flush(fence);
     
+    DXR::Camera cam({0,0,-10},{0,0,1});
+    
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
-	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH({ 0.0f,0.0f,-10.0f,1.0f }, { 0.0f,0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f,0.0f });
+	DirectX::XMMATRIX view = cam.ViewMatrix();
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.015f, 0.015f, 0.015f);
     
 	DirectX::XMMATRIX mvp = model * view * projection;
@@ -153,7 +157,7 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::SliderAngle("X Rotation", &x_rotation_angle);
 		ImGui::SliderAngle("Y Rotation", &y_rotation_angle);
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
-		ImGui::SliderFloat("Model Scale", &scale, 0, 10);
+		ImGui::SliderFloat("Model Scale", &scale, 0, 1);
 		ImGui::End();
         
 		{
