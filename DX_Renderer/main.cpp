@@ -30,7 +30,7 @@ void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
     
-    DXR::GraphicsDevice device;
+	DXR::GraphicsDevice device;
     
 	DXR::SceneVoxelizer voxelizer(device);
     
@@ -106,7 +106,7 @@ void MainDirectXThread(DXR::Window& window)
 	device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 	device.GetGraphicsCommandQueue().Flush(fence);
     
-    DXR::Camera cam({0,0,-10},{0,0,1});
+	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
     
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
@@ -125,8 +125,8 @@ void MainDirectXThread(DXR::Window& window)
 	float scale = 0.015f;
     
 	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sibenik/sibenik.obj");
-	auto vertex_buffer = sib_model.GenerateVertexBuffer(device,commandList);
-	auto index_buffer = sib_model.GenerateIndexBuffer(device,commandList);
+	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
+	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
     
 	DXR::GUI gui(device, window, swapchain);
     
@@ -142,10 +142,13 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::MissSBTEntry miss(ms);
 	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
     
-	DXR::ShaderBindingTable sbtable(device,rtpso,raygen,miss,hitgroup);
-	
+	DXR::ShaderBindingTable sbtable(device, rtpso, raygen, miss, hitgroup);
+    
 	//VXGI::IGlobalIllumination::getVoxelizationViewParameters();
 	//VXGI::IGlobalIllumination::prepareForVoxelization();
+    
+    float cam_view_pitch_delta = 0;
+    float cam_view_yaw_delta = 0;
     
 	while (window.ShouldContinue)
 	{
@@ -158,11 +161,19 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::SliderAngle("Y Rotation", &y_rotation_angle);
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
 		ImGui::SliderFloat("Model Scale", &scale, 0, 1);
+        
+		ImGui::InputFloat("Camera Pitch Delta", &cam_view_pitch_delta);
+		ImGui::InputFloat("Camera Yaw Delta", &cam_view_yaw_delta);
+		if(ImGui::Button("Rotate Camera View"))
+		{
+			cam.Rotate(cam_view_pitch_delta,cam_view_yaw_delta);
+		}
+        
 		ImGui::End();
         
 		{
-            ///NOTE(Tiago): The view matrix will only update if the camera parameters have changed
-            view = cam.ViewMatrix();
+			///NOTE(Tiago): The view matrix will only update if the camera parameters have changed
+			view = cam.ViewMatrix();
             
 			model = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
@@ -194,21 +205,21 @@ void MainDirectXThread(DXR::Window& window)
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
             
 			commandList.BindTLAS(tlas, 1);
-			rt_out.Bind(commandList,2);
+			rt_out.Bind(commandList, 2);
             
 			D3D12_DISPATCH_RAYS_DESC rays = {};
-			
+            
 			rays.HitGroupTable.StartAddress = sbtable.GetHitGroupEntryAddress();
 			rays.HitGroupTable.StrideInBytes = sbtable.GetHitGroupSectionSize();
 			rays.HitGroupTable.SizeInBytes = sbtable.GetHitGroupEntrySize();
-			
+            
 			rays.MissShaderTable.StartAddress = sbtable.GetMissEntryAddress();
 			rays.MissShaderTable.StrideInBytes = sbtable.GetMissEntrySize();
 			rays.MissShaderTable.SizeInBytes = sbtable.GetMissEntrySize();
-			
+            
 			rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
 			rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
-			
+            
 			rays.Depth = 1;
 			rays.Width = swapchain.GetBackbufferResolution().Width;
 			rays.Height = swapchain.GetBackbufferResolution().Height;

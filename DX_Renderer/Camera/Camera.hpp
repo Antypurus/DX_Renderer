@@ -16,8 +16,13 @@ namespace DXR
         mutable bool has_changed = true;
         mutable XMMATRIX view_matrix;
         
+        float pitch = 0; //NOTE(Tiago): x-axis rotation
+        float yaw = 0;   //NOTE(Tiago): y-axis rotation
+        
         Camera(const XMFLOAT3& position = {0,0,1}, const XMFLOAT3& view_direction = {0,0,-1});
         XMMATRIX ViewMatrix() const;
+        void Rotate(float pitch_delta = 0, float yaw_delta = 0);
+        void Move(float x_delta = 0, float y_delta =0, float z_delta = 0);
     };
     
 }
