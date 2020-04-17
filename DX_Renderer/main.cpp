@@ -173,7 +173,7 @@ void MainDirectXThread(DXR::Window& window)
 		}
         
 		commandList.SetGraphicsRootSignature(root_signature);
-		commandList->SetComputeRootSignature(root_signature.GetRootSignature());//NOTE(Tiago):Placeholder, need to create an light abstraction to bind the compute root signature, which in this case is used for the RT pipeline
+		commandList->SetComputeRootSignature(root_signature.GetRootSignature());//NOTE(Tiago):Placeholder, need to create an lite abstraction to bind the compute root signature, which in this case is used for the RT pipeline
 		swapchain.Prepare(commandList);
         
 		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
