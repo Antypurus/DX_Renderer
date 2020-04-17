@@ -161,6 +161,7 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::End();
         
 		{
+            ///TODO(Tiago): Optimize this to only update the view matrix if its parameters are actually changed
             view = cam.ViewMatrix();
             
 			model = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
