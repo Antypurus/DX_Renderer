@@ -12,6 +12,7 @@ namespace DXR
     {
         this->position = position;
         this->view_direction = view_direction;
+        UpdateRightDirection();
     }
     
     XMMATRIX Camera::ViewMatrix() const
@@ -43,12 +44,12 @@ namespace DXR
         };
         view_direction_vector = XMVector3Rotate(view_direction_vector,rotation_quat);
         XMStoreFloat3(&view_direction,view_direction_vector); //NOTE(Tiago): Converts the vector to a float3
+        UpdateRightDirection();
     }
     
     void Camera::Rotate(float pitch, float yaw)
     {
         has_changed = true;
-        
         if(pitch > 90)
         {
             pitch = 90;
@@ -56,13 +57,10 @@ namespace DXR
         {
             pitch = -90;
         }
-        
         float pitch_delta = pitch - this->pitch;
         float yaw_delta = yaw = this->yaw;
-        
         this->pitch = pitch;
         this->yaw = yaw;
-        
         XMVECTOR rotation_quat = XMQuaternionRotationRollPitchYaw(ToRadian(pitch_delta),ToRadian(yaw_delta),0);
         XMVECTOR view_direction_vector = {
             view_direction.x,
@@ -72,12 +70,12 @@ namespace DXR
         };
         view_direction_vector = XMVector3Rotate(view_direction_vector,rotation_quat);
         XMStoreFloat3(&view_direction,view_direction_vector); //NOTE(Tiago): Converts the vector to a float3
+        UpdateRightDirection();
     }
     
     void Camera::DeltaRotate(float pitch_delta, float yaw_delta)
     {
         has_changed = true;
-        
         pitch += pitch_delta;
         if(pitch > 90.0f)
         {
@@ -88,9 +86,7 @@ namespace DXR
             pitch_delta = -90.0 - pitch;
             pitch = -90.0f;
         }
-        
         yaw += yaw_delta;
-        
         XMVECTOR rotation_quat = XMQuaternionRotationRollPitchYaw(ToRadian(pitch_delta),ToRadian(yaw_delta),0);
         XMVECTOR view_direction_vector = {
             view_direction.x,
@@ -100,6 +96,7 @@ namespace DXR
         };
         view_direction_vector = XMVector3Rotate(view_direction_vector,rotation_quat);
         XMStoreFloat3(&view_direction,view_direction_vector); //NOTE(Tiago): Converts the vector to a float3
+        UpdateRightDirection();
     }
     
     void Camera::Move(float x_delta, float y_delta, float z_delta)
@@ -112,6 +109,63 @@ namespace DXR
     {
         has_changed = true;
         position = {x,y,z};
+    }
+    
+    void Camera::UpdateRightDirection()
+    {
+        XMVECTOR right_direction_vector;
+        XMVECTOR view_direction_vector = {
+            view_direction.x,
+            view_direction.y,
+            view_direction.z
+        };
+        XMVECTOR up_direction_vector = {
+            up_direction.x,
+            up_direction.y,
+            up_direction.z
+        };
+        right_direction_vector = XMVector3Cross(view_direction_vector,up_direction_vector);
+        XMStoreFloat3(&right_direction, right_direction_vector);
+    }
+    
+    void Camera::Forward(float intensity)
+    {
+        has_changed = true;
+        position = {
+            position.x + view_direction.x * intensity,
+            position.y + view_direction.y * intensity,
+            position.z + view_direction.z * intensity
+        };
+    }
+    
+    void Camera::Backward(float intensity)
+    {
+        has_changed = true;
+        position = {
+            position.x - view_direction.x * intensity,
+            position.y - view_direction.y * intensity,
+            position.z - view_direction.z * intensity
+        };
+    }
+    
+    void Camera::Left(float intensity)
+    {
+        has_changed = true;
+        position = {
+            position.x - right_direction.x * intensity,
+            position.y - right_direction.y * intensity,
+            position.z - right_direction.z * intensity
+        };
+    }
+    
+    void Camera::Right(float intensity)
+    {
+        has_changed = true;
+        position = {
+            position.x + right_direction.x * intensity,
+            position.y + right_direction.y * intensity,
+            position.z + right_direction.z * intensity
+        };
     }
     
 }
