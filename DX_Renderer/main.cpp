@@ -161,6 +161,8 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::End();
         
 		{
+            view = cam.ViewMatrix();
+            
 			model = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,0.0f,1.0f }, z_rotation_angle);
