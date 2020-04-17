@@ -147,9 +147,6 @@ void MainDirectXThread(DXR::Window& window)
 	//VXGI::IGlobalIllumination::getVoxelizationViewParameters();
 	//VXGI::IGlobalIllumination::prepareForVoxelization();
     
-    float cam_view_pitch_delta = 0;
-    float cam_view_yaw_delta = 0;
-    
 	while (window.ShouldContinue)
 	{
         
@@ -162,84 +159,82 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
 		ImGui::SliderFloat("Model Scale", &scale, 0, 1);
         
-		ImGui::InputFloat("Camera Pitch Delta", &cam_view_pitch_delta);
-		ImGui::InputFloat("Camera Yaw Delta", &cam_view_yaw_delta);
-		if(ImGui::Button("Rotate Camera View"))
-		{
-			cam.Rotate(cam_view_pitch_delta,cam_view_yaw_delta);
-		}
+		ImGui::SliderFloat("Camera View Pitch", &cam.pitch, -90,90);
+        ImGui::SliderFloat("Camera View Yaw", &cam.yaw, 0,360);
         
-		ImGui::End();
+        cam.Rotate();
         
-		{
-			///NOTE(Tiago): The view matrix will only update if the camera parameters have changed
-			view = cam.ViewMatrix();
+        ImGui::End();
+        
+        {
+            ///NOTE(Tiago): The view matrix will only update if the camera parameters have changed
+            view = cam.ViewMatrix();
             
-			model = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
-			model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
-			model *= DirectX::XMMatrixRotationAxis({ 0.0f,0.0f,1.0f }, z_rotation_angle);
-			model *= DirectX::XMMatrixScaling(scale, scale, scale);
-			mvp = model * view * projection;
-			constant_buffer.UpdateData({ mvp });
-		}
+            model = DirectX::XMMatrixRotationAxis({ 1.0f,0.0f,0.0f }, x_rotation_angle);
+            model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
+            model *= DirectX::XMMatrixRotationAxis({ 0.0f,0.0f,1.0f }, z_rotation_angle);
+            model *= DirectX::XMMatrixScaling(scale, scale, scale);
+            mvp = model * view * projection;
+            constant_buffer.UpdateData({ mvp });
+        }
         
-		commandList.SetGraphicsRootSignature(root_signature);
-		commandList->SetComputeRootSignature(root_signature.GetRootSignature());//NOTE(Tiago):Placeholder, need to create an lite abstraction to bind the compute root signature, which in this case is used for the RT pipeline
-		swapchain.Prepare(commandList);
+        commandList.SetGraphicsRootSignature(root_signature);
+        commandList->SetComputeRootSignature(root_signature.GetRootSignature());//NOTE(Tiago):Placeholder, need to create an lite abstraction to bind the compute root signature, which in this case is used for the RT pipeline
+        swapchain.Prepare(commandList);
         
-		swapchain.GetCurrentBackBuffer().Clear(commandList, color);
-		swapchain.GetDepthStencilBuffer().Clear(commandList);
-		commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
+        swapchain.GetCurrentBackBuffer().Clear(commandList, color);
+        swapchain.GetDepthStencilBuffer().Clear(commandList);
+        commandList.SetDisplayRenderTarget(swapchain.GetCurrentBackBuffer(), swapchain.GetDepthStencilBuffer());
         
-		commandList.BindDescriptorHeaps({ &DXR::SRHeapManager::GetManager().descriptor_heap, &DXR::SamplerHeapManager::GetManager().descriptor_heap });
+        commandList.BindDescriptorHeaps({ &DXR::SRHeapManager::GetManager().descriptor_heap, &DXR::SamplerHeapManager::GetManager().descriptor_heap });
         
-		commandList.BindVertexBuffer(vertex_buffer);
-		commandList.BindIndexBuffer(index_buffer);
+        commandList.BindVertexBuffer(vertex_buffer);
+        commandList.BindIndexBuffer(index_buffer);
         
-		commandList.BindConstantBuffer(constant_buffer, 0);
-		commandList.BindTexture(texture, 3, 4);
+        commandList.BindConstantBuffer(constant_buffer, 0);
+        commandList.BindTexture(texture, 3, 4);
         
-		commandList.SendDrawCall();
+        commandList.SendDrawCall();
         
-		{
-			commandList->SetPipelineState1(rtpso.GetRTPSO());
+        {
+            commandList->SetPipelineState1(rtpso.GetRTPSO());
             
-			commandList.BindTLAS(tlas, 1);
-			rt_out.Bind(commandList, 2);
+            commandList.BindTLAS(tlas, 1);
+            rt_out.Bind(commandList, 2);
             
-			D3D12_DISPATCH_RAYS_DESC rays = {};
+            D3D12_DISPATCH_RAYS_DESC rays = {};
             
-			rays.HitGroupTable.StartAddress = sbtable.GetHitGroupEntryAddress();
-			rays.HitGroupTable.StrideInBytes = sbtable.GetHitGroupSectionSize();
-			rays.HitGroupTable.SizeInBytes = sbtable.GetHitGroupEntrySize();
+            rays.HitGroupTable.StartAddress = sbtable.GetHitGroupEntryAddress();
+            rays.HitGroupTable.StrideInBytes = sbtable.GetHitGroupSectionSize();
+            rays.HitGroupTable.SizeInBytes = sbtable.GetHitGroupEntrySize();
             
-			rays.MissShaderTable.StartAddress = sbtable.GetMissEntryAddress();
-			rays.MissShaderTable.StrideInBytes = sbtable.GetMissEntrySize();
-			rays.MissShaderTable.SizeInBytes = sbtable.GetMissEntrySize();
+            rays.MissShaderTable.StartAddress = sbtable.GetMissEntryAddress();
+            rays.MissShaderTable.StrideInBytes = sbtable.GetMissEntrySize();
+            rays.MissShaderTable.SizeInBytes = sbtable.GetMissEntrySize();
             
-			rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
-			rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
+            rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
+            rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
             
-			rays.Depth = 1;
-			rays.Width = swapchain.GetBackbufferResolution().Width;
-			rays.Height = swapchain.GetBackbufferResolution().Height;
-			commandList->DispatchRays(&rays);
+            rays.Depth = 1;
+            rays.Width = swapchain.GetBackbufferResolution().Width;
+            rays.Height = swapchain.GetBackbufferResolution().Height;
+            commandList->DispatchRays(&rays);
             
-			//rt_out.CopyToBackbuffer(commandList,swapchain);
-		}
+            //rt_out.CopyToBackbuffer(commandList,swapchain);
+        }
         
-		gui.Render(commandList);
+        gui.Render(commandList);
         
-		swapchain.PrepareBackbufferForPresentation(commandList);
+        swapchain.PrepareBackbufferForPresentation(commandList);
         
-		commandList.Close();
-		device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
+        commandList.Close();
+        device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
         
-		swapchain.Present();
+        swapchain.Present();
         
-		device.GetGraphicsCommandQueue().Flush(fence);
+        device.GetGraphicsCommandQueue().Flush(fence);
         
-		commandList.FullReset(pso);
+        commandList.FullReset(pso);
 	}
     
 }
