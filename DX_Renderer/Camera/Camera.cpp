@@ -11,13 +11,17 @@ namespace DXR
     
     XMMATRIX Camera::ViewMatrix() const
     {
-        XMVECTOR focus_position = {
-            position.x + view_direction.x,
-            position.y + view_direction.y,
-            position.z + view_direction.z,1.0f};
-        return XMMatrixLookAtLH({position.x,position.y,position.z,1.0f},
-                                focus_position,
-                                {up_direction.x,up_direction.y,up_direction.z,1.0f});
+        if(has_changed)
+        {
+            XMVECTOR focus_position = {
+                position.x + view_direction.x,
+                position.y + view_direction.y,
+                position.z + view_direction.z,1.0f};
+            view_matrix = XMMatrixLookAtLH({position.x,position.y,position.z,1.0f},
+                                           focus_position,
+                                           {up_direction.x,up_direction.y,up_direction.z,1.0f});
+            has_changed = false;
+        }
+        return view_matrix;
     }
-    
 }
