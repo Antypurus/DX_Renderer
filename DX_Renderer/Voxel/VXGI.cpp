@@ -51,7 +51,7 @@ namespace DXR
         
         VXGI::VoxelizationParameters voxel_parameters = {};
         voxel_parameters.ambientOcclusionMode = false;
-        voxel_parameters.mapSize = VXGI::uint3(128);
+        voxel_parameters.mapSize = VXGI::uint3(64);
         
         if(VXGI_FAILED(this->gi->setVoxelizationParameters(voxel_parameters)))
         {

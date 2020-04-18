@@ -6,6 +6,8 @@
 #include "../Core/Components/Command List/GraphicsCommandList.hpp"
 #include "../Core/Components/Vertices/IndexBuffer.hpp"
 
+#include <unordered_map>
+
 namespace DXR
 {
     //TODO(Tiago): Loading of the chatedral insides seem a bit off, but the overall architecture also seems to be right so it might be an issue with the model itself, need to investigate this further and test more models
@@ -31,6 +33,8 @@ namespace DXR
 			//LOG Warning
 		}
         
+        std::unordered_map<UINT,bool> index_map;
+        
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
         
@@ -38,25 +42,26 @@ namespace DXR
 		{
 			for (const auto& index : shape.mesh.indices)
 			{
-				XMFLOAT3 pos = {
-					attrib.vertices[3 * index.vertex_index + 0],
-					attrib.vertices[3 * index.vertex_index + 1],
-					attrib.vertices[3 * index.vertex_index + 2]
-				};
+                XMFLOAT3 pos = {
+                    attrib.vertices[3 * index.vertex_index + 0],
+                    attrib.vertices[3 * index.vertex_index + 1],
+                    attrib.vertices[3 * index.vertex_index + 2]
+                };
                 
-				XMFLOAT2 uv = {
-					attrib.texcoords[2 * index.texcoord_index + 0],
-					1.0f - attrib.texcoords[2 * index.texcoord_index + 1],
-				};
+                XMFLOAT2 uv = {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1],
+                };
                 
-				XMFLOAT3 normal = {
-					0,0,0
-				};
+                XMFLOAT3 normal = {
+                    0,0,0
+                };
                 
-				XMFLOAT3 color = {0.0f,0.0f,0.0f};
+                XMFLOAT3 color = {0.0f,0.0f,0.0f};
                 
-				vertices.push_back({pos,normal,uv,color});
-				indices.push_back(indices.size());
+                vertices.push_back({pos,normal,uv,color});
+                index_map[index.vertex_index] = true;
+                indices.push_back(index.vertex_index);
 			}
 		}
         

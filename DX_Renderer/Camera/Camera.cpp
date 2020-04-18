@@ -181,28 +181,28 @@ namespace DXR
     void Camera::HookMouseControlls()
     {
         //TODO(Tiago): What is the point of having the callback receive the message type? It is just creating confusion! refactor this!
-        //NOTE(Tiago): Register callback for when left mouse button is pressed
+        //NOTE(Tiago): Register callback for when right mouse button is pressed
 		Window* window = Window::GetCurrentWindowHandle();
 		WindowEventMessageCallback mouse_button_down_callback;
-		mouse_button_down_callback.message = WM_LBUTTONDOWN;
+		//mouse_button_down_callback.message = WM_LBUTTONDOWN;
 		mouse_button_down_callback.module = "Camera";
 		mouse_button_down_callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
 		{
             this->is_mouse_button_pressed = true;
 		};
-		window->RegisterWindowEventCallback(WM_LBUTTONDOWN, mouse_button_down_callback);
-        //NOTE(Tiago): Register callback for when left mouse button is lifted
+		window->RegisterWindowEventCallback(WM_RBUTTONDOWN, mouse_button_down_callback);
+        //NOTE(Tiago): Register callback for when right mouse button is lifted
         WindowEventMessageCallback mouse_button_up_callback;
-		mouse_button_up_callback.message = WM_LBUTTONUP;
+		//mouse_button_up_callback.message = WM_LBUTTONUP;
 		mouse_button_up_callback.module = "Camera";
 		mouse_button_up_callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
 		{
             this->is_mouse_button_pressed = false;
 		};
-		window->RegisterWindowEventCallback(WM_LBUTTONUP, mouse_button_up_callback);
+		window->RegisterWindowEventCallback(WM_RBUTTONUP, mouse_button_up_callback);
         //NOTE(Tiago): Register Callback for mouse movement
         WindowEventMessageCallback callback;
-		callback.message = WM_MOUSEMOVE;
+		//callback.message = WM_MOUSEMOVE;
 		callback.module = "Camera";
 		callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
 		{
