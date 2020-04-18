@@ -9,7 +9,7 @@ namespace DXR
 		this->uv = uv;
 		this->color = color;
 	}
-
+    
 	std::vector<D3D12_INPUT_ELEMENT_DESC> OBJVertex::GenerateInputElementDescription()
 	{
 		D3D12_INPUT_ELEMENT_DESC position_description = {};
@@ -20,7 +20,7 @@ namespace DXR
 		position_description.AlignedByteOffset = 0;
 		position_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		position_description.InstanceDataStepRate = 0;
-
+        
 		D3D12_INPUT_ELEMENT_DESC uv_description = {};
 		uv_description.SemanticName = "UV";
 		uv_description.SemanticIndex = 0;
@@ -29,7 +29,7 @@ namespace DXR
 		uv_description.AlignedByteOffset = 12;
 		uv_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		uv_description.InstanceDataStepRate = 0;
-
+        
 		D3D12_INPUT_ELEMENT_DESC normal_description = {};
 		normal_description.SemanticName = "NORMAL";
 		normal_description.SemanticIndex = 0;
@@ -38,7 +38,7 @@ namespace DXR
 		normal_description.AlignedByteOffset = 20;
 		normal_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		normal_description.InstanceDataStepRate = 0;
-
+        
 		D3D12_INPUT_ELEMENT_DESC color_description = {};
 		color_description.SemanticName = "COLOR";
 		color_description.SemanticIndex = 0;
@@ -47,27 +47,27 @@ namespace DXR
 		color_description.AlignedByteOffset = 32;
 		color_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		color_description.InstanceDataStepRate = 0;
-
+        
 		std::vector<D3D12_INPUT_ELEMENT_DESC> ret = {position_description,uv_description,normal_description,color_description};
-
+        
 		return ret;
 	}
-
+    
 	UINT64 OBJVertex::GetElementSize() const
 	{
 		return sizeof(position) + sizeof(normal) + sizeof(uv) + sizeof(color);
 	}
-
+    
 	void* OBJVertex::GetData()
 	{
 		return &this->position;
 	}
-
+    
 	void OBJVertex::operator=(Vertex other)
 	{
 		//TODO(Tiago): someday we will get back to this :)
 	}
-
+    
 	D3D12_INPUT_LAYOUT_DESC OBJVertex::GetInputLayout()
 	{
 		D3D12_INPUT_ELEMENT_DESC position_description = {};
@@ -78,7 +78,7 @@ namespace DXR
 		position_description.AlignedByteOffset = 0;
 		position_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		position_description.InstanceDataStepRate = 0;
-
+        
 		D3D12_INPUT_ELEMENT_DESC uv_description = {};
 		uv_description.SemanticName = "UV";
 		uv_description.SemanticIndex = 0;
@@ -87,7 +87,7 @@ namespace DXR
 		uv_description.AlignedByteOffset = 12;
 		uv_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		uv_description.InstanceDataStepRate = 0;
-
+        
 		D3D12_INPUT_ELEMENT_DESC normal_description = {};
 		normal_description.SemanticName = "NORMAL";
 		normal_description.SemanticIndex = 0;
@@ -96,7 +96,7 @@ namespace DXR
 		normal_description.AlignedByteOffset = 20;
 		normal_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		normal_description.InstanceDataStepRate = 0;
-
+        
 		D3D12_INPUT_ELEMENT_DESC color_description = {};
 		color_description.SemanticName = "COLOR";
 		color_description.SemanticIndex = 0;
@@ -105,18 +105,44 @@ namespace DXR
 		color_description.AlignedByteOffset = 32;
 		color_description.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		color_description.InstanceDataStepRate = 0;
-
+        
 		std::vector<D3D12_INPUT_ELEMENT_DESC>* input_elements_descriptions = new std::vector<D3D12_INPUT_ELEMENT_DESC>();
 		input_elements_descriptions->push_back(position_description);
 		input_elements_descriptions->push_back(uv_description);
 		input_elements_descriptions->push_back(normal_description);
 		input_elements_descriptions->push_back(color_description);
-
+        
 		D3D12_INPUT_LAYOUT_DESC input_layout = {};
 		input_layout.NumElements = (UINT)(input_elements_descriptions->size());
 		input_layout.pInputElementDescs = input_elements_descriptions->data();
-
+        
 		return input_layout;
 	}
 
+	XMFLOAT3 OBJVertex::GetPosition() const
+	{
+		return position;
+	}
+    
+    bool OBJVertex::operator==(const OBJVertex& other) const
+    {
+        if(position.x != other.position.x || position.y != other.position.y || position.z != other.position.y)
+        {
+            return false;
+        }
+        if(uv.x != other.uv.x || uv.y != other.uv.y)
+        {
+            return false;
+        }
+        if(normal.x != other.normal.x || normal.y != other.normal.y || normal.z != other.normal.z)
+        {
+            return false;
+        }
+        if(color.x != other.color.x || color.y != other.color.y || color.z != other.color.z)
+        {
+            return false;
+        }
+        return true;
+    }
+    
 }
