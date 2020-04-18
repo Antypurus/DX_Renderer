@@ -126,14 +126,23 @@ namespace DXR
     
     bool OBJVertex::operator==(const OBJVertex& other) const
     {
-        if(position.x != other.position.x || position.y != other.position.y || position.z != other.position.y)
-        {
-            return false;
-        }
-        if(uv.x != other.uv.x || uv.y != other.uv.y)
-        {
-            return false;
-        }
+		{
+			XMVECTOR original = {position.x,position.y,position.z,1.0f};
+			XMVECTOR other_vec = {other.position.x,other.position.y,other.position.z,1.0f};
+			if(!XMVector3Equal(original,other_vec))
+			{
+				return false;
+			}
+		}
+		{
+			XMVECTOR original = { uv.x,uv.y,1.0f,1.0f };
+			XMVECTOR other_vec = { other.uv.x,other.uv.y,1.0f,1.0f };
+			if (!XMVector3Equal(original, other_vec))
+			{
+				return false;
+			}
+		}
+		/*
         if(normal.x != other.normal.x || normal.y != other.normal.y || normal.z != other.normal.z)
         {
             return false;
@@ -141,8 +150,14 @@ namespace DXR
         if(color.x != other.color.x || color.y != other.color.y || color.z != other.color.z)
         {
             return false;
-        }
+        }*/
         return true;
     }
     
+}
+
+void hash_combine_vertices(size_t& seed, size_t hash)
+{
+	hash += 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	seed ^= hash;
 }

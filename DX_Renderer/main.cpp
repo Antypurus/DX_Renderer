@@ -218,7 +218,7 @@ void MainDirectXThread(DXR::Window& window)
             rays.Depth = 1;
             rays.Width = swapchain.GetBackbufferResolution().Width;
             rays.Height = swapchain.GetBackbufferResolution().Height;
-            commandList->DispatchRays(&rays);
+            //commandList->DispatchRays(&rays);
             
             //rt_out.CopyToBackbuffer(commandList,swapchain);
         }

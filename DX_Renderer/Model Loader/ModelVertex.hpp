@@ -25,6 +25,8 @@ namespace DXR
     
 }
 
+void hash_combine_vertices(size_t& seed, size_t hash);
+
 namespace std
 {
     template<> class hash<DXR::OBJVertex>
@@ -32,10 +34,12 @@ namespace std
     public:
         size_t operator()(const DXR::OBJVertex& vertex) const
         {
-            //TODO(Tiago): This hashing function is just a placeholder and need to be improved, it onl takes position into accoutn and even then its still not a very good hashing function i dont think
-            return
-                (((UINT)(vertex.GetPosition().x) ^ ((UINT)(vertex.GetPosition().y) << 1)) >> 1)
-                ^ ((UINT)(vertex.GetPosition().z) << 1);
+            //TODO(Tiago): This is stone from glm and only accounts for the position so it can likely be improved
+			size_t seed = 0;
+			hash_combine_vertices(seed,static_cast<size_t>(vertex.position.x));
+			hash_combine_vertices(seed,static_cast<size_t>(vertex.position.y));
+			hash_combine_vertices(seed,static_cast<size_t>(vertex.position.z));
+			return seed;
         }
     };
 }

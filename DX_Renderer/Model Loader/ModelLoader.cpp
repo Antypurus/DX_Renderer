@@ -63,14 +63,10 @@ namespace DXR
 
 				if (vertex_map.count(vert) == 0)
 				{
+					vertex_map[vert] = static_cast<UINT>(vertices.size());
 					vertices.push_back(vert);
-					vertex_map[vert] = indices.size();
-					indices.push_back(indices.size());
 				}
-				else
-				{
-					indices.push_back(vertex_map[vert]);
-				}
+				indices.push_back(vertex_map[vert]);
 			}
 		}
 
