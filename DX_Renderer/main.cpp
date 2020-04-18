@@ -85,19 +85,6 @@ void MainDirectXThread(DXR::Window& window)
 	commandList.SetName(L"Main Command List");
     
 	DXR::Swapchain swapchain = device.CreateSwapchain(window, 60, commandList);
-	/*
-	DXR::VertexBuffer<DXR::Vertex> vertex_buffer(device, commandList,
-		{
-			{{-0.5f, -0.5f,  -1.0f},	{0.0f,1.0f}},
-			{{0.5f, -0.5f,  -1.0f},	{1.0f,1.0f}},
-			{{-0.5f, 0.5f,  -1.0f},	{0.0f,0.0f}},
-			{{0.5f, 0.5f,  -1.0f},	{1.0f,0.0f}},
-		});
-	DXR::IndexBuffer index_buffer(device, commandList,
-		{ 0,2,1,
-			1,3,2,
-		});
-		*/
     
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
     
@@ -117,7 +104,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	commandList.FullReset(pso);
     
-	FLOAT color[4] = { 0.4f, 0.6f, 0.9f, 1.0f };
+	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     
 	float x_rotation_angle = 0;
 	float y_rotation_angle = 1;
