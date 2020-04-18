@@ -67,6 +67,36 @@ namespace DXR
 	{
 		//TODO(Tiago): someday we will get back to this :)
 	}
+
+	void OBJVertex::operator=(const OBJVertex& other)
+	{
+		this->position = 
+		{
+			other.position.x,
+			other.position.y,
+			other.position.z
+		};
+
+		this->uv = 
+		{
+			other.uv.x,
+			other.uv.y
+		};
+
+		this->normal = 
+		{
+			other.normal.x,
+			other.normal.y,
+			other.normal.z
+		};
+
+		this->color = 
+		{
+			other.color.x,
+			other.color.y,
+			other.color.z
+		};
+	}
     
 	D3D12_INPUT_LAYOUT_DESC OBJVertex::GetInputLayout()
 	{

@@ -18,6 +18,7 @@ namespace DXR
 		UINT64 GetElementSize() const override;
 		void* GetData() override;
 		void operator=(Vertex other) override;
+		void operator=(const OBJVertex& other);
         bool operator==(const OBJVertex& other) const;
 		static D3D12_INPUT_LAYOUT_DESC GetInputLayout();
         XMFLOAT3 GetPosition() const;

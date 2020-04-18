@@ -75,8 +75,14 @@ namespace DXR
 
 	OBJMesh::OBJMesh(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices)
 	{
-		this->vertices = vertices;
-		this->indices = indices;
+		for(const auto& vertex:vertices)
+		{
+			this->vertices.push_back(vertex);
+		}
+		for(const auto& index:indices)
+		{
+			this->indices.push_back(index);
+		}
 	}
 
 	VertexBuffer<OBJVertex> OBJMesh::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
