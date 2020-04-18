@@ -21,16 +21,16 @@ namespace DXR
 		std::string warn;
 		std::string err;
         
-		bool res = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str(), 0, true);
-		if (!res || !err.empty())
+		bool res = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filepath.c_str(), 0, true);
+		if (!res)
 		{
-			//LOG LOAD FAIL
+			//TODO(Tiago): Handle load fail
 			return OBJMesh();
 		}
         
-		if (!warn.empty())
+		if(!err.empty())
 		{
-			//LOG Warning
+			//TODO(Tiago): Handle this error
 		}
         
         std::unordered_map<UINT,bool> index_map;
@@ -60,8 +60,7 @@ namespace DXR
                 XMFLOAT3 color = {0.0f,0.0f,0.0f};
                 
                 vertices.push_back({pos,normal,uv,color});
-                index_map[index.vertex_index] = true;
-                indices.push_back(index.vertex_index);
+                indices.push_back(indices.size());
 			}
 		}
         
