@@ -172,6 +172,7 @@ namespace DXR
 				return false;
 			}
 		}
+		//TODO(Tiago): Update this to the safe way of comparing vertices
 		/*
         if(normal.x != other.normal.x || normal.y != other.normal.y || normal.z != other.normal.z)
         {

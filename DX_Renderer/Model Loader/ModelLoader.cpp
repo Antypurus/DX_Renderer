@@ -10,7 +10,6 @@
 
 namespace DXR
 {
-	//TODO(Tiago): Loading of the chatedral insides seem a bit off, but the overall architecture also seems to be right so it might be an issue with the model itself, need to investigate this further and test more models
 	OBJMesh OBJModelLoader::Load(const std::string& filepath)
 	{
 
