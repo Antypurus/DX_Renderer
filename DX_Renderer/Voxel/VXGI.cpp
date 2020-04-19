@@ -134,6 +134,11 @@ namespace DXR
             __debugbreak();
             exit(-1);
         }
+        if(VXGI_FAILED(gi->loadUserDefinedShaderSet(&voxelization_pixel_shader, blob->getData(), blob->getSize())))
+        {
+            __debugbreak();
+            exit(-1);
+        }
     }
     
 	void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
