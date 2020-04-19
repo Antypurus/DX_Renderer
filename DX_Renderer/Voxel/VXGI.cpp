@@ -2,6 +2,9 @@
 
 #include <Windows.h>
 #include <cmath>
+#include <locale>
+#include <codecvt>
+
 #include "VXGI.hpp"
 #include "../Core/Components/GraphicsDevice.hpp"
 #include "../Core/Components/Command Queue/GraphicsCommandQueue.hpp"
@@ -89,8 +92,16 @@ namespace DXR
     }
     
     void SceneVoxelizer::CreateVoxelizationPixelShader()
-    {
-        
+    {        
+        HRSRC resource = FindResourceA(NULL,(LPCSTR)"VertexShader","TEXTFILE");
+        if(resource == NULL)
+        {
+            auto err = GetLastError();
+            __debugbreak();
+            exit(-1);
+        }
+        void* data = LockResource(LoadResource(NULL,resource));
+        uint32_t size = SizeofResource(NULL,resource);
     }
     
 	void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
