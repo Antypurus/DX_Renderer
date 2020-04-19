@@ -111,7 +111,7 @@ void MainDirectXThread(DXR::Window& window)
 	float z_rotation_angle = 0;
 	float scale = 0.015f;
     
-	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sibenik/sibenik.obj");
+	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sponza/sponza.obj");
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
     
@@ -130,9 +130,6 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::HitGroupSBTEntry hitgroup(L"HitGroup");
     
 	DXR::ShaderBindingTable sbtable(device, rtpso, raygen, miss, hitgroup);
-    
-	//VXGI::IGlobalIllumination::getVoxelizationViewParameters();
-	//VXGI::IGlobalIllumination::prepareForVoxelization();
     
 	while (window.ShouldContinue)
 	{
@@ -205,9 +202,9 @@ void MainDirectXThread(DXR::Window& window)
             rays.Depth = 1;
             rays.Width = swapchain.GetBackbufferResolution().Width;
             rays.Height = swapchain.GetBackbufferResolution().Height;
-            //commandList->DispatchRays(&rays);
+            commandList->DispatchRays(&rays);
             
-            //rt_out.CopyToBackbuffer(commandList,swapchain);
+            rt_out.CopyToBackbuffer(commandList,swapchain);
         }
         
         gui.Render(commandList);
