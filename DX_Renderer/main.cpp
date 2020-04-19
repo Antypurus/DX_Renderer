@@ -32,8 +32,6 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::GraphicsDevice device;
     
-	DXR::SceneVoxelizer voxelizer(device);
-    
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", L"VSMain");
 	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", L"PSMain");
 	DXR::RayGenShader rgs = DXR::RayGenShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"raygen");
@@ -42,6 +40,8 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::ClosestHitShader chs = DXR::ClosestHitShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"closesthit");
 	DXR::MissShader ms = DXR::MissShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"miss");
     
+    DXR::SceneVoxelizer voxelizer(device,vs);
+
 	DXR::RootSignature root_signature;
     
 	DXR::DescriptorTableRootParameter uav_desc_table;

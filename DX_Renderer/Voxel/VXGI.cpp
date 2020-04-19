@@ -7,12 +7,17 @@
 #include "../Core/Components/Command Queue/GraphicsCommandQueue.hpp"
 #include "../Tooling/Log.hpp"
 
+#include "../Resources/Shaders/reflection.h"
+
 namespace DXR
 {
-	SceneVoxelizer::SceneVoxelizer(GraphicsDevice& Device)
+	SceneVoxelizer::SceneVoxelizer(GraphicsDevice& Device,VertexShader& vertex_shader)
 	{
+        this->normal_vertex_shader = &vertex_shader;
+        
 		this->CreateRendererInterface(Device);
         this->CreateVXGIObjects();
+        this->CreateVoxelizationGeometryShader();
 	}
     
 	void SceneVoxelizer::CreateRendererInterface(GraphicsDevice& Device)
@@ -62,18 +67,29 @@ namespace DXR
         return;
 	}
     
+    void SceneVoxelizer::CreateVoxelizationGeometryShader()
+    {
+        VXGI::IBlob* gs_blob = nullptr;
+        
+        if(VXGI_FAILED(compiler->compileVoxelizationGeometryShaderFromVS(&gs_blob,
+                                                                         g_VSMain,sizeof(g_VSMain))))
+        {
+            __debugbreak();
+            exit(-1);
+        }
+    }
+    
 	void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
 	{
 		//TODO(Tiago): Make this your own, right now its just copied and shit
-        
 		char buffer[4096];
 		int length = (int)strlen(errorDesc);
 		length = std::min(length, 4000); // avoid a "buffer too small" exception for really long error messages
 		sprintf_s(buffer, "%s:%i\n%.*s", file, line, length, errorDesc);
-        
 		OutputDebugStringA(buffer);
 		OutputDebugStringA("\n");
 		MessageBoxA(NULL, buffer, "ERROR", MB_ICONERROR | MB_OK);
 	}
+    
     
 }
