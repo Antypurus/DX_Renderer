@@ -11,13 +11,16 @@
 
 namespace DXR
 {
-	SceneVoxelizer::SceneVoxelizer(GraphicsDevice& Device,VertexShader& vertex_shader)
+	SceneVoxelizer::SceneVoxelizer(GraphicsDevice& Device,VertexShader& vertex_shader, PixelShader& pixel_shader)
 	{
+        //TODO(Tiago): I dont really need to store these, I can just pass them to the functions that need them
         this->normal_vertex_shader = &vertex_shader;
+        this->normal_pixel_shader = &pixel_shader;
         
 		this->CreateRendererInterface(Device);
         this->CreateVXGIObjects();
         this->CreateVoxelizationGeometryShader();
+        this->CreateVoxelizationPixelShader();
 	}
     
 	void SceneVoxelizer::CreateRendererInterface(GraphicsDevice& Device)
@@ -83,6 +86,11 @@ namespace DXR
             exit(-1);
         }
         gs_blob->dispose();
+    }
+    
+    void SceneVoxelizer::CreateVoxelizationPixelShader()
+    {
+        
     }
     
 	void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)

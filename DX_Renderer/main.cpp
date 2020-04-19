@@ -40,8 +40,8 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::ClosestHitShader chs = DXR::ClosestHitShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"closesthit");
 	DXR::MissShader ms = DXR::MissShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"miss");
     
-    DXR::SceneVoxelizer voxelizer(device,vs);
-
+    DXR::SceneVoxelizer voxelizer(device,vs,ps);
+    
 	DXR::RootSignature root_signature;
     
 	DXR::DescriptorTableRootParameter uav_desc_table;
