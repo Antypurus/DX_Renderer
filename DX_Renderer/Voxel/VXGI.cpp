@@ -77,6 +77,12 @@ namespace DXR
             __debugbreak();
             exit(-1);
         }
+        if(VXGI_FAILED(gi->loadUserDefinedShaderSet(&voxelization_geometry_shader, gs_blob->getData(), gs_blob->getSize())))
+        {
+            __debugbreak();
+            exit(-1);
+        }
+        gs_blob->dispose();
     }
     
 	void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
