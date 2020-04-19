@@ -4,6 +4,8 @@
 #include <cmath>
 #include <locale>
 #include <codecvt>
+#include <fstream>
+#include <sstream>
 
 #include "VXGI.hpp"
 #include "../Core/Components/GraphicsDevice.hpp"
@@ -92,16 +94,46 @@ namespace DXR
     }
     
     void SceneVoxelizer::CreateVoxelizationPixelShader()
-    {        
-        HRSRC resource = FindResourceA(NULL,(LPCSTR)"VertexShader","TEXTFILE");
-        if(resource == NULL)
+    {
+        //TODO(Tiago): Clean UP THIS MESS!
+		std::wstring string_to_convert = this->normal_pixel_shader->filepath.c_str();
+        
+		//setup converter
+		using convert_type = std::codecvt_utf8<wchar_t>;
+		std::wstring_convert<convert_type, wchar_t> converter;
+        
+		//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+		std::string converted_str = converter.to_bytes(string_to_convert);
+        
+        std::stringstream builder;
+        std::string line;
+		std::ifstream myfile(converted_str);
+		if (myfile.is_open())
+		{
+			while (std::getline(myfile, line))
+			{
+				builder << line;
+			}
+			myfile.close();
+            line = builder.str();
+		}
+        
+        VXGI::ShaderResources resources;
+        resources.constantBufferCount = 1;
+        resources.constantBufferSlots[0] = 0;
+        resources.textureCount = 1;
+        resources.textureSlots[0] = 0;
+        resources.samplerCount = 1;
+        resources.samplerSlots[0] = 0;
+        
+        VXGI::IBlob* blob = nullptr;
+        
+        //TODO(Tiago): Even if this works, the shader i gave it does not work as it requests so it might create issue, as an alternative i can use the default shader is has for the pixel shader as i really dont care to do anything there rn
+        if(VXGI_FAILED(compiler->compileVoxelizationPixelShader(&blob,line.c_str(),line.size(),"PSMain", resources)))
         {
-            auto err = GetLastError();
             __debugbreak();
             exit(-1);
         }
-        void* data = LockResource(LoadResource(NULL,resource));
-        uint32_t size = SizeofResource(NULL,resource);
     }
     
 	void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
