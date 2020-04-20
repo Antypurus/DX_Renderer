@@ -4,22 +4,24 @@
 #include "Command List/GraphicsCommandList.hpp"
 #include "Swapchain.hpp"
 #include "Resource/DescriptorHeap.hpp"
+#include <d3d12video.h>
 
 namespace DXR
 {
-
+    
 	GraphicsDevice* GraphicsDevice::Device = nullptr;
-
+    
 	GraphicsDevice::GraphicsDevice(UINT8 DeviceIndex)
 	{
 		this->CreateDXGIFactory();
 		this->CreateD3D12Device(DeviceIndex);
 		this->QueryAllDescriptorSizes();
 		this->CreateGraphicsCommandQueue();
-
+        
 		GraphicsDevice::Device = this;
-
+        
 		this->supports_ray_tracing = this->QueryRayTracingSupport();
+		this->QueryMotionEstimationSupport();
 		if(this->supports_ray_tracing)
 		{
 			SUCCESS_LOG(L"Device Supports DirectX Ray Tracing");
@@ -29,69 +31,68 @@ namespace DXR
 			WARNING_LOG(L"Device Does Not Support DirectX Ray Tracing");
 		}
 	}
-
+    
 	ID3D12Device5* GraphicsDevice::operator->() const
 	{
 		return this->m_device.Get();
 	}
-
+    
 	IDXGIFactory2* GraphicsDevice::GetDXGIFactory() const
 	{
 		return this->m_dxgi_factory.Get();
 	}
-
+    
 	DescriptorSizes GraphicsDevice::GetDescriptorSizes() const
 	{
 		return this->descriptorSizes;
 	}
-
+    
 	Fence GraphicsDevice::CreateFence(UINT64 initialValue)
 	{
 		return Fence(initialValue, *this);
 	}
-
+    
 	GraphicsCommandList GraphicsDevice::CreateGraphicsCommandList()
 	{
 		return GraphicsCommandList(*this);
 	}
-
+    
 	Swapchain GraphicsDevice::CreateSwapchain(Window& window, UINT refreshRate, GraphicsCommandList& commandList)
 	{
 		return Swapchain(*this, window, refreshRate, commandList);
 	}
-
+    
 	DescriptorHeap GraphicsDevice::CreateRenderTargetViewDescriptorHeap(const UINT descriptorCount)
 	{
 		return DescriptorHeap(*this, descriptorCount, DescriptorType::RenderTargetView);
 	}
-
+    
 	DescriptorHeap GraphicsDevice::CreateDepthStencilBufferDescriptorHeap(const UINT descriptorCount)
 	{
 		return DescriptorHeap(*this, descriptorCount, DescriptorType::DepthStencilBuffer);
 	}
-
+    
 	DescriptorHeap GraphicsDevice::CreateConstantBufferDescriptorHeap(const UINT descriptorCount,
 																	  D3D12_DESCRIPTOR_HEAP_FLAGS flags)
 	{
 		return DescriptorHeap(*this, descriptorCount, DescriptorType::ConstantBufferView, flags);
 	}
-
+    
 	DescriptorHeap GraphicsDevice::CreateShaderResourceDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
 	{
 		return DescriptorHeap(*this,descriptorCount, DescriptorType::ConstantBufferView,flags);
 	}
-
+    
 	DescriptorHeap GraphicsDevice::CreateSamplerDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
 	{
 		return DescriptorHeap(*this,descriptorCount,DescriptorType::Sampler,flags);
 	}
-
+    
 	ID3D12Device5* GraphicsDevice::GetRawInterface() const
 	{
 		return this->m_device.Get();
 	}
-
-
+    
 	bool GraphicsDevice::QueryRayTracingSupport() const
 	{
 		D3D12_FEATURE_DATA_D3D12_OPTIONS5 opts = {};
@@ -102,21 +103,31 @@ namespace DXR
 		}
 		return true;
 	}
-
+    
+    bool GraphicsDevice::QueryMotionEstimationSupport() const
+    {
+		ID3D12VideoDevice* video_dev;
+		m_device->QueryInterface(IID_ID3D12VideoDevice1,(LPVOID*)&video_dev);
+        D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR MotionEstimatorSupport = {0u, DXGI_FORMAT_NV12};
+        auto res = video_dev->CheckFeatureSupport(D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR,&MotionEstimatorSupport, sizeof(MotionEstimatorSupport));
+		DXCall(res);
+		return true;
+    }
+    
 	void GraphicsDevice::CreateDXGIFactory()
 	{
 		INFO_LOG(L"Creating DXGI Factory");
 		DXCall(::CreateDXGIFactory(IID_PPV_ARGS(&this->m_dxgi_factory)));
 		SUCCESS_LOG(L"DXGI Factory Created");
 	}
-
+    
 	void GraphicsDevice::CreateDefaultD3D12Device()
 	{
 		INFO_LOG(L"Creating Default D3D12 Device");
 		DXCall(D3D12CreateDevice(nullptr, this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
 		SUCCESS_LOG(L"Default D3D12 Device Created");
 	}
-
+    
 	void GraphicsDevice::CreateD3D12Device(UINT8 deviceIndex)
 	{
 		auto adapter_list = this->GetGraphicsAdapterList();
@@ -124,7 +135,7 @@ namespace DXR
 		DXCall(D3D12CreateDevice(adapter_list[deviceIndex].Get(), this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
 		SUCCESS_LOG(L"D3D12 Device Created");
 	}
-
+    
 	std::vector<WRL::ComPtr<IDXGIAdapter>> GraphicsDevice::GetGraphicsAdapterList() const
 	{
 		INFO_LOG(L"Fetching Complete Adapter List");
@@ -134,19 +145,19 @@ namespace DXR
 		while(m_dxgi_factory->EnumAdapters(adapter_index, &current_adapter) != DXGI_ERROR_NOT_FOUND)
 		{
 			adapter_list.emplace_back(current_adapter);
-
+            
 			{
 				// to prevent leaks we must release the adapter interface when we no longer need it
 				current_adapter->Release();
 				current_adapter = nullptr;
 			}
-
+            
 			++adapter_index;
 		}
 		INFO_LOG(L"Finished Fetching Complete Adapter List");
 		return adapter_list;
 	}
-
+    
 	void GraphicsDevice::QueryAllDescriptorSizes()
 	{
 		INFO_LOG(L"Fetching Descriptor Handle Increment Sizes");
@@ -157,17 +168,17 @@ namespace DXR
 		this->descriptorSizes = {RTV_size,CBV_SRV_UAV_size,DSV_size,Sampler_size};
 		SUCCESS_LOG(L"Finished Fetching Descriptor Handle Increment Sizes");
 	}
-
+    
 	UINT64 GraphicsDevice::QueryDescriptorSize(D3D12_DESCRIPTOR_HEAP_TYPE descriptorType) const
 	{
 		return this->m_device->GetDescriptorHandleIncrementSize(descriptorType);
 	}
-
+    
 	inline void GraphicsDevice::CreateGraphicsCommandQueue()
 	{
 		this->m_graphics_command_queue = new GraphicsCommandQueue(*this);
 	}
-
+    
 	void GraphicsDevice::CheckSupportedMSAALevels(DXGI_FORMAT backbufferFormat)
 	{
 		INFO_LOG(L"Fetching Supported MSAA Levels");
@@ -191,7 +202,7 @@ namespace DXR
 		}
 		SUCCESS_LOG(L"Finished Fetching Supported MSAA Quality Levels");
 	}
-
+    
 	GraphicsCommandQueue& GraphicsDevice::GetGraphicsCommandQueue()
 	{
 		return *this->m_graphics_command_queue;
