@@ -149,6 +149,7 @@ namespace DXR
         }
     }
     
+    //TODO(Tiago): There is a bunch of work left in order to finish this, have fun mofo
     void SceneVoxelizer::Voxelize(Camera& camera)
     {
         XMVECTOR anchor = {
@@ -165,6 +166,8 @@ namespace DXR
         bool use_emitance = false;
         gi->prepareForVoxelization(params,use_opacity,use_emitance);
 
+        renderer_interface->flushCommandList();
+
         if(use_emitance || use_opacity)
         {
 
@@ -180,13 +183,25 @@ namespace DXR
 
 			if (VXGI_SUCCEEDED(gi->getInvalidatedRegions(regions, maxRegions, numRegions)))
 			{
-				NVRHI::DrawCallState emptyState;
-				//g_pSceneRenderer->RenderForVoxelization(emptyState, g_pGI, regions, numRegions, voxelizationMatrix, NULL);
+				NVRHI::DrawCallState draw_call;
+				//draw_call.indexBuffer = 
 			}
 
         }
 
+        renderer_interface->flushCommandList();
+
         gi->finalizeVoxelization();
+
+		VXGI::DebugRenderParameters debug_params;
+        debug_params.blendState.blendEnable[0] = true;
+        debug_params.blendState.srcBlend[0] = NVRHI::BlendState::BLEND_SRC_ALPHA;
+        debug_params.blendState.destBlend[0] = NVRHI::BlendState::BLEND_INV_SRC_ALPHA;
+
+        debug_params.debugMode = VXGI::DebugRenderMode::OPACITY_TEXTURE;
+
+        gi->renderDebug(debug_params);
+
     }
     
     void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
