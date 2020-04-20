@@ -1,5 +1,7 @@
 #include "MotionEstimation.hpp"
 #include "../../../Tooling/Validate.hpp"
+#include "../../../ThirdParty/DX12/d3dx12.h"
+#include "../RayTracing/ShaderBindingTable.hpp"
 
 namespace DXR
 {
@@ -9,6 +11,8 @@ namespace DXR
         this->video_device = device.GetVideoDevice();
         this->QueryMotionEstimationSupport();
         this->CreateMotionEstimator();
+        this->CreateMotionVectorHeap();
+        this->CreateResolvedMotionVectorTexture();
     }
     
     bool MotionEstimator::QueryMotionEstimationSupport()
@@ -26,11 +30,52 @@ namespace DXR
             D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_QUARTER_PEL,
             {1920, 1080, 1280, 720} // D3D12_VIDEO_SIZE_RANGE
         };
-        
         DXCall(video_device->CreateVideoMotionEstimator(
                                                         &motionEstimatorDesc,
                                                         nullptr,
                                                         IID_PPV_ARGS(&motion_estimator)));
+    }
+    
+    void MotionEstimator::CreateMotionVectorHeap()
+    {
+        D3D12_VIDEO_MOTION_VECTOR_HEAP_DESC MotionVectorHeapDesc = {
+            0, // NodeIndex
+            DXGI_FORMAT_NV12,
+            D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_16X16,
+            D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_QUARTER_PEL,
+            {1920, 1080, 1280, 720} // D3D12_VIDEO_SIZE_RANGE
+        };
+        DXCall(video_device->CreateVideoMotionVectorHeap(
+                                                         &MotionVectorHeapDesc,
+                                                         nullptr,
+                                                         IID_PPV_ARGS(&vector_heap)));
+    }
+    
+    void MotionEstimator::CreateResolvedMotionVectorTexture()
+    {
+        CD3DX12_RESOURCE_DESC resolvedMotionVectorDesc =
+            CD3DX12_RESOURCE_DESC::Tex2D(
+                                         DXGI_FORMAT_R16G16_SINT,
+                                         Align(1920, 16) / 16, // This example uses a 16x16 block size. Pixel width and height
+                                         Align(1080, 16) / 16, // are adjusted to store the vectors for those blocks.
+                                         1, // ArraySize
+                                         1  // MipLevels
+                                         );
+        
+		D3D12_HEAP_PROPERTIES heap_properties = {};
+		heap_properties.Type = D3D12_HEAP_TYPE_DEFAULT;
+		heap_properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		heap_properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		heap_properties.CreationNodeMask = 1;
+		heap_properties.VisibleNodeMask = 1;
+
+        DXCall((*GraphicsDevice::Device)->CreateCommittedResource(
+                                                          &heap_properties,
+                                                          D3D12_HEAP_FLAG_NONE,
+                                                          &resolvedMotionVectorDesc,
+                                                          D3D12_RESOURCE_STATE_COMMON,
+                                                          nullptr,
+                                                          IID_PPV_ARGS(&resolved_motion_vectors)));
     }
     
 }
