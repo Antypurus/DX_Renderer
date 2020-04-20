@@ -57,6 +57,7 @@ namespace DXR
 		DescriptorHeap CreateShaderResourceDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 		DescriptorHeap CreateSamplerDescriptorHeap(const UINT descriptorCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 		ID3D12Device5* GetRawInterface() const;
+        ID3D12VideoDevice1* GetVideoDevice() const;
         private:
 		bool QueryRayTracingSupport() const;
         void CreateVideoDevice();

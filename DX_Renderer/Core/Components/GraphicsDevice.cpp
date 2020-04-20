@@ -92,6 +92,11 @@ namespace DXR
 		return this->m_device.Get();
 	}
     
+    ID3D12VideoDevice1* GraphicsDevice::GetVideoDevice() const
+    {
+        return this->m_video_device.Get();
+    }
+    
 	bool GraphicsDevice::QueryRayTracingSupport() const
 	{
 		D3D12_FEATURE_DATA_D3D12_OPTIONS5 opts = {};

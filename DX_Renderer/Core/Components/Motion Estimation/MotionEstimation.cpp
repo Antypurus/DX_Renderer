@@ -1,4 +1,4 @@
-#include "MotionEstimation.cpp"
+#include "MotionEstimation.hpp"
 
 namespace DXR
 {
