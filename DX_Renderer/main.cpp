@@ -40,7 +40,7 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::ClosestHitShader chs = DXR::ClosestHitShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"closesthit");
 	DXR::MissShader ms = DXR::MissShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/RTX.hlsl", L"miss");
     
-    DXR::SceneVoxelizer voxelizer(device,vs,ps);
+    //DXR::SceneVoxelizer voxelizer(device,vs,ps);
     
 	DXR::RootSignature root_signature;
     
@@ -207,7 +207,7 @@ void MainDirectXThread(DXR::Window& window)
             //rt_out.CopyToBackbuffer(commandList,swapchain);
         }
         
-        voxelizer.Voxelize(cam);
+        //voxelizer.Voxelize(cam);
 
         gui.Render(commandList);
         
