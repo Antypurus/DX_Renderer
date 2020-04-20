@@ -13,6 +13,7 @@
 #include "../Tooling/Log.hpp"
 
 #include "../Resources/Shaders/reflection.h"
+#include "../Camera/Camera.hpp"
 
 namespace DXR
 {
@@ -129,7 +130,14 @@ namespace DXR
         VXGI::IBlob* blob = nullptr;
         
         //TODO(Tiago): Even if this works, the shader i gave it does not work as it requests so it might create issue, as an alternative i can use the default shader is has for the pixel shader as i really dont care to do anything there rn
+        /*
         if(VXGI_FAILED(compiler->compileVoxelizationPixelShader(&blob,line.c_str(),line.size(),"PSMain", resources)))
+        {
+            __debugbreak();
+            exit(-1);
+        }
+        */
+        if(VXGI_FAILED(compiler->compileVoxelizationDefaultPixelShader(&blob)))
         {
             __debugbreak();
             exit(-1);
@@ -141,7 +149,47 @@ namespace DXR
         }
     }
     
-	void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
+    void SceneVoxelizer::Voxelize(Camera& camera)
+    {
+        XMVECTOR anchor = {
+            camera.position.x + camera.view_direction.x * 8,
+            camera.position.y + camera.view_direction.y * 8,
+            camera.position.z + camera.view_direction.z * 8,
+            1.0f
+        };
+        VXGI::UpdateVoxelizationParameters params;
+        params.clipmapAnchor = VXGI::float3(anchor.m128_f32);
+        params.finestVoxelSize = 8;
+
+        bool use_opacity = false;
+        bool use_emitance = false;
+        gi->prepareForVoxelization(params,use_opacity,use_emitance);
+
+        if(use_emitance || use_opacity)
+        {
+
+            VXGI::VoxelizationViewParameters view_params;
+            gi->getVoxelizationViewParameters(view_params);
+
+            DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
+            VXGI::float4x4 voxelization_matrix = view_params.viewMatrix * view_params.projectionMatrix;
+
+			const uint32_t maxRegions = 128;
+			uint32_t numRegions = 0;
+			VXGI::Box3f regions[maxRegions];
+
+			if (VXGI_SUCCEEDED(gi->getInvalidatedRegions(regions, maxRegions, numRegions)))
+			{
+				NVRHI::DrawCallState emptyState;
+				//g_pSceneRenderer->RenderForVoxelization(emptyState, g_pGI, regions, numRegions, voxelizationMatrix, NULL);
+			}
+
+        }
+
+        gi->finalizeVoxelization();
+    }
+    
+    void ErrorCallbackHandler::signalError(const char* file, int line, const char* errorDesc)
 	{
 		//TODO(Tiago): Make this your own, right now its just copied and shit
 		char buffer[4096];

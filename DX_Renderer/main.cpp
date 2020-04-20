@@ -207,6 +207,8 @@ void MainDirectXThread(DXR::Window& window)
             //rt_out.CopyToBackbuffer(commandList,swapchain);
         }
         
+        voxelizer.Voxelize(cam);
+
         gui.Render(commandList);
         
         swapchain.PrepareBackbufferForPresentation(commandList);

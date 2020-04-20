@@ -9,7 +9,8 @@ namespace DXR
 {
     
 	struct GraphicsDevice;
-    
+    struct Camera;
+
 	struct ErrorCallbackHandler:public NVRHI::IErrorCallback
 	{
 		void signalError(const char* file, int line, const char* errorDesc);
@@ -32,6 +33,7 @@ namespace DXR
         public:
 		SceneVoxelizer() = default;
 		SceneVoxelizer(GraphicsDevice& Device,VertexShader& vertex_shader, PixelShader& pixel_shader);
+        void Voxelize(Camera& camera);
         private:
 		void CreateRendererInterface(GraphicsDevice& Device);
 		void CreateVXGIObjects();
