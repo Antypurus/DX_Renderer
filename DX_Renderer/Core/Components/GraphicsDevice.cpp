@@ -4,7 +4,6 @@
 #include "Command List/GraphicsCommandList.hpp"
 #include "Swapchain.hpp"
 #include "Resource/DescriptorHeap.hpp"
-#include <d3d12video.h>
 
 namespace DXR
 {
@@ -17,11 +16,11 @@ namespace DXR
 		this->CreateD3D12Device(DeviceIndex);
 		this->QueryAllDescriptorSizes();
 		this->CreateGraphicsCommandQueue();
+		this->CreateVideoDevice();
         
 		GraphicsDevice::Device = this;
         
 		this->supports_ray_tracing = this->QueryRayTracingSupport();
-		this->QueryMotionEstimationSupport();
 		if(this->supports_ray_tracing)
 		{
 			SUCCESS_LOG(L"Device Supports DirectX Ray Tracing");
@@ -104,14 +103,9 @@ namespace DXR
 		return true;
 	}
     
-    bool GraphicsDevice::QueryMotionEstimationSupport() const
+    void GraphicsDevice::CreateVideoDevice()
     {
-		ID3D12VideoDevice* video_dev;
-		m_device->QueryInterface(IID_ID3D12VideoDevice1,(LPVOID*)&video_dev);
-        D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR MotionEstimatorSupport = {0u, DXGI_FORMAT_NV12};
-        auto res = video_dev->CheckFeatureSupport(D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR,&MotionEstimatorSupport, sizeof(MotionEstimatorSupport));
-		DXCall(res);
-		return true;
+		DXCall(m_device->QueryInterface(IID_ID3D12VideoDevice1,(LPVOID*)m_video_device.GetAddressOf()));
     }
     
 	void GraphicsDevice::CreateDXGIFactory()

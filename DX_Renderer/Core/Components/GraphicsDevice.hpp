@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <vector>
 #include <d3d12.h>
+#include <d3d12video.h>
 
 #include "Command Queue/GraphicsCommandQueue.hpp"
 
@@ -35,7 +36,8 @@ namespace DXR
         private:
 		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1;
 		WRL::ComPtr<IDXGIFactory2> m_dxgi_factory;
-		WRL::ComPtr <ID3D12Device5> m_device;
+		WRL::ComPtr<ID3D12Device5> m_device;
+        WRL::ComPtr<ID3D12VideoDevice1> m_video_device;
 		DescriptorSizes descriptorSizes{};
 		GraphicsCommandQueue* m_graphics_command_queue{};
 		// public and private methods
@@ -57,7 +59,7 @@ namespace DXR
 		ID3D12Device5* GetRawInterface() const;
         private:
 		bool QueryRayTracingSupport() const;
-        bool QueryMotionEstimationSupport() const;
+        void CreateVideoDevice();
 		void CreateDXGIFactory();
 		void CreateDefaultD3D12Device();
 		void CreateD3D12Device(UINT8 deviceIndex);
