@@ -24,6 +24,7 @@
 #include "Model Loader/ModelLoader.hpp"
 #include "Voxel/VXGI.hpp"
 #include "Camera/Camera.hpp"
+#include "Core/Components/Motion Estimation/MotionEstimation.hpp"
 
 
 void MainDirectXThread(DXR::Window& window)
@@ -131,6 +132,8 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::ShaderBindingTable sbtable(device, rtpso, raygen, miss, hitgroup);
     
+    DXR::MotionEstimator estimator(device);
+
 	while (window.ShouldContinue)
 	{
         
