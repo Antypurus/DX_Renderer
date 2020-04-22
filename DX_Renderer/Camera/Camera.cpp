@@ -2,10 +2,11 @@
 
 #include "Camera.hpp"
 #include "../Core/Windows Abstractions/Window.hpp"
+#include "../Tooling/Log.hpp"
 
 #include <cmath>
 #include <Windowsx.h>
-#include "../Tooling/Log.hpp"
+#include <thread>
 
 namespace DXR
 {
@@ -247,22 +248,6 @@ namespace DXR
                     case(D_KEY): {this->d_key_down = true; break; }
                     default:break;
                 }
-                if(this->w_key_down)
-                {
-                    this->Forward(this->keyboard_intensity);
-                }
-                if(this->s_key_down)
-                {
-                    this->Backward(this->keyboard_intensity);
-                }
-                if(this->a_key_down)
-                {
-                    this->Left(this->keyboard_intensity);
-                }
-                if(this->d_key_down)
-                {
-                    this->Right(this->keyboard_intensity);
-                }
             };
             window->RegisterWindowEventCallback(WM_KEYDOWN, callback);
 		}
@@ -283,5 +268,31 @@ namespace DXR
             };
             window->RegisterWindowEventCallback(WM_KEYUP, callback);
 		}
+        //TODO(Tiago): Not sure i like this way of handling this, need to find a better approach. In practice it works pretty damn smothly, but i dont like the code itself, its feels very unmodular, might need to write an input module once im done with the thesis
+        std::thread camera_command_thread([this]()
+                                          {
+                                              while(Window::GetCurrentWindowHandle()->ShouldContinue)
+                                              {
+                                                  if(this->w_key_down)
+                                                  {
+                                                      this->Forward(this->keyboard_intensity);
+                                                  }
+                                                  if(this->s_key_down)
+                                                  {
+                                                      this->Backward(this->keyboard_intensity);
+                                                  }
+                                                  if(this->a_key_down)
+                                                  {
+                                                      this->Left(this->keyboard_intensity);
+                                                  }
+                                                  if(this->d_key_down)
+                                                  {
+                                                      this->Right(this->keyboard_intensity);
+                                                  }
+                                                  //TODO(Tiago): there should be a better way to handle this, than just put this thread to sleep as that essentially ties the keyboard sensitivity to the sleep ammount
+												  Sleep(1);
+                                              }
+                                          });
+        camera_command_thread.detach();
 	}
 }

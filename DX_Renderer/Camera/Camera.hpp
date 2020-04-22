@@ -20,7 +20,7 @@ namespace DXR
         
         XMFLOAT3 right_direction = {0,0,0};
         
-        const float keyboard_intensity = 0.05f;//TODO(Tiago): Might Need some tunning
+        const float keyboard_intensity = 0.01f;//TODO(Tiago): Might Need some tunning
         const float mouse_intensity = 0.05f;//TODO(Tiago): Might Need some tunning
         
         mutable bool has_changed = true;
