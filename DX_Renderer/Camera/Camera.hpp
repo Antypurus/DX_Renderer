@@ -34,6 +34,11 @@ namespace DXR
         int previous_mouse_x;
         int previous_mouse_y;
         
+        bool w_key_down = false;
+        bool s_key_down = false;
+        bool a_key_down = false;
+        bool d_key_down = false;
+        
         Camera(const XMFLOAT3& position = {0,0,1}, const XMFLOAT3& view_direction = {0,0,-1});
         XMMATRIX ViewMatrix() const;
         void Rotate();

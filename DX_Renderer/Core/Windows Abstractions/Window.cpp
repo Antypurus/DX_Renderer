@@ -5,66 +5,73 @@ namespace DXR
 {
 	LRESULT WindowMessageCallbackProcedure(HWND WindowHandle, UINT Message, WPARAM WParam, LPARAM LParam)
 	{
-		switch(Message)
+		switch (Message)
 		{
-			case WM_CLOSE:
-            INFO_LOG(L"Receibed WM_CLOSE Window Message");
-            current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-            DestroyWindow(WindowHandle);
-            current_window->ShouldContinue = false;
-            break;
-			case WM_DESTROY:
-            INFO_LOG(L"Receibed WM_DESTROY Window Message");
-            current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-            PostQuitMessage(0);
-            break;
-			default:
-            if(current_window)
-                current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-            return DefWindowProc(WindowHandle, Message, WParam, LParam);
+		case WM_CLOSE:
+		{
+			INFO_LOG(L"Receibed WM_CLOSE Window Message");
+			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
+			DestroyWindow(WindowHandle);
+			current_window->ShouldContinue = false;
+			break;
+		}
+		case WM_DESTROY:
+		{
+			INFO_LOG(L"Receibed WM_DESTROY Window Message");
+			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
+			PostQuitMessage(0);
+			break;
+		}
+		default:
+		{
+			if (current_window)
+				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
+			return DefWindowProc(WindowHandle, Message, WParam, LParam);
+			break;
+		}
 		}
 		return 0;
 	}
-    
+
 	Window* GetCurrentWindowHandle()
 	{
 		return current_window;
 	}
-    
+
 	Window* Window::GetCurrentWindowHandle()
 	{
 		return current_window;
 	}
-    
+
 	HWND Window::GetWindowHandle()
 	{
 		return this->m_window_handle;
 	}
-    
+
 	HINSTANCE Window::GetInstance()
 	{
 		return this->m_instance;
 	}
-    
+
 	const std::string& Window::GetWindowTittle()
 	{
 		return this->m_window_tittle;
 	}
-    
+
 	void Window::UpdateWindow()
 	{
 		MSG message;
-		const BOOL updateStatus = GetMessage(&message, this->m_window_handle, 0, 0);
+		const BOOL updateStatus = PeekMessage(&message, NULL, 0, 0, PM_REMOVE);
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
-    
+
 	void Window::RegisterWindowEventCallback(UINT message, const WindowEventMessageCallback& callback)
 	{
 		INFO_LOG(L"Registering Window Message Event Callback Function");
 		this->m_registered_window_event_callbacks.emplace(message, callback);
 	}
-    
+
 	void Window::HandleMessage(UINT Message, HWND windowHandle, WPARAM WParam, LPARAM LParam)
 	{
 		// handlers for specifically this message type
@@ -76,7 +83,7 @@ namespace DXR
 				++currentCallback;
 			}
 		}
-        
+
 		// handlers for all message types
 		{
 			auto [currentCallback, rangeEnd] = this->m_registered_window_event_callbacks.equal_range(0);
@@ -87,12 +94,12 @@ namespace DXR
 			}
 		}
 	}
-    
+
 	Resolution Window::GetResolution() const
 	{
 		return this->m_window_resolution;
 	}
-    
+
 	Window::Window(HINSTANCE Instance, int CmdShow, Resolution Resolution, const std::string& WindowTittle)
 		:m_instance(Instance), m_cmd_show(CmdShow), m_window_tittle(WindowTittle), m_window_resolution(Resolution)
 	{
@@ -111,10 +118,10 @@ namespace DXR
 		windowClass.lpszMenuName = nullptr;
 		windowClass.lpszClassName = this->m_window_tittle.c_str();
 		windowClass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-        
+
 		INFO_LOG(L"Registering Window Class");
 		// register the window class
-		if(!RegisterClassEx(&windowClass))
+		if (!RegisterClassEx(&windowClass))
 		{
 			ERROR_LOG(L"Failed To Register Window Class");
 			this->ShouldContinue = false;
@@ -122,23 +129,23 @@ namespace DXR
 			throw std::exception("Failed to create window class");
 		}
 		SUCCESS_LOG(L"Window Class Registered");
-        
+
 		// create the window
 		this->m_window_handle = CreateWindowEx(
-                                               WS_EX_CLIENTEDGE,
-                                               this->m_window_tittle.c_str(),
-                                               this->m_window_tittle.c_str(),
-                                               WS_OVERLAPPEDWINDOW,
-                                               CW_USEDEFAULT, CW_USEDEFAULT,
-                                               this->m_window_resolution.Width, this->m_window_resolution.Height,
-                                               nullptr,
-                                               nullptr,
-                                               this->m_instance,
-                                               nullptr);
-        
+			WS_EX_CLIENTEDGE,
+			this->m_window_tittle.c_str(),
+			this->m_window_tittle.c_str(),
+			WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			this->m_window_resolution.Width, this->m_window_resolution.Height,
+			nullptr,
+			nullptr,
+			this->m_instance,
+			nullptr);
+
 		INFO_LOG(L"Creating Win32 Window");
 		//validate window creation
-		if(this->m_window_handle == nullptr)
+		if (this->m_window_handle == nullptr)
 		{
 			ERROR_LOG(L"Failed To Create Win32 Window");
 			this->ShouldContinue = false;
@@ -146,20 +153,20 @@ namespace DXR
 			throw std::exception("Failed to Create Window!");
 		}
 		SUCCESS_LOG(L"Win32 Windows Created");
-        
+
 		ShowWindow(this->m_window_handle, this->m_cmd_show);
 		::UpdateWindow(this->m_window_handle);
-        
+
 		current_window = this;
 		SUCCESS_LOG(L"Window Creation Completed");
-        
+
 		// specified resolution is the windows res but not the client or drawable resolution, need to fix that
 		RECT clientRect = {};
-		GetClientRect(this->m_window_handle,&clientRect);
+		GetClientRect(this->m_window_handle, &clientRect);
 		this->m_window_resolution.Height = abs(clientRect.top - clientRect.bottom);
 		this->m_window_resolution.Width = abs(clientRect.right - clientRect.left);
-        
-        SetCapture(this->m_window_handle);
+
+		SetCapture(this->m_window_handle);
 	}
-    
+
 }
