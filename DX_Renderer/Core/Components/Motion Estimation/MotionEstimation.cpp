@@ -68,14 +68,16 @@ namespace DXR
 		heap_properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 		heap_properties.CreationNodeMask = 1;
 		heap_properties.VisibleNodeMask = 1;
-
+        
         DXCall((*GraphicsDevice::Device)->CreateCommittedResource(
-                                                          &heap_properties,
-                                                          D3D12_HEAP_FLAG_NONE,
-                                                          &resolvedMotionVectorDesc,
-                                                          D3D12_RESOURCE_STATE_COMMON,
-                                                          nullptr,
-                                                          IID_PPV_ARGS(&resolved_motion_vectors)));
+                                                                  &heap_properties,
+                                                                  D3D12_HEAP_FLAG_NONE,
+                                                                  &resolvedMotionVectorDesc,
+                                                                  D3D12_RESOURCE_STATE_COMMON,
+                                                                  nullptr,
+                                                                  IID_PPV_ARGS(&resolved_motion_vectors)));
+        resolved_motion_vectors->SetName(L"Motion Vector Texture");
+        
     }
     
 }
