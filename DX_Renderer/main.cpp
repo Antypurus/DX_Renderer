@@ -25,13 +25,15 @@
 #include "Voxel/VXGI.hpp"
 #include "Camera/Camera.hpp"
 #include "Core/Components/Motion Estimation/MotionEstimation.hpp"
-
+#include "Core/Components/Command List/VideoCommandList.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
     
-	DXR::GraphicsDevice device;
+    DXR::GraphicsDevice device;
+    
+    DXR::VideoEncodeCommandList video_cm_list(device);
     
 	DXR::VertexShader vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", L"VSMain");
 	DXR::PixelShader ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/VertexShader.hlsl", L"PSMain");
@@ -133,7 +135,7 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::ShaderBindingTable sbtable(device, rtpso, raygen, miss, hitgroup);
     
     DXR::MotionEstimator estimator(device);
-
+    
 	while (window.ShouldContinue)
 	{
         
@@ -211,7 +213,7 @@ void MainDirectXThread(DXR::Window& window)
         }
         
         //voxelizer.Voxelize(cam);
-
+        
         gui.Render(commandList);
         
         swapchain.PrepareBackbufferForPresentation(commandList);

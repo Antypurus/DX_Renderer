@@ -10,7 +10,7 @@ namespace DXR
         CreateCommandList(Device);
     }
     
-    ID3D12VideoProcessCommandList1* VideoEncodeCommandList::operator->() const
+    ID3D12VideoEncodeCommandList* VideoEncodeCommandList::operator->() const
     {
         return command_list.Get();
     }
