@@ -38,5 +38,5 @@ command_list = {
             { "../debug/../release" , .os = "mac"   }, }, },
 };
 
-fkey_command[1] = "";
+fkey_command[1] = "build";
 fkey_command[2] = "";

@@ -1,7 +1,5 @@
 @echo off
 
-set opts=-FC -GR- -EHa- -nologo -Zi
-set code=%cd%
-pushd ..\debug
-cl %opts% %code%\windows -Fe..\release
-popd
+cd debug
+call cmake ..
+call cmake --build ..

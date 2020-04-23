@@ -1,5 +1,6 @@
 #include "VideoCommandList.hpp"
 #include "../GraphicsDevice.hpp"
+#include "../../../Tooling/Validate.hpp"
 
 namespace DXR
 {
@@ -7,6 +8,11 @@ namespace DXR
     {
         CreateCommandAllocator(Device);
         CreateCommandList(Device);
+    }
+    
+    ID3D12VideoProcessCommandList1* VideoEncodeCommandList::operator->() const
+    {
+        return command_list.Get();
     }
     
     void VideoEncodeCommandList::CreateCommandAllocator(GraphicsDevice& Device)
