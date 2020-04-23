@@ -15,6 +15,8 @@ namespace DXR
         WRL::ComPtr<ID3D12Resource> resolved_motion_vectors;
         
         MotionEstimator(GraphicsDevice& device);
+        private:
+        void CreateVideoEncodingCommandList(GraphicsDevice& device);
         bool QueryMotionEstimationSupport();
         void CreateMotionEstimator();
         void CreateMotionVectorHeap();

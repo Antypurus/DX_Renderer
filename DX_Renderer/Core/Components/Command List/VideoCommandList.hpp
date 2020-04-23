@@ -13,9 +13,10 @@ namespace DXR
     
     struct VideoEncodeCommandList
     {
-        ComPtr<ID3D12CommandAllocator> command_allocator;
-        ComPtr<ID3D12VideoEncodeCommandList> command_list;
+        ComPtr<ID3D12CommandAllocator> command_allocator = nullptr;
+        ComPtr<ID3D12VideoEncodeCommandList> command_list = nullptr;
         
+        VideoEncodeCommandList() = default;
         VideoEncodeCommandList(GraphicsDevice& Device);
         ID3D12VideoEncodeCommandList* operator->() const;
         private:
