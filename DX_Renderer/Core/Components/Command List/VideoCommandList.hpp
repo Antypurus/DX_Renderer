@@ -7,11 +7,19 @@
 namespace DXR
 {
     
-    using namespace Microsoft;
+    using namespace Microsoft::WRL;
+    
+    struct GraphicsDevice;
     
     struct VideoEncodeCommandList
     {
+        ComPtr<ID3D12CommandAllocator> command_allocator;
+        ComPtr<ID3D12VideoProcessingCommandList1> command_list;
         
+        VideoEncodeCommandList(GraphicsDevice& Device);
+        private:
+        void CreateCommandAllocator(GraphicsDevice& Device);
+        void CreateCommandList(GraphicsDevice& Device);
     }
     
 }
