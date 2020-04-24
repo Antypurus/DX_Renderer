@@ -135,7 +135,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	while (window.ShouldContinue)
 	{
-        //estimator.EstimateMotion(device,swapchain);
+        estimator.EstimateMotion(device,swapchain);
 		// Start the Dear ImGui frame
 		gui.StartFrame();
         

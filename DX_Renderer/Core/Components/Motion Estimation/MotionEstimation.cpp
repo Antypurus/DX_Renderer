@@ -46,7 +46,7 @@ namespace DXR
             DXGI_FORMAT_NV12,
             D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_16X16,
             D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_QUARTER_PEL,
-            {1920, 1080, 1280, 720} // D3D12_VIDEO_SIZE_RANGE
+            {1920, 1080, 640, 480} // D3D12_VIDEO_SIZE_RANGE
         };
         DXCall(video_device->CreateVideoMotionVectorHeap(
                                                          &MotionVectorHeapDesc,
@@ -92,6 +92,8 @@ namespace DXR
         command_queue = new VideoEncodeCommandQueue(device);
     }
     
+    
+    //TODO(Tiago): Backbuffer needs to be converted to NV12 before its estimation can happen
     void MotionEstimator::EstimateMotion(GraphicsDevice& device, Swapchain& swapchain)
     {
         const D3D12_VIDEO_MOTION_ESTIMATOR_OUTPUT output = {vector_heap.Get()};
@@ -102,7 +104,17 @@ namespace DXR
         input.pReferenceTexture2D = swapchain.GetNonCurrentBackbufferResource();
         input.ReferenceSubresourceIndex = 0;
         command_list->EstimateMotion(motion_estimator.Get(),&output,&input);
-        
+        const D3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_OUTPUT outputArgs = {
+            resolved_motion_vectors.Get(),
+            {}};
+        const D3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_INPUT inputArgs = {
+            vector_heap.Get(),
+            swapchain.GetBackbufferResolution().Width,
+            swapchain.GetBackbufferResolution().Height
+        };
+        command_list->ResolveMotionVectorHeap(&outputArgs,&inputArgs);
+        DXCall(command_list->Close());
+        command_queue->ExecuteCommandList(command_list);
     }
     
 }
