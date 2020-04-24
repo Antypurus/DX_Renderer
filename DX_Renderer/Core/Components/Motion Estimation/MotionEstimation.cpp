@@ -39,6 +39,7 @@ namespace DXR
                                                         IID_PPV_ARGS(&motion_estimator)));
     }
     
+    //TODO(Tiago): Adapt this to use the swapchian size
     void MotionEstimator::CreateMotionVectorHeap()
     {
         D3D12_VIDEO_MOTION_VECTOR_HEAP_DESC MotionVectorHeapDesc = {
@@ -54,6 +55,7 @@ namespace DXR
                                                          IID_PPV_ARGS(&vector_heap)));
     }
     
+    //TODO(Tiago): Adapt this to use the swapchian size
     void MotionEstimator::CreateResolvedMotionVectorTexture()
     {
         CD3DX12_RESOURCE_DESC resolvedMotionVectorDesc =
