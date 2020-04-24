@@ -10,6 +10,7 @@ namespace DXR
     using namespace Microsoft::WRL;
     
     struct GraphicsDevice;
+    struct Swapchain;
     
     struct VideoEncodeCommandList
     {

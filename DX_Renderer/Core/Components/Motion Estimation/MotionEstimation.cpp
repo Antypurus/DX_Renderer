@@ -2,6 +2,7 @@
 #include "../../../Tooling/Validate.hpp"
 #include "../../../ThirdParty/DX12/d3dx12.h"
 #include "../RayTracing/ShaderBindingTable.hpp"
+#include "../Swapchain.hpp"
 
 namespace DXR
 {
@@ -9,6 +10,7 @@ namespace DXR
     MotionEstimator::MotionEstimator(GraphicsDevice& device)
     {
         this->video_device = device.GetVideoDevice();
+        this->CreateVideoEncodingCommandList(device);
         this->QueryMotionEstimationSupport();
         this->CreateMotionEstimator();
         this->CreateMotionVectorHeap();
@@ -77,6 +79,23 @@ namespace DXR
                                                                   nullptr,
                                                                   IID_PPV_ARGS(&resolved_motion_vectors)));
         resolved_motion_vectors->SetName(L"Motion Vector Texture");
+    }
+    
+    void MotionEstimator::CreateVideoEncodingCommandList(GraphicsDevice& device)
+    {
+        command_list = VideoEncodeCommandList(device);
+    }
+    
+    void MotionEstimator::EstimateMotion(GraphicsDevice& device, Swapchain& swapchain)
+    {
+        const D3D12_VIDEO_MOTION_ESTIMATOR_OUTPUT output = {vector_heap.Get()};
+        D3D12_VIDEO_MOTION_ESTIMATOR_INPUT input = {};
+        input.InputSubresourceIndex = 0;
+        input.pHintMotionVectorHeap = nullptr;
+        input.pInputTexture2D = swapchain.GetCurrentBackBuffer().GetResource();
+        input.pReferenceTexture2D = swapchain.GetNonCurrentBackbufferResource();
+        input.ReferenceSubresourceIndex = 0;
+        command_list->EstimateMotion(motion_estimator.Get(),&output,&input);
         
     }
     

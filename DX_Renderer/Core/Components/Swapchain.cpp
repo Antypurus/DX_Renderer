@@ -10,19 +10,19 @@ namespace DXR
 	{
 		return this->m_swapchain.Get();
 	}
-
+    
 	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList)
 		:m_resolution(window.GetResolution()), m_refresh_rate(refreshRate)
 	{
 		this->Create(device, window, commandList);
 	}
-
+    
 	Swapchain::Swapchain(GraphicsDevice& device, Window& window, UINT16 refreshRate, GraphicsCommandList& commandList, DXGI_FORMAT backbufferFormat)
 		: m_resolution(window.GetResolution()), m_refresh_rate(refreshRate)
 	{
 		this->Create(device, window, commandList);
 	}
-
+    
 	void Swapchain::Create(GraphicsDevice& device, Window& window,
 						   GraphicsCommandList& commandList)
 	{
@@ -33,12 +33,12 @@ namespace DXR
 		this->CreateRenderTargetViews(device);
 		this->CreateDepthStencilBufferView(device, commandList);
 	}
-
+    
 	inline void Swapchain::CreateSwapChain(GraphicsDevice& device, Window& window)
 	{
 		this->m_swapchain.Reset();
 		INFO_LOG(L"Swapchain ComPtr references reset");
-
+        
 		// description of the swapchain
 		WRL::ComPtr<IDXGISwapChain1> swapchain;
 		DXGI_SWAP_CHAIN_DESC1 swapchain_description = {};
@@ -49,7 +49,7 @@ namespace DXR
 		swapchain_description.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapchain_description.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapchain_description.SampleDesc.Count = 1;
-
+        
 		INFO_LOG(L"Creating Swapchain");
 		DXCall(device.GetDXGIFactory()->CreateSwapChainForHwnd(device.GetGraphicsCommandQueue().GetCommandQueueRawPtr()
 															   , window.GetWindowHandle(),
@@ -61,7 +61,7 @@ namespace DXR
 		DXCall(device.GetDXGIFactory()->MakeWindowAssociation(window.GetWindowHandle(), DXGI_MWA_NO_ALT_ENTER));
 		swapchain.As(&this->m_swapchain);
 	}
-
+    
 	void Swapchain::CreateRenderTargetViews(GraphicsDevice& device)
 	{
 		std::vector<WRL::ComPtr<ID3D12Resource>> backbuffers;
@@ -77,18 +77,18 @@ namespace DXR
 			device->CreateRenderTargetView(backbuffers[i].Get(), nullptr, this->m_RTV_descriptor_heap[i]);
 			SUCCESS_LOG(L"Backbuffer Render Target View Created");
 		}
-
+        
 		for (size_t i = 0; i < this->m_swapchain_buffer_count; ++i)
 		{
 			this->m_backbuffers.emplace_back(backbuffers[i],this->m_RTV_descriptor_heap,this->m_resolution,i);
 		}
 	}
-
+    
 	void Swapchain::CreateDepthStencilBufferView(GraphicsDevice& device, GraphicsCommandList& commandList)
 	{
 		this->m_depth_stencil_buffer_resource = std::make_unique<DepthStencilBuffer>(device, commandList, this->m_DSV_descriptor_heap,0 ,this->m_resolution);
 	}
-
+    
 	void Swapchain::SetViewport(GraphicsCommandList& commandList, Resolution& resolution, UINT xOffset, UINT yOffset)
 	{
 		D3D12_VIEWPORT viewport = {};
@@ -98,10 +98,10 @@ namespace DXR
 		viewport.MaxDepth = D3D12_MAX_DEPTH;
 		viewport.TopLeftX = (FLOAT)xOffset;
 		viewport.TopLeftY = (FLOAT)yOffset;
-
+        
 		commandList->RSSetViewports(1, &viewport);
 	}
-
+    
 	void Swapchain::SetScisorRect(GraphicsCommandList& commandList, Resolution& resolution)
 	{
 		D3D12_RECT rect = {};
@@ -109,57 +109,65 @@ namespace DXR
 		rect.top = 0;
 		rect.right = resolution.Width;
 		rect.bottom = resolution.Height;
-
+        
 		commandList->RSSetScissorRects(1, &rect);
 	}
-
+    
 	void Swapchain::Prepare(GraphicsCommandList& commandList)
 	{
 		this->SetViewport(commandList, this->m_resolution, 0, 0);
 		this->SetScisorRect(commandList, this->m_resolution);
-
+        
 		TransitionResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_PRESENT,D3D12_RESOURCE_STATE_RENDER_TARGET};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
-
+    
 	void Swapchain::Present()
 	{
 		DXCall(this->m_swapchain->Present(0, 0));
 		this->m_current_backbuffer = this->m_current_backbuffer == 1 ? 0 : 1;
 	}
-
+    
 	ID3D12Resource* Swapchain::GetCurrentBackbufferResource()
 	{
 		return this->m_backbuffers[this->m_current_backbuffer].GetResource();
 	}
-
+    
+    ID3D12Resource* Swapchain::GetNonCurrentBackbufferResource()
+    {
+		size_t index = (m_current_backbuffer + 1)%m_swapchain_buffer_count;
+        return this->m_backbuffers[index].GetResource();
+    }
+    
 	D3D12_CPU_DESCRIPTOR_HANDLE Swapchain::GetCurrentBackBufferDescriptor()
 	{
 		return this->m_RTV_descriptor_heap[this->m_current_backbuffer];
 	}
-
+    
 	D3D12_CPU_DESCRIPTOR_HANDLE Swapchain::GetDepthStencilBufferDescriptor()
 	{
 		return this->m_DSV_descriptor_heap[0];
 	}
-
+    
 	DepthStencilBuffer& Swapchain::GetDepthStencilBuffer()
 	{
 		return *this->m_depth_stencil_buffer_resource;
 	}
-
+    
 	RenderTargetView& Swapchain::GetCurrentBackBuffer()
 	{
 		return this->m_backbuffers[this->m_current_backbuffer];
 	}
-
+    
 	void Swapchain::PrepareBackbufferForPresentation(GraphicsCommandList& commandList)
 	{
 		TransitionResourceBarrier barrier = {*this->m_backbuffers[this->m_current_backbuffer].GetResource(),D3D12_RESOURCE_STATE_RENDER_TARGET,D3D12_RESOURCE_STATE_PRESENT};
 		barrier.ExecuteResourceBarrier(commandList);
 	}
+    
 	Resolution Swapchain::GetBackbufferResolution()
 	{
 		return this->m_resolution;
 	}
+    
 }

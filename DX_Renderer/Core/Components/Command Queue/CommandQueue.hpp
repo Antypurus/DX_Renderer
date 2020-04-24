@@ -7,28 +7,29 @@ namespace DXR
 {
 	struct Fence;
 	using namespace Microsoft;
-
+    
 	enum class CommandQueueType
 	{
 		None,
 		Direct,
 		Bundle,
-		Compute
+		Compute,
+        VideoEncode
 	};
-
+    
 	struct CommandQueue
 	{
-	public:
+        public:
 		const CommandQueueType Type;
-	protected:
+        protected:
 		D3D12_COMMAND_LIST_TYPE m_command_queue_type;
 		WRL::ComPtr<ID3D12CommandQueue> m_command_queue;
-	public:
+        public:
 		virtual ~CommandQueue(){};
 		ID3D12CommandQueue* operator->();
 		ID3D12CommandQueue* GetCommandQueueRawPtr();
 		void Flush(Fence& fence);
-	protected:
+        protected:
 		CommandQueue(CommandQueueType type);
 		
 	};

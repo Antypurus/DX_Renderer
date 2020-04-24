@@ -25,7 +25,6 @@
 #include "Voxel/VXGI.hpp"
 #include "Camera/Camera.hpp"
 #include "Core/Components/Motion Estimation/MotionEstimation.hpp"
-#include "Core/Components/Command List/VideoCommandList.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -136,7 +135,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	while (window.ShouldContinue)
 	{
-        
+        //estimator.EstimateMotion(device,swapchain);
 		// Start the Dear ImGui frame
 		gui.StartFrame();
         

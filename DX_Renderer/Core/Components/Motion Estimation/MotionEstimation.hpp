@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../GraphicsDevice.hpp"
+#include "../Command List/VideoCommandList.hpp"
 
 namespace DXR
 {
@@ -13,8 +14,10 @@ namespace DXR
         WRL::ComPtr<ID3D12VideoMotionEstimator> motion_estimator;
         WRL::ComPtr<ID3D12VideoMotionVectorHeap> vector_heap;
         WRL::ComPtr<ID3D12Resource> resolved_motion_vectors;
+        VideoEncodeCommandList command_list;
         
         MotionEstimator(GraphicsDevice& device);
+        void EstimateMotion(GraphicsDevice& device, Swapchain& swapchain);
         private:
         void CreateVideoEncodingCommandList(GraphicsDevice& device);
         bool QueryMotionEstimationSupport();
