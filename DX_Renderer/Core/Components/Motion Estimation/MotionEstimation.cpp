@@ -10,6 +10,7 @@ namespace DXR
     MotionEstimator::MotionEstimator(GraphicsDevice& device)
     {
         this->video_device = device.GetVideoDevice();
+        this->CreateVideoEncodingCommandQueue(device);
         this->CreateVideoEncodingCommandList(device);
         this->QueryMotionEstimationSupport();
         this->CreateMotionEstimator();
@@ -84,6 +85,11 @@ namespace DXR
     void MotionEstimator::CreateVideoEncodingCommandList(GraphicsDevice& device)
     {
         command_list = VideoEncodeCommandList(device);
+    }
+    
+    void MotionEstimator::CreateVideoEncodingCommandQueue(GraphicsDevice& device)
+    {
+        command_queue = new VideoEncodeCommandQueue(device);
     }
     
     void MotionEstimator::EstimateMotion(GraphicsDevice& device, Swapchain& swapchain)

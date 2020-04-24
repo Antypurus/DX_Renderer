@@ -10,6 +10,7 @@ namespace DXR
     
     struct VideoEncodeCommandQueue: public CommandQueue
     {
+        VideoEncodeCommandQueue();//NOTE(Tiago):Null constructor
         VideoEncodeCommandQueue(GraphicsDevice& device);
         void ExecuteCommandList(VideoEncodeCommandList& commandList);
         private:
