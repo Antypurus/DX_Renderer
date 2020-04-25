@@ -27,6 +27,11 @@
 #include "Core/Components/Motion Estimation/MotionEstimation.hpp"
 #include "Voxel/VoxelMap.hpp"
 
+struct CBuffer
+{
+    DirectX::XMMATRIX mvp;
+};
+
 void MainDirectXThread(DXR::Window& window)
 {
 	SUCCESS_LOG(L"Main DirectX12 Thread Started");
@@ -101,7 +106,9 @@ void MainDirectXThread(DXR::Window& window)
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.015f, 0.015f, 0.015f);
     
 	DirectX::XMMATRIX mvp = model * view * projection;
-	DXR::ConstantBuffer<DirectX::XMMATRIX> constant_buffer(device, { mvp });
+    CBuffer raster_cbufer;
+    raster_cbufer.mvp = mvp;
+    DXR::ConstantBuffer<CBuffer> constant_buffer(device, {raster_cbufer});
     
 	commandList.FullReset(pso);
     
@@ -162,8 +169,8 @@ void MainDirectXThread(DXR::Window& window)
             model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
             model *= DirectX::XMMatrixRotationAxis({ 0.0f,0.0f,1.0f }, z_rotation_angle);
             model *= DirectX::XMMatrixScaling(scale, scale, scale);
-            mvp = model * view * projection;
-            constant_buffer.UpdateData({ mvp });
+            raster_cbufer.mvp = model * view * projection;
+            constant_buffer.UpdateData({raster_cbufer});
         }
         
         commandList.SetGraphicsRootSignature(root_signature);

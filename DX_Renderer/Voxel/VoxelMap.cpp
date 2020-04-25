@@ -2,7 +2,8 @@
 
 #include "../Core/Components/GraphicsDevice.hpp"
 #include "../Tooling/Validate.hpp"
-#include "../Core/Components/Resource/HeapManager.hpp""
+#include "../Core/Components/Resource/HeapManager.hpp"
+#include "../Core/Components/Command List/GraphicsCommandList.hpp"
 
 namespace DXR
 {
@@ -14,6 +15,12 @@ namespace DXR
         this->depth = depth;
         this->CreateVoxelMap(device);
         this->CreateUAV(device);
+        this->CreateVoxelMatrix();
+    }
+    
+    void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera)
+    {
+        this->SetViewport(command_list);
     }
     
     void VoxelMap::CreateVoxelMap(GraphicsDevice& device)
@@ -62,6 +69,23 @@ namespace DXR
                                           nullptr,
                                           &uav_desc,
                                           (*descriptor_heap)[heap_index]);
+    }
+    
+    void VoxelMap::SetViewport(GraphicsCommandList& command_list)
+    {
+        D3D12_VIEWPORT viewport = {};
+        viewport.Width = (FLOAT)width;
+        viewport.Height = (FLOAT)height;
+        viewport.MinDepth = 0;
+        viewport.MaxDepth = 1;
+        viewport.TopLeftX = 0;
+        viewport.TopLeftY = 0;
+        command_list->RSSetViewports(1,&viewport);
+    }
+    
+    void VoxelMap::CreateVoxelMatrix()
+    {
+        voxel_space_matrix = XMMatrixOrthographicLH((FLOAT)width,(FLOAT)height,(FLOAT)0,(FLOAT)depth);
     }
     
 }
