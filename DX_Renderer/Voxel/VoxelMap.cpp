@@ -5,6 +5,8 @@
 #include "../Core/Components/Resource/HeapManager.hpp"
 #include "../Core/Components/Command List/GraphicsCommandList.hpp"
 #include "../Camera/Camera.hpp"
+#include "../Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
+#include <vector>
 
 namespace DXR
 {
@@ -16,6 +18,7 @@ namespace DXR
         this->depth = depth;
         this->CreateVoxelMap(device);
         this->CreateUAV(device);
+        this->CreateVoxelConstantBuffer(device);
     }
     
     void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera)
@@ -92,6 +95,15 @@ namespace DXR
     {
         clip_space_matrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f)
             * camera.ViewMatrix();
+    }
+    
+    void VoxelMap::CreateVoxelConstantBuffer(GraphicsDevice& device)
+    {
+        Voxel_cbuffer cbuffer = {};
+        cbuffer.clip_space_matrix = clip_space_matrix;
+        cbuffer.voxel_space_matrix = voxel_space_matrix;
+        
+        voxel_constant_buffer = std::make_unique<ConstantBuffer<Voxel_cbuffer>>(device,std::vector({cbuffer}));
     }
     
 }

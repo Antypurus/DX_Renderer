@@ -3,6 +3,7 @@
 #include <directxmath.h>
 #include <d3d12.h>
 #include <wrl.h>
+#include <memory>
 
 namespace DXR
 {
@@ -14,11 +15,12 @@ namespace DXR
     struct DescriptorHeap;
     struct GraphicsCommandList;
     struct Camera;
+    template<typename T> struct ConstantBuffer;
     
     struct Voxel_cbuffer
     {
         DirectX::XMMATRIX clip_space_matrix;
-        DirectX::XMMATRIX voxel_space;
+        DirectX::XMMATRIX voxel_space_matrix;
     };
     
     struct VoxelMap
@@ -35,6 +37,8 @@ namespace DXR
         XMMATRIX voxel_space_matrix;
         XMMATRIX clip_space_matrix;
         
+        std::unique_ptr<ConstantBuffer<Voxel_cbuffer>> voxel_constant_buffer;
+        
         VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
         void Bind(GraphicsCommandList& command_list, Camera& camera);
         private:
@@ -43,6 +47,8 @@ namespace DXR
         void SetViewport(GraphicsCommandList& command_list);
         void CreateVoxelMatrix(Camera& camera);
         void CreateClipMatrix(Camera& camera);
+        void CreateVoxelConstantBuffer(GraphicsDevice& device);
+        void UpdateVoxelConstantBuffer();
     };
     
 }
