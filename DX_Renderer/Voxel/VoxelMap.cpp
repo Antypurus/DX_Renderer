@@ -2,15 +2,18 @@
 
 #include "../Core/Components/GraphicsDevice.hpp"
 #include "../Tooling/Validate.hpp"
+#include "../Core/Components/Resource/HeapManager.hpp""
 
 namespace DXR
 {
     VoxelMap::VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth)
     {
+        this->format = DXGI_FORMAT_R32_UINT;
         this->width = width;
         this->height = height;
         this->depth = depth;
         this->CreateVoxelMap(device);
+        this->CreateUAV(device);
     }
     
     void VoxelMap::CreateVoxelMap(GraphicsDevice& device)
@@ -24,8 +27,8 @@ namespace DXR
         resource_desc.SampleDesc.Count = 1;
         resource_desc.SampleDesc.Quality = 0;
         resource_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-        resource_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
-        resource_desc.Format = DXGI_FORMAT_R32_UINT;
+        resource_desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+        resource_desc.Format = this->format;
         resource_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
         
         D3D12_HEAP_PROPERTIES heap_properties = {};
@@ -36,11 +39,29 @@ namespace DXR
 		heap_properties.VisibleNodeMask = 1;
         
         DXCall(device->CreateCommittedResource(&heap_properties,
-                                       D3D12_HEAP_FLAG_NONE,//TODO(Tiago): Allow UAV Access
-                                       &resource_desc,
-                                       D3D12_RESOURCE_STATE_COMMON,//TODO(Tiago): What is the best initial state?
-                                       nullptr,
-                                       IID_PPV_ARGS(&voxel_volume_texture)));
+                                               D3D12_HEAP_FLAG_NONE,
+                                               &resource_desc,
+                                               D3D12_RESOURCE_STATE_COMMON,//TODO(Tiago): What is the best initial state?
+                                               nullptr,
+                                               IID_PPV_ARGS(&voxel_volume_texture)));
+    }
+    
+    void VoxelMap::CreateUAV(GraphicsDevice& device)
+    {
+        this->heap_index = SRHeapManager::GetManager().Allocate();
+        this->descriptor_heap = &SRHeapManager::GetManager().descriptor_heap;
+        
+        D3D12_UNORDERED_ACCESS_VIEW_DESC uav_desc = {};
+        uav_desc.Format = this->format;
+        uav_desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
+        uav_desc.Texture3D.MipSlice = 0;
+        uav_desc.Texture3D.FirstWSlice = 0;
+        uav_desc.Texture3D.WSize = depth;
+        
+        device->CreateUnorderedAccessView(voxel_volume_texture.Get(),
+                                          nullptr,
+                                          &uav_desc,
+                                          (*descriptor_heap)[heap_index]);
     }
     
 }

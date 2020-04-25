@@ -9,6 +9,7 @@ namespace DXR
     using namespace Microsoft::WRL;
     
     struct GraphicsDevice;
+    struct DescriptorHeap;
     
     struct VoxelMap
     {
@@ -18,9 +19,13 @@ namespace DXR
         UINT depth;
         DXGI_FORMAT format;
         
+        UINT heap_index;
+        DescriptorHeap* descriptor_heap;
+        
         VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
         private:
         void CreateVoxelMap(GraphicsDevice& device);
+        void CreateUAV(GraphicsDevice& device);
     };
     
 }
