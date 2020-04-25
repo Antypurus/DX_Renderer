@@ -41,7 +41,8 @@ namespace DXR
         void CreateVoxelMap(GraphicsDevice& device);
         void CreateUAV(GraphicsDevice& device);
         void SetViewport(GraphicsCommandList& command_list);
-        void CreateVoxelMatrix();
+        void CreateVoxelMatrix(Camera& camera);
+        void CreateClipMatrix(Camera& camera);
     };
     
 }

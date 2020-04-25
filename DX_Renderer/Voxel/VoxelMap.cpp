@@ -4,6 +4,7 @@
 #include "../Tooling/Validate.hpp"
 #include "../Core/Components/Resource/HeapManager.hpp"
 #include "../Core/Components/Command List/GraphicsCommandList.hpp"
+#include "../Camera/Camera.hpp"
 
 namespace DXR
 {
@@ -15,7 +16,6 @@ namespace DXR
         this->depth = depth;
         this->CreateVoxelMap(device);
         this->CreateUAV(device);
-        this->CreateVoxelMatrix();
     }
     
     void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera)
@@ -83,9 +83,15 @@ namespace DXR
         command_list->RSSetViewports(1,&viewport);
     }
     
-    void VoxelMap::CreateVoxelMatrix()
+    void VoxelMap::CreateVoxelMatrix(Camera& camera)
     {
-        voxel_space_matrix = XMMatrixOrthographicLH((FLOAT)width,(FLOAT)height,(FLOAT)0,(FLOAT)depth);
+        voxel_space_matrix = XMMatrixOrthographicLH((FLOAT)width,(FLOAT)height,(FLOAT)0,(FLOAT)depth) * camera.ViewMatrix();
+    }
+    
+    void VoxelMap::CreateClipMatrix(Camera& camera)
+    {
+        clip_space_matrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f)
+            * camera.ViewMatrix();
     }
     
 }
