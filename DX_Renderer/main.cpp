@@ -25,6 +25,7 @@
 #include "Voxel/VXGI.hpp"
 #include "Camera/Camera.hpp"
 #include "Core/Components/Motion Estimation/MotionEstimation.hpp"
+#include "Voxel/VoxelMap.hpp"
 
 void MainDirectXThread(DXR::Window& window)
 {
@@ -132,10 +133,11 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::ShaderBindingTable sbtable(device, rtpso, raygen, miss, hitgroup);
     
     DXR::MotionEstimator estimator(device);
+    DXR::VoxelMap map(device,128,128,128);
     
 	while (window.ShouldContinue)
 	{
-        estimator.EstimateMotion(device,swapchain);
+        //estimator.EstimateMotion(device,swapchain);
 		// Start the Dear ImGui frame
 		gui.StartFrame();
         
