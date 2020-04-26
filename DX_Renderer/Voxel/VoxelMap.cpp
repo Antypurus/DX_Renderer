@@ -23,11 +23,11 @@ namespace DXR
         this->CreateVoxelConstantBuffer(device);
     }
     
-    void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso)
+    void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso, XMMATRIX model)
     {
         this->SetViewport(command_list);
-        this->CreateVoxelMatrix(camera);
-        this->CreateClipMatrix(camera);
+        this->CreateVoxelMatrix(camera, model);
+        this->CreateClipMatrix(camera, model);
         this->UpdateVoxelConstantBuffer();
         
         command_list.SetGraphicsRootSignature(root_signature);
@@ -98,15 +98,14 @@ namespace DXR
         command_list->RSSetViewports(1,&viewport);
     }
     
-    void VoxelMap::CreateVoxelMatrix(Camera& camera)
+    void VoxelMap::CreateVoxelMatrix(Camera& camera, XMMATRIX model)
     {
-        voxel_space_matrix = XMMatrixOrthographicLH((FLOAT)width,(FLOAT)height,(FLOAT)0,(FLOAT)depth) * camera.ViewMatrix();
+        voxel_space_matrix = model * camera.ViewMatrix() * XMMatrixOrthographicLH((FLOAT)width,(FLOAT)height,(FLOAT)0,(FLOAT)depth);
     }
     
-    void VoxelMap::CreateClipMatrix(Camera& camera)
+    void VoxelMap::CreateClipMatrix(Camera& camera, XMMATRIX model)
     {
-        clip_space_matrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0/720.0, 0.1f, 1000.0f)
-            * camera.ViewMatrix();
+        clip_space_matrix = camera.ViewMatrix() * camera.ViewMatrix() * DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0/720.0, 0.1f, 1000.0f);
     }
     
     void VoxelMap::CreateVoxelConstantBuffer(GraphicsDevice& device)

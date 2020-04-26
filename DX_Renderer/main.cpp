@@ -197,10 +197,6 @@ void MainDirectXThread(DXR::Window& window)
         
         commandList.BindVertexBuffer(vertex_buffer);
         commandList.BindIndexBuffer(index_buffer);
-        
-        map.Bind(commandList,cam,root_signature,voxel_pso);
-
-        commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
 
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         commandList->SetPipelineState(pso.GetPipelineStateObject());
@@ -209,6 +205,11 @@ void MainDirectXThread(DXR::Window& window)
         commandList.BindTexture(texture, 3, 4);
         
         commandList.SendDrawCall();
+
+        map.Bind(commandList,cam,root_signature,voxel_pso, model);
+        commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
+
+        swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         
         {
             commandList->SetPipelineState1(rtpso.GetRTPSO());

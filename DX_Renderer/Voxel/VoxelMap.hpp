@@ -42,13 +42,13 @@ namespace DXR
         std::unique_ptr<ConstantBuffer<Voxel_cbuffer>> voxel_constant_buffer;
         
         VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
-        void Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso);
+        void Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso, XMMATRIX model = XMMatrixIdentity());
         private:
         void CreateVoxelMap(GraphicsDevice& device);
         void CreateUAV(GraphicsDevice& device);
         void SetViewport(GraphicsCommandList& command_list);
-        void CreateVoxelMatrix(Camera& camera);
-        void CreateClipMatrix(Camera& camera);
+        void CreateVoxelMatrix(Camera& camera, XMMATRIX model = XMMatrixIdentity());
+        void CreateClipMatrix(Camera& camera, XMMATRIX model = XMMatrixIdentity());
         void CreateVoxelConstantBuffer(GraphicsDevice& device);
         void UpdateVoxelConstantBuffer();
     };

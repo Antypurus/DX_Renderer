@@ -44,7 +44,6 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     
     voxel_map[voxel_pos] = float4(voxel_pos,1);
     output.color = float4(voxel_pos, 1);
-    discard;
     
     return output;
 }
