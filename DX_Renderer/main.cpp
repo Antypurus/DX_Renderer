@@ -131,7 +131,7 @@ void MainDirectXThread(DXR::Window& window)
 	float z_rotation_angle = 0;
 	float scale = 0.015f;
     
-	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/cube/cube.obj");
+	auto sib_model = DXR::OBJModelLoader::Load("./DX_Renderer/Resources/Models/sponza/sponza.obj");
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
     
@@ -198,12 +198,6 @@ void MainDirectXThread(DXR::Window& window)
         commandList.BindVertexBuffer(vertex_buffer);
         commandList.BindIndexBuffer(index_buffer);
 
-        
-        map.Bind(commandList,cam,root_signature,voxel_pso, sib_model.AABB, model);
-        commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
-
-        device.GetGraphicsCommandQueue().Flush(fence);
-
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         commandList->SetPipelineState(pso.GetPipelineStateObject());
 
@@ -211,6 +205,9 @@ void MainDirectXThread(DXR::Window& window)
         commandList.BindTexture(texture, 3, 4);
         
         commandList.SendDrawCall();
+
+        map.Bind(commandList,cam,root_signature,voxel_pso, sib_model.AABB, model);
+        commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
 
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         
