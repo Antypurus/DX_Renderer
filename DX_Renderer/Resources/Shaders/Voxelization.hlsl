@@ -40,6 +40,11 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     PS_OUTPUT output;
 
     output.color = float4(0, 0, 0, 1);
+    
+    int3 voxel_pos = int3(input.voxel_grip_position.xyz / input.voxel_grip_position.w);
+    
+    InterlockedOr(voxel_map[voxel_pos], 1 << (voxel_pos.z & 31));
+    
     discard;
     return output;
 }
