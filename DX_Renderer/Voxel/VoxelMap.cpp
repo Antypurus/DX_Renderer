@@ -106,4 +106,13 @@ namespace DXR
         voxel_constant_buffer = std::make_unique<ConstantBuffer<Voxel_cbuffer>>(device,std::vector({cbuffer}));
     }
     
+    void VoxelMap::UpdateVoxelConstantBuffer()
+    {
+        Voxel_cbuffer cbuffer = {};
+        cbuffer.clip_space_matrix = clip_space_matrix;
+        cbuffer.voxel_space_matrix = voxel_space_matrix;
+        
+        voxel_constant_buffer->UpdateData({cbuffer});
+    }
+    
 }
