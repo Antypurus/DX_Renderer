@@ -26,9 +26,10 @@ namespace DXR
 
 	void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso, XMFLOAT3 AABB[2], XMMATRIX model)
 	{
+
 		this->SetViewport(command_list);
-		this->CreateVoxelMatrix(camera, model);
-		this->CreateClipMatrix(camera, model);
+		this->CreateVoxelMatrix(camera, AABB, model);
+		this->CreateClipMatrix(camera, AABB, model);
 		this->UpdateVoxelConstantBuffer();
 
 		command_list.SetGraphicsRootSignature(root_signature);
