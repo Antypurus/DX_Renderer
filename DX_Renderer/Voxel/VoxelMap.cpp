@@ -24,6 +24,9 @@ namespace DXR
     void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera)
     {
         this->SetViewport(command_list);
+        this->CreateVoxelMatrix(camera);
+        this->CreateClipMatrix(camera);
+        this->UpdateVoxelConstantBuffer();
     }
     
     void VoxelMap::CreateVoxelMap(GraphicsDevice& device)
