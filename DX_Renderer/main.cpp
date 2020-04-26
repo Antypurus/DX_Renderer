@@ -206,7 +206,7 @@ void MainDirectXThread(DXR::Window& window)
         
         commandList.SendDrawCall();
 
-        map.Bind(commandList,cam,root_signature,voxel_pso, model);
+        map.Bind(commandList,cam,root_signature,voxel_pso, sib_model.AABB, model);
         commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
 
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
