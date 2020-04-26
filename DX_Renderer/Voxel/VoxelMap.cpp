@@ -34,8 +34,8 @@ namespace DXR
         command_list->SetPipelineState(pso.GetPipelineStateObject());
         
         command_list.BindConstantBuffer(*voxel_constant_buffer, 0);
-        // Bind voxel map to slot 1
-        command_list->SetGraphicsRootUnorderedAccessView(1,this->voxel_volume_texture->GetGPUVirtualAddress());//TODO(Tiago): Make the slot not hardcoded
+        // Bind voxel map to slot 2
+        command_list->SetGraphicsRootDescriptorTable(2,(*descriptor_heap).Get(heap_index));//TODO(Tiago): Make the slot not hardcoded
     }
     
     void VoxelMap::CreateVoxelMap(GraphicsDevice& device)

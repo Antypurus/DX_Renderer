@@ -202,6 +202,9 @@ void MainDirectXThread(DXR::Window& window)
 
         commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
 
+        swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
+        commandList->SetPipelineState(pso.GetPipelineStateObject());
+
         commandList.BindConstantBuffer(constant_buffer, 0);
         commandList.BindTexture(texture, 3, 4);
         

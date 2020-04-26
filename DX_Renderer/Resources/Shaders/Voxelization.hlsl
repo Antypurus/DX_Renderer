@@ -23,11 +23,23 @@ struct VS_INPUT
 VS_OUTPUT VoxelVSMain(VS_INPUT input)
 {
     VS_OUTPUT output;
+    
+    output.position = mul(ClipSpaceMatrix, float4(input.pos, 1.0f));
+    output.voxel_grip_position = mul(VoxelSpaceMatrix, float4(input.pos, 1.0f));
+    
     return output;
 }
 
-float4 VoxelPSMain(VS_OUTPUT input)
+struct PS_OUTPUT
 {
+    float4 color : SV_TARGET;
+};
+
+PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
+{
+    PS_OUTPUT output;
+
+    output.color = float4(0, 0, 0, 1);
     discard;
-    return 0;
+    return output;
 }
