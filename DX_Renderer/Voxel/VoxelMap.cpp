@@ -6,6 +6,8 @@
 #include "../Core/Components/Command List/GraphicsCommandList.hpp"
 #include "../Camera/Camera.hpp"
 #include "../Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
+#include "../Core/Components/Pipeline/PipelineStateObject.hpp"
+#include "../Core/Components/Shader/Root Signature/RootSignature.hpp"
 #include <vector>
 
 namespace DXR
@@ -21,12 +23,19 @@ namespace DXR
         this->CreateVoxelConstantBuffer(device);
     }
     
-    void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera)
+    void VoxelMap::Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso)
     {
         this->SetViewport(command_list);
         this->CreateVoxelMatrix(camera);
         this->CreateClipMatrix(camera);
         this->UpdateVoxelConstantBuffer();
+        
+        command_list.SetGraphicsRootSignature(root_signature);
+        command_list->SetPipelineState(pso.GetPipelineStateObject());
+        
+        command_list.BindConstantBuffer(*voxel_constant_buffer, 0);
+        // Bind voxel map to slot 1
+        command_list->SetGraphicsRootUnorderedAccessView(1,this->voxel_volume_texture->GetGPUVirtualAddress());//TODO(Tiago): Make the slot not hardcoded
     }
     
     void VoxelMap::CreateVoxelMap(GraphicsDevice& device)

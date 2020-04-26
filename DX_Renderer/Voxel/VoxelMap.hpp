@@ -15,6 +15,8 @@ namespace DXR
     struct DescriptorHeap;
     struct GraphicsCommandList;
     struct Camera;
+    struct RootSignature;
+    struct PipelineStateObject;
     template<typename T> struct ConstantBuffer;
     
     struct Voxel_cbuffer
@@ -40,7 +42,7 @@ namespace DXR
         std::unique_ptr<ConstantBuffer<Voxel_cbuffer>> voxel_constant_buffer;
         
         VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
-        void Bind(GraphicsCommandList& command_list, Camera& camera);
+        void Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso);
         private:
         void CreateVoxelMap(GraphicsDevice& device);
         void CreateUAV(GraphicsDevice& device);
