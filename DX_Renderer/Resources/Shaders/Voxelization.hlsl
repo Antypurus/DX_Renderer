@@ -39,10 +39,12 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
 {
     PS_OUTPUT output;
 
+    float3 gridPos = input.voxel_grip_position.xyz / input.voxel_grip_position.w;
+    int3 voxel_pos = int3(gridPos);
+
+    voxel_map[voxel_pos] = float4(voxel_pos, 1);
     
-    int3 voxel_pos = int3(input.voxel_grip_position.xyz / input.voxel_grip_position.w);
     
-    voxel_map[voxel_pos] = float4(voxel_pos,1);
     output.color = float4(voxel_pos, 1);
     
     return output;

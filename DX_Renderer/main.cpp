@@ -152,7 +152,7 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::ShaderBindingTable sbtable(device, rtpso, raygen, miss, hitgroup);
     
     DXR::MotionEstimator estimator(device);
-    DXR::VoxelMap map(device,128,128,128);
+    DXR::VoxelMap map(device,128,128,728);
     
 	while (window.ShouldContinue)
 	{
@@ -198,6 +198,10 @@ void MainDirectXThread(DXR::Window& window)
         commandList.BindVertexBuffer(vertex_buffer);
         commandList.BindIndexBuffer(index_buffer);
 
+        
+        map.Bind(commandList,cam,root_signature,voxel_pso, sib_model.AABB, model);
+        commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
+
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         commandList->SetPipelineState(pso.GetPipelineStateObject());
 
@@ -205,9 +209,6 @@ void MainDirectXThread(DXR::Window& window)
         commandList.BindTexture(texture, 3, 4);
         
         commandList.SendDrawCall();
-
-        map.Bind(commandList,cam,root_signature,voxel_pso, sib_model.AABB, model);
-        commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
 
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         

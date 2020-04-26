@@ -127,7 +127,7 @@ namespace DXR
 		m1 = XMMatrixTranslation(voxel_space.x, voxel_space.y, voxel_space.z);
 		m2 = XMMatrixScaling(width / extent.x, height / extent.y, depth / extent.z);
 
-		voxel_matrix = XMMatrixMultiplyTranspose(m1, m2);
+		voxel_matrix = m1 * m2;
 
 		voxel_space_matrix = model * camera.ViewMatrix() * voxel_matrix;
 	}
@@ -159,9 +159,9 @@ namespace DXR
 		m1 = XMMatrixTranslation(center.x, center.y, voxel_space.z);
 		m2 = XMMatrixScaling(2 / extent.x, 2 / extent.y, 1 / extent.z);
 
-		voxel_projection_matrix = XMMatrixMultiplyTranspose(m1, m2);
+		voxel_projection_matrix = m1 * m2;
 
-		clip_space_matrix = camera.ViewMatrix() * camera.ViewMatrix() * voxel_projection_matrix;
+		clip_space_matrix = model * camera.ViewMatrix() * voxel_projection_matrix;
 	}
 
 	void VoxelMap::CreateVoxelConstantBuffer(GraphicsDevice& device)
