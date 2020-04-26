@@ -14,7 +14,7 @@ namespace DXR
 {
     VoxelMap::VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth)
     {
-        this->format = DXGI_FORMAT_R32_UINT;
+        this->format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         this->width = width;
         this->height = height;
         this->depth = depth;
@@ -105,7 +105,7 @@ namespace DXR
     
     void VoxelMap::CreateClipMatrix(Camera& camera)
     {
-        clip_space_matrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f)
+        clip_space_matrix = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0/720.0, 0.1f, 1000.0f)
             * camera.ViewMatrix();
     }
     
@@ -116,6 +116,7 @@ namespace DXR
         cbuffer.voxel_space_matrix = voxel_space_matrix;
         
         voxel_constant_buffer = std::make_unique<ConstantBuffer<Voxel_cbuffer>>(device,std::vector({cbuffer}));
+        (*voxel_constant_buffer)->SetName(L"Voxel C Buffer");
     }
     
     void VoxelMap::UpdateVoxelConstantBuffer()

@@ -4,7 +4,7 @@ cbuffer ConversionMatrixBuffer : register(b0)
     float4x4 VoxelSpaceMatrix;
 };
 
-RWTexture3D<uint> voxel_map : register(u0);
+RWTexture3D<float4> voxel_map : register(u0);
 
 struct VS_OUTPUT
 {
@@ -39,12 +39,12 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
 {
     PS_OUTPUT output;
 
-    output.color = float4(0, 0, 0, 1);
     
     int3 voxel_pos = int3(input.voxel_grip_position.xyz / input.voxel_grip_position.w);
     
-    InterlockedOr(voxel_map[voxel_pos], 1 << (voxel_pos.z & 31));
-    
+    voxel_map[voxel_pos] = float4(voxel_pos,1);
+    output.color = float4(voxel_pos, 1);
     discard;
+    
     return output;
 }
