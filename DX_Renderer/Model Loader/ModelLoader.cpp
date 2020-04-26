@@ -48,10 +48,14 @@ namespace DXR
 					attrib.vertices[3 * index.vertex_index + 2]
 				};
 
-				XMFLOAT2 uv = {
-					attrib.texcoords[2 * index.texcoord_index + 0],
-					1.0f - attrib.texcoords[2 * index.texcoord_index + 1],
-				};
+				XMFLOAT2 uv;
+				if (attrib.texcoords.size() > 0)
+				{
+					uv = {
+						attrib.texcoords[2 * index.texcoord_index + 0],
+						1.0f - attrib.texcoords[2 * index.texcoord_index + 1],
+					};
+				}
 
 				XMFLOAT3 normal;
 				if (attrib.normals.size() > 0)
@@ -112,7 +116,7 @@ namespace DXR
 	{
 		using namespace std;
 		AABB[0] = AABB[1] = vertices[0].position;
-		for (std::vector<OBJVertex>::iterator it = vertices.begin(); it != vertices.end(); ++it) 
+		for (std::vector<OBJVertex>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 		{
 			AABB[0].x = min(AABB[0].x, it->position.x);
 			AABB[0].y = min(AABB[0].y, it->position.y);

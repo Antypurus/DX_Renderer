@@ -65,7 +65,7 @@ namespace DXR
 		DXCall(device->CreateCommittedResource(&heap_properties,
 			D3D12_HEAP_FLAG_NONE,
 			&resource_desc,
-			D3D12_RESOURCE_STATE_COMMON,//TODO(Tiago): What is the best initial state?
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,//TODO(Tiago): What is the best initial state?
 			nullptr,
 			IID_PPV_ARGS(&voxel_volume_texture)));
 	}
@@ -103,20 +103,20 @@ namespace DXR
 	void VoxelMap::CreateVoxelMatrix(Camera& camera, XMFLOAT3 AABB[2], XMMATRIX model)
 	{
 		using namespace std;
-		XMVECTOR extent_vector = XMVectorSubtract({ AABB[1].x,AABB[1].y,AABB[1].z,0 }, { AABB[0].x,AABB[0].y,AABB[0].z,0 });
+		XMVECTOR extent_vector = XMVectorSubtract({ AABB[1].x,AABB[1].y,AABB[1].z,1 }, { AABB[0].x,AABB[0].y,AABB[0].z,1 });
 		XMFLOAT3 extent;
 		XMStoreFloat3(&extent, extent_vector);
 		extent.x *= float(width + 2.0f) / float(width);
 		extent.y *= float(height + 2.0f) / float(height);
 		extent.z *= float(depth + 2.0f) / float(depth);
-		extent.x = extent.y = extent.z = max(extent.x, max(extent.y, extent.z));
+		//extent.x = extent.y = extent.z = max(extent.x, max(extent.y, extent.z));
 
-		XMVECTOR center_vector = XMVectorAdd({ AABB[1].x,AABB[1].y,AABB[1].z,0 }, { AABB[0].x,AABB[0].y,AABB[0].z,0 });
+		XMVECTOR center_vector = XMVectorAdd({ AABB[1].x,AABB[1].y,AABB[1].z,1 }, { AABB[0].x,AABB[0].y,AABB[0].z,1 });
 		center_vector = XMVectorScale(center_vector, 0.5f);
 		XMFLOAT3 center;
 		XMStoreFloat3(&center, center_vector);
 
-		XMVECTOR voxel_space_vector = XMVectorScale({ extent.x,extent.y,extent.z,0 }, 0.5f);
+		XMVECTOR voxel_space_vector = XMVectorScale({ extent.x,extent.y,extent.z,1 }, 0.5f);
 		voxel_space_vector = XMVectorSubtract(center_vector, voxel_space_vector);
 		XMFLOAT3 voxel_space;
 		XMStoreFloat3(&voxel_space, voxel_space_vector);
@@ -124,7 +124,7 @@ namespace DXR
 		XMMATRIX voxel_matrix;
 		XMMATRIX m1, m2;
 
-		m1 = XMMatrixTranslation(voxel_space.x, voxel_space.y, voxel_space.z);
+		m1 = XMMatrixTranslation(-voxel_space.x, -voxel_space.y, -voxel_space.z);
 		m2 = XMMatrixScaling(width / extent.x, height / extent.y, depth / extent.z);
 
 		voxel_matrix = m1 * m2;
@@ -141,7 +141,7 @@ namespace DXR
 		extent.x *= float(width + 2.0f) / float(width);
 		extent.y *= float(height + 2.0f) / float(height);
 		extent.z *= float(depth + 2.0f) / float(depth);
-		extent.x = extent.y = extent.z = max(extent.x, max(extent.y, extent.z));
+		//extent.x = extent.y = extent.z = max(extent.x, max(extent.y, extent.z));
 
 		XMVECTOR center_vector = XMVectorAdd({ AABB[1].x,AABB[1].y,AABB[1].z,0 }, { AABB[0].x,AABB[0].y,AABB[0].z,0 });
 		center_vector = XMVectorScale(center_vector, 0.5f);
@@ -156,8 +156,8 @@ namespace DXR
 		XMMATRIX voxel_projection_matrix;
 		XMMATRIX m1, m2;
 
-		m1 = XMMatrixTranslation(center.x, center.y, voxel_space.z);
-		m2 = XMMatrixScaling(2 / extent.x, 2 / extent.y, 1 / extent.z);
+		m1 = XMMatrixTranslation(-center.x, -center.y, -voxel_space.z);
+		m2 = XMMatrixScaling(2.0f / extent.x, 2.0f / extent.y, 1.0f / extent.z);
 
 		voxel_projection_matrix = m1 * m2;
 
