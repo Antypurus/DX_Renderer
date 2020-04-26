@@ -6,8 +6,6 @@ cbuffer MVPBuffer : register(b0)
 Texture2D gText: register(t0);
 SamplerState gsampler: register(s0);
 
-RWTexture3D<uint> voxel_map : register(u0);
-
 struct VS_OUTPUT
 {
 	float4 position:SV_POSITION;
