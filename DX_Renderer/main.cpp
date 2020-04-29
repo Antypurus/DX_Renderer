@@ -83,10 +83,10 @@ void MainDirectXThread(DXR::Window& window)
 		DXR::OBJVertex::GetInputLayout(),
 		DXR::Swapchain::m_backbuffer_format,
 		DXR::DepthStencilBuffer::DepthStencilBufferFormat };
-
+    
     DXR::VertexShader voxelization_vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/Voxelization.hlsl", L"VoxelVSMain");
 	DXR::PixelShader voxelization_ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/Voxelization.hlsl", L"VoxelPSMain");
-
+    
     DXR::PipelineStateObject voxel_pso = {
 		device,
 		voxelization_vs.GetShaderBytecode(),
@@ -197,18 +197,18 @@ void MainDirectXThread(DXR::Window& window)
         
         commandList.BindVertexBuffer(vertex_buffer);
         commandList.BindIndexBuffer(index_buffer);
-
+        
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         commandList->SetPipelineState(pso.GetPipelineStateObject());
-
+        
         commandList.BindConstantBuffer(constant_buffer, 0);
         commandList.BindTexture(texture, 3, 4);
         
         commandList.SendDrawCall();
-
+        
         map.Bind(commandList,cam,root_signature,voxel_pso, sib_model.AABB, model);
         commandList.SendDrawCall();//NOTE(Tiago): Voxelization Draw Call
-
+        
         swapchain.SetViewport(commandList,swapchain.GetBackbufferResolution());
         
         {
@@ -259,7 +259,7 @@ void MainDirectXThread(DXR::Window& window)
 int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                             LPSTR lpCmdLine, int nCmdShow)
 {
-	DXR::Window window{ hInstance,nCmdShow,{1280,720},"DX Renderer" };
+	DXR::Window window{ hInstance,nCmdShow,{1920,1080},"DX Renderer" };
     
 	std::thread main_dx12_thread(MainDirectXThread, std::ref(window));
     
