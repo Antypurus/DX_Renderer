@@ -21,7 +21,7 @@ namespace DXR
 		OBJMesh(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices);
 		VertexBuffer<OBJVertex> GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList);
 		IndexBuffer GenerateIndexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList);
-	private:
+        private:
 		void DetermineAABB();
 	};
     
@@ -29,6 +29,8 @@ namespace DXR
 	{
         public:
 		static OBJMesh Load(const std::string& filepath);
+        private:
+        std::string static DetermineFolder(const std::string& filepath);
 	};
     
 }
