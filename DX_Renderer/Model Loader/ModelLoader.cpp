@@ -48,6 +48,8 @@ namespace DXR
                 for(unsigned int j=0;j<3;j++)
                 {
                     auto index = shape.mesh.indices[i * 3 + j];
+                    auto material_id = shape.mesh.material_ids[i];
+                    auto material = materials[material_id];
                     
                     XMFLOAT3 pos = {
                         attrib.vertices[3 * index.vertex_index + 0],
