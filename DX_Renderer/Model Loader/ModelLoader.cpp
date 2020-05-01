@@ -120,6 +120,15 @@ namespace DXR
         return (std::string::npos == pos) ? "" : (filepath.substr(0, pos)+"/");
     }
     
+    Material::Material(const Material& other)
+    {
+        this->name = other.name;
+        this->ambient_coefficient = other.ambient_coefficient;
+        this->diffuse_coefficient = other.diffuse_coefficient;
+        this->specular_coefficient = other.specular_coefficient;
+        this->texture = other.texture;
+    }
+    
 	Model::Model(const std::vector<OBJVertex>& vertices,
                  const std::vector<UINT>& indices,
                  const std::unordered_map<UINT,std::vector<UINT>>& submeshes,
@@ -135,15 +144,6 @@ namespace DXR
 		}
 		this->DetermineAABB();
 	}
-    
-    Material::Material(const Material& other)
-    {
-        this->name = other.name;
-        this->ambient_coefficient = other.ambient_coefficient;
-        this->diffuse_coefficient = other.diffuse_coefficient;
-        this->specular_coefficient = other.specular_coefficient;
-        this->texture = other.texture;
-    }
     
 	VertexBuffer<OBJVertex> Model::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
