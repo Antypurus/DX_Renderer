@@ -31,6 +31,7 @@ namespace  DXR
 		Texture() = default;
 		Texture(const std::wstring& filepath, GraphicsDevice& Device, GraphicsCommandList& CommandList);
         Texture(const Texture& other);
+		void operator=(const Texture& other);
 		DescriptorHeap* GetSRVHeap();
 		DescriptorHeap* GetSamplerHeap();
         protected:

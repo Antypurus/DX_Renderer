@@ -15,10 +15,11 @@ namespace DXR
     struct Material
     {
         std::string name = "";
-        XMFLOAT3 ambient_coefficient = {0,0,0};
-        XMFLOAT3 diffuse_coefficient = {0,0,0};
+        XMFLOAT3 ambient_coefficient = {1,1,1};
+        XMFLOAT3 diffuse_coefficient = {1,1,1};
         XMFLOAT3 specular_coefficient = {0,0,0};
-        Texture texture;
+        bool has_texture = false;
+        std::shared_ptr<Texture> texture = nullptr;
         
         Material() = default;
         Material(const Material& other);
@@ -34,6 +35,7 @@ namespace DXR
         public:
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
+        std::vector<Material> materials;
 		XMFLOAT3 AABB[2] = {{0,0,0},{1,1,1}};
         public:
 		Model() = default;

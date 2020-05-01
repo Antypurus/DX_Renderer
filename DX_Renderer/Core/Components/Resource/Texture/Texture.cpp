@@ -32,6 +32,11 @@ namespace DXR
     
     Texture::Texture(const Texture& other)
     {
+		this->m_resource = other.m_resource;
+		this->m_heap_index = other.m_heap_index;
+		this->m_descriptor_heap = other.m_descriptor_heap;
+		this->m_optimized_clear_value = other.m_optimized_clear_value;
+		this->m_resource_heap_description = other.m_resource_heap_description;
         this->m_texture_data = other.m_texture_data;
 		this->m_texture_format = other.m_texture_format;
         this->m_resource_description = other.m_resource_description;
@@ -40,6 +45,22 @@ namespace DXR
         this->m_upload_buffer = other.m_upload_buffer;
         this->m_texture_buffer = other.m_texture_buffer;
     }
+
+	void Texture::operator=(const Texture& other)
+	{
+		this->m_resource = other.m_resource;
+		this->m_heap_index = other.m_heap_index;
+		this->m_descriptor_heap = other.m_descriptor_heap;
+		this->m_optimized_clear_value = other.m_optimized_clear_value;
+		this->m_resource_heap_description = other.m_resource_heap_description;
+        this->m_texture_data = other.m_texture_data;
+		this->m_texture_format = other.m_texture_format;
+        this->m_resource_description = other.m_resource_description;
+        this->m_srv_desc = other.m_srv_desc;
+        this->m_heap = other.m_heap;
+        this->m_upload_buffer = other.m_upload_buffer;
+        this->m_texture_buffer = other.m_texture_buffer;
+	}
     
 	DescriptorHeap* Texture::GetSRVHeap()
 	{

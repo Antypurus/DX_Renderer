@@ -107,10 +107,10 @@ void MainDirectXThread(DXR::Window& window)
 	auto texture = DXR::Texture(L"./DX_Renderer/Resources/Textures/star.jpg", device, commandList);
     
 	commandList->Close();
-    
 	device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 	device.GetGraphicsCommandQueue().Flush(fence);
-    
+    commandList.FullReset(pso);
+
 	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
     
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
@@ -122,7 +122,6 @@ void MainDirectXThread(DXR::Window& window)
     raster_cbufer.mvp = mvp;
     DXR::ConstantBuffer<CBuffer> constant_buffer(device, {raster_cbufer});
     
-	commandList.FullReset(pso);
     
 	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     
@@ -153,7 +152,7 @@ void MainDirectXThread(DXR::Window& window)
     
     DXR::MotionEstimator estimator(device);
     DXR::VoxelMap map(device,128,128,128);
-    
+
 	while (window.ShouldContinue)
 	{
         //estimator.EstimateMotion(device,swapchain);
