@@ -166,11 +166,6 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
 		ImGui::SliderFloat("Model Scale", &scale, 0, 1);
         
-		ImGui::SliderFloat("Camera View Pitch", &cam.pitch, -90,90);
-        ImGui::SliderFloat("Camera View Yaw", &cam.yaw, 0,360);
-        
-        cam.Rotate();
-        
         ImGui::End();
         
         {
