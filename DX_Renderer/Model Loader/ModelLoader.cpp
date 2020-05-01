@@ -40,7 +40,8 @@ namespace DXR
 		//Generate Material Data
 		{
 			for (auto& material : materials)
-			{
+            {
+                //TODO(Tiago): i really dont like this sytem where we have to proccess the string to fix the stupid design of tinyobj loader, in the future I should just make my own obj loader that isnt shit
 				size_t pos = 0;
 				while ((pos = material.diffuse_texname.find("\\", pos)) != std::string::npos) {
 					material.diffuse_texname.replace(pos, std::string("\\").length(), "/");
@@ -55,6 +56,7 @@ namespace DXR
 				model_material.specular_coefficient = { 0,0,0 };
 				if (diffuse_texture_path != folder)
 				{
+                    //NOTE(Tiago): if the texture is not kept alive, the system freaks out cuz it will be deleted at the end of the scope, but that will happen while the command list is open and that will create a massive issue, maybe in the future i need a system to schedule resources for deletion
 					model_material.has_texture = true;
 					model_material.texture = std::make_shared<Texture>(std::wstring(diffuse_texture_path.begin(), diffuse_texture_path.end()), device, command_list);
 				}
@@ -129,7 +131,7 @@ namespace DXR
 		size_t pos = filepath.find_last_of("/\\");
 		return (std::string::npos == pos) ? "" : (filepath.substr(0, pos) + "/");
 	}
-
+    
 	Material::Material(const Material& other)
 	{
 		this->name = other.name;

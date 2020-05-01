@@ -19,7 +19,7 @@ namespace DXR
         XMFLOAT3 diffuse_coefficient = {1,1,1};
         XMFLOAT3 specular_coefficient = {0,0,0};
         bool has_texture = false;
-        std::shared_ptr<Texture> texture = nullptr;
+        std::shared_ptr<Texture> texture = nullptr;//TODO(Tiago): Still think that this should be a unique ptr and not a shared ptr, but C++ is dumb sometimes
         
         Material() = default;
         Material(const Material& other);
