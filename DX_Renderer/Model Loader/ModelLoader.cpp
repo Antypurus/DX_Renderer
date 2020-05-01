@@ -8,10 +8,12 @@
 
 #include <unordered_map>
 #include <algorithm>
+#include <locale>
+#include <codecvt>
 
 namespace DXR
 {
-    Model ModelLoader::LoadOBJ(const std::string& filepath)
+    Model ModelLoader::LoadOBJ(const std::string& filepath, GraphicsDevice& device, GraphicsCommandList& command_list)
 	{
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -33,6 +35,22 @@ namespace DXR
 		{
 			//TODO(Tiago): Handle this error
 		}
+        
+        std::vector<Material> model_materials;
+        //Generate Material Data
+        {
+            for(auto& material:materials)
+            {
+                Material model_material;
+                model_material.name = material.name;
+                model_material.ambient_coefficient = {0,0,0};
+                model_material.diffuse_coefficient = {0,0,0};
+                model_material.specular_coefficient = {0,0,0};
+                model_material.texture = Texture(std::wstring(material.diffuse_texname.begin(),material.diffuse_texname.end()), device, command_list);
+                
+                model_materials.push_back(model_material);
+            }
+        }
         
 		std::unordered_map<OBJVertex, UINT> vertex_map;
         std::unordered_map<UINT,std::vector<UINT>> submeshes;//NOTE(Tiago): Could be substituted by an array of arrays maybe
@@ -93,7 +111,7 @@ namespace DXR
             }
 		}
         
-		return Model(vertices, indices);
+		return Model(vertices, indices, submeshes, model_materials);
 	}
     
     std::string ModelLoader::DetermineFolder(const std::string& filepath)
@@ -102,7 +120,10 @@ namespace DXR
         return (std::string::npos == pos) ? "" : (filepath.substr(0, pos)+"/");
     }
     
-	Model::Model(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices)
+	Model::Model(const std::vector<OBJVertex>& vertices,
+                 const std::vector<UINT>& indices,
+                 const std::unordered_map<UINT,std::vector<UINT>>& submeshes,
+                 std::vector<Material>& materials)
 	{
 		for (const auto& vertex : vertices)
 		{
@@ -114,6 +135,15 @@ namespace DXR
 		}
 		this->DetermineAABB();
 	}
+    
+    Material::Material(const Material& other)
+    {
+        this->name = other.name;
+        this->ambient_coefficient = other.ambient_coefficient;
+        this->diffuse_coefficient = other.diffuse_coefficient;
+        this->specular_coefficient = other.specular_coefficient;
+        this->texture = other.texture;
+    }
     
 	VertexBuffer<OBJVertex> Model::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{

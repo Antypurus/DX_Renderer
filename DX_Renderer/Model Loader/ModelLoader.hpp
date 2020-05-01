@@ -14,9 +14,13 @@ namespace DXR
     
     struct Material
     {
+        std::string name;
         XMFLOAT3 ambient_coefficient;
         XMFLOAT3 diffuse_coefficient;
         XMFLOAT3 specular_coefficient;
+        Texture texture;
+        
+        Material(const Material& other);
     };
     
     struct Submesh
@@ -32,7 +36,10 @@ namespace DXR
 		XMFLOAT3 AABB[2] = {{0,0,0},{1,1,1}};
         public:
 		Model() = default;
-		Model(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices);
+		Model(const std::vector<OBJVertex>& vertices,
+              const std::vector<UINT>& indices,
+              const std::unordered_map<UINT,std::vector<UINT>>& submeshes,
+              std::vector<Material>& materials);
 		VertexBuffer<OBJVertex> GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList);
 		IndexBuffer GenerateIndexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList);
         private:
@@ -42,7 +49,7 @@ namespace DXR
 	struct ModelLoader
 	{
         public:
-		static Model LoadOBJ(const std::string& filepath);
+		static Model LoadOBJ(const std::string& filepath, GraphicsDevice& device, GraphicsCommandList& command_list);
         private:
         std::string static DetermineFolder(const std::string& filepath);
 	};
