@@ -11,7 +11,7 @@
 
 namespace DXR
 {
-	OBJMesh OBJModelLoader::Load(const std::string& filepath)
+    Model ModelLoader::LoadOBJ(const std::string& filepath)
 	{
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -20,13 +20,13 @@ namespace DXR
 		std::string warn;
 		std::string err;
         
-        std::string folder = OBJModelLoader::DetermineFolder(filepath);
+        std::string folder = ModelLoader::DetermineFolder(filepath);
         
 		bool res = tinyobj::LoadObj(&attrib, &shapes, &materials,&warn, &err, filepath.c_str(), folder.c_str());
 		if (!res)
 		{
 			//TODO(Tiago): Handle load fail
-			return OBJMesh();
+			return Model();
 		}
         
 		if (!err.empty())
@@ -35,21 +35,19 @@ namespace DXR
 		}
         
 		std::unordered_map<OBJVertex, UINT> vertex_map;
+        std::unordered_map<UINT,std::vector<UINT>> submeshes;//NOTE(Tiago): Could be substituted by an array of arrays maybe
         
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
         
 		for (const auto& shape : shapes)
 		{
-			auto mats = shape.mesh.material_ids;
-            
 			for (size_t i = 0;i<shape.mesh.indices.size()/3;++i)
 			{
+                UINT face_indices[3];
                 for(unsigned int j=0;j<3;j++)
                 {
                     auto index = shape.mesh.indices[i * 3 + j];
-                    auto material_id = shape.mesh.material_ids[i];
-                    auto material = materials[material_id];
                     
                     XMFLOAT3 pos = {
                         attrib.vertices[3 * index.vertex_index + 0],
@@ -86,20 +84,25 @@ namespace DXR
                         vertices.push_back(vert);
                     }
                     indices.push_back(vertex_map[vert]);
+                    face_indices[j] = vertex_map[vert];
                 }
+                auto material_id = shape.mesh.material_ids[i];
+                submeshes[material_id].push_back(face_indices[0]);
+                submeshes[material_id].push_back(face_indices[1]);
+                submeshes[material_id].push_back(face_indices[2]);
             }
 		}
         
-		return OBJMesh(vertices, indices);
+		return Model(vertices, indices);
 	}
     
-    std::string OBJModelLoader::DetermineFolder(const std::string& filepath)
+    std::string ModelLoader::DetermineFolder(const std::string& filepath)
     {
         size_t pos = filepath.find_last_of("/\\");
         return (std::string::npos == pos) ? "" : (filepath.substr(0, pos)+"/");
     }
     
-	OBJMesh::OBJMesh(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices)
+	Model::Model(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices)
 	{
 		for (const auto& vertex : vertices)
 		{
@@ -112,17 +115,17 @@ namespace DXR
 		this->DetermineAABB();
 	}
     
-	VertexBuffer<OBJVertex> OBJMesh::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
+	VertexBuffer<OBJVertex> Model::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
 		return VertexBuffer<OBJVertex>(Device, CommandList, this->vertices);
 	}
     
-	IndexBuffer OBJMesh::GenerateIndexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
+	IndexBuffer Model::GenerateIndexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
 		return IndexBuffer(Device, CommandList, this->indices);
 	}
     
-	void OBJMesh::DetermineAABB()
+	void Model::DetermineAABB()
 	{
 		using namespace std;
 		AABB[0] = AABB[1] = vertices[0].position;
