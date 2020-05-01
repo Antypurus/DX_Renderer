@@ -15,7 +15,7 @@ namespace DXR
         public:
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
-		XMFLOAT3 AABB[2];
+		XMFLOAT3 AABB[2] = {{0,0,0},{1,1,1}};
         public:
 		OBJMesh() = default;
 		OBJMesh(const std::vector<OBJVertex>& vertices, const std::vector<UINT>& indices);

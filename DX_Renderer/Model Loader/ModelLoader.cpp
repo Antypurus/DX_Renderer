@@ -22,7 +22,7 @@ namespace DXR
         
         std::string folder = OBJModelLoader::DetermineFolder(filepath);
         
-		bool res = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filepath.c_str(), folder.c_str());
+		bool res = tinyobj::LoadObj(&attrib, &shapes, &materials,&warn, &err, filepath.c_str(), folder.c_str());
 		if (!res)
 		{
 			//TODO(Tiago): Handle load fail
@@ -41,6 +41,8 @@ namespace DXR
         
 		for (const auto& shape : shapes)
 		{
+			auto mats = shape.mesh.material_ids;
+
 			for (const auto& index : shape.mesh.indices)
 			{
 				XMFLOAT3 pos = {
