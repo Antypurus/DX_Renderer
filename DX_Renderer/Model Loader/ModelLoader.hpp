@@ -14,12 +14,13 @@ namespace DXR
     
     struct Material
     {
-        std::string name;
-        XMFLOAT3 ambient_coefficient;
-        XMFLOAT3 diffuse_coefficient;
-        XMFLOAT3 specular_coefficient;
+        std::string name = "";
+        XMFLOAT3 ambient_coefficient = {0,0,0};
+        XMFLOAT3 diffuse_coefficient = {0,0,0};
+        XMFLOAT3 specular_coefficient = {0,0,0};
         Texture texture;
         
+        Material() = default;
         Material(const Material& other);
     };
     

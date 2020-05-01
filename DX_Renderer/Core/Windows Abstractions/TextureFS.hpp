@@ -10,7 +10,7 @@ namespace DXR
 	
 	struct TextureData
 	{
-	private:
+        private:
 		// actual texture
 		std::unique_ptr<BYTE[]> m_texture_data = nullptr;
 		// metadata
@@ -21,7 +21,7 @@ namespace DXR
 		UINT64 m_height =0;
 		UINT16 m_mip_levels = 1;
 		WICPixelFormatGUID m_pixel_format = GUID_WICPixelFormatDontCare;
-	public:
+        public:
 		~TextureData() = default;
 		TextureData() = default;
 		TextureData(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame);
@@ -35,7 +35,7 @@ namespace DXR
 		UINT64 CalculateRowPitch() const;
 		UINT64 CalculateAlignedRowPitch() const;
 		UINT16 GetMipLevelCount() const;
-	private:
+        private:
 		WRL::ComPtr<IWICFormatConverter> ConvertToFormat(WRL::ComPtr<IWICBitmapFrameDecode>& TextureFrame, const WICPixelFormatGUID& PixelFormat);
 		bool CheckIfFormatIsSupported() const;
 		bool CheckIfFormatIsSupported(const WICPixelFormatGUID& PixelFormat) const;
@@ -47,17 +47,17 @@ namespace DXR
 	
 	struct TextureFS
 	{
-	public:
-	private:
+        public:
+        private:
 		static TextureFS m_instance;
 		WRL::ComPtr<IWICImagingFactory2> m_imaging_factory;
-	public:
+        public:
 		~TextureFS();
 		static TextureFS& GetInstance();
 		static TextureData LoadTextureData(const std::wstring& Filepath);
 		IWICImagingFactory2* operator->() const;
 		static UINT ComputeTextureFormatBitsPerPixel(const WICPixelFormatGUID& PixelFormat);
-	private:
+        private:
 		TextureFS();
 		void CreateImagingFactory();
 	};
