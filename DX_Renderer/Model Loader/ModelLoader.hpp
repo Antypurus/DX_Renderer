@@ -42,17 +42,24 @@ namespace DXR
 		std::vector<UINT> indices;
         std::vector<Material> materials;
         std::vector<Submesh> submeshes;
+        std::unique_ptr<VertexBuffer<OBJVertex>> vertex_buffer = nullptr;
 		XMFLOAT3 AABB[2] = {{0,0,0},{1,1,1}};
         public:
 		Model() = default;
-		Model(const std::vector<OBJVertex>& vertices,
+		Model(GraphicsDevice& device,
+              GraphicsCommandList& command_list,
+              const std::vector<OBJVertex>& vertices,
               const std::vector<UINT>& indices,
               const std::unordered_map<UINT,std::vector<UINT>>& submeshes,
               std::vector<Material>& materials);
 		VertexBuffer<OBJVertex> GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList);
 		IndexBuffer GenerateIndexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList);
+        void Draw(GraphicsCommandList& command_list, UINT texture_slot, UINT sampler_slot);
         private:
 		void DetermineAABB();
+        void BuildSubmeshes(GraphicsDevice& device,
+                            GraphicsCommandList& command_list,
+                            const std::unordered_map<UINT,std::vector<UINT>>& submeshes);
 	};
     
 	struct ModelLoader

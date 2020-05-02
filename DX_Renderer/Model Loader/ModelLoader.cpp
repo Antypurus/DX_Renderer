@@ -123,7 +123,7 @@ namespace DXR
 			}
 		}
         
-		return Model(vertices, indices, submeshes, model_materials);
+		return Model(device, command_list, vertices, indices, submeshes, model_materials);
 	}
     
 	std::string ModelLoader::DetermineFolder(const std::string& filepath)
@@ -159,7 +159,9 @@ namespace DXR
         command_list.SendDrawCall();
     }
     
-	Model::Model(const std::vector<OBJVertex>& vertices,
+	Model::Model(GraphicsDevice& device,
+                 GraphicsCommandList& command_list,
+                 const std::vector<OBJVertex>& vertices,
                  const std::vector<UINT>& indices,
                  const std::unordered_map<UINT, std::vector<UINT>>& submeshes,
                  std::vector<Material>& materials)
@@ -167,11 +169,38 @@ namespace DXR
 		this->vertices = vertices;
 		this->indices = indices;
 		this->materials = materials;
+        this->vertex_buffer = std::make_unique<VertexBuffer<OBJVertex>>(device, command_list, this->vertices);
 		this->DetermineAABB();
+        this->BuildSubmeshes(device, command_list, submeshes);
 	}
     
-	VertexBuffer<OBJVertex> Model::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
+    void Model::BuildSubmeshes(GraphicsDevice& device,
+                               GraphicsCommandList& command_list,
+                               const std::unordered_map<UINT, std::vector<UINT>>& submeshes)
+    {
+        for(UINT material = 0; material < materials.size(); ++material)
+        {
+            auto [currentSubmesh, rangeEnd] = submeshes.equal_range((UINT)material);
+            while(currentSubmesh != rangeEnd)
+            {
+                this->submeshes.push_back({currentSubmesh->second,materials[material],device, command_list});
+                ++currentSubmesh;
+            }
+        }
+    }
+    
+    void Model::Draw(GraphicsCommandList& command_list, UINT texture_slot, UINT sampler_slot)
+    {
+        command_list.BindVertexBuffer(*this->vertex_buffer);
+        for(auto& submesh: submeshes)
+        {
+            submesh.Draw(command_list, texture_slot, sampler_slot);
+        }
+    }
+    
+    VertexBuffer<OBJVertex> Model::GenerateVertexBuffer(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
+        //TODO(Tiago): add a copy operator to the vertex buffer so that i can just return a reference to this and have a copy of the original vertex buffer
 		return VertexBuffer<OBJVertex>(Device, CommandList, this->vertices);
 	}
     
