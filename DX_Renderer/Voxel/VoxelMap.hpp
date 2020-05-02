@@ -29,22 +29,23 @@ namespace DXR
     
 	struct VoxelMap
 	{
-		ComPtr<ID3D12Resource> voxel_volume_texture;
-		UINT width;
-		UINT height;
-		UINT depth;
+		ComPtr<ID3D12Resource> voxel_volume_texture = nullptr;
+		UINT width = 0;
+		UINT height = 0;
+		UINT depth = 0;
 		DXGI_FORMAT format;
         
-		UINT heap_index;
-		DescriptorHeap* descriptor_heap;
+		UINT heap_index = 0xFF;
+		DescriptorHeap* descriptor_heap = nullptr;
         
 		XMMATRIX voxel_space_matrix;
 		XMMATRIX clip_space_matrix;
         
         DescriptorHeap clear_heap;
         
-		std::unique_ptr<ConstantBuffer<Voxel_cbuffer>> voxel_constant_buffer;
+		std::unique_ptr<ConstantBuffer<Voxel_cbuffer>> voxel_constant_buffer = nullptr;
         
+        VoxelMap() = default;
 		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
 		void Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso, XMFLOAT3 AABB[2], XMMATRIX model = XMMatrixIdentity());
         private:

@@ -147,7 +147,7 @@ namespace DXR
 		extent.x *= float(width + 2.0f) / float(width);
 		extent.y *= float(height + 2.0f) / float(height);
 		extent.z *= float(depth + 2.0f) / float(depth);
-		//extent.x = extent.y = extent.z = max(extent.x, max(extent.y, extent.z));
+		extent.x = extent.y = extent.z = max(extent.x, max(extent.y, extent.z));
         
 		XMVECTOR center_vector = XMVectorAdd({ AABB[1].x,AABB[1].y,AABB[1].z,0 }, { AABB[0].x,AABB[0].y,AABB[0].z,0 });
 		center_vector = XMVectorScale(center_vector, 0.5f);
