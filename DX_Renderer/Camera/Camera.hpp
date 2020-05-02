@@ -11,6 +11,7 @@ namespace DXR
 #define A_KEY 0x41
 #define S_KEY 0x53
 #define D_KEY 0x44
+#define CAM_MAX_PITCH 180.0f
     
     struct Camera
     {
