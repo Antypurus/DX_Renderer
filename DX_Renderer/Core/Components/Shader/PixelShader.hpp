@@ -10,6 +10,7 @@ namespace DXR
         std::wstring entrypoint;
         private:
         public:
+        PixelShader() = default;
 		static PixelShader CompileShaderFromFile(const std::wstring& filename, const std::wstring& entryPoint);
         private:
 		PixelShader(const std::wstring& filepath, const std::wstring& entrypoint);
