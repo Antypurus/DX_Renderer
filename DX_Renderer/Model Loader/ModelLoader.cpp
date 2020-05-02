@@ -142,6 +142,23 @@ namespace DXR
 		this->texture = other.texture;
 	}
     
+    Submesh::Submesh(const std::vector<UINT>& indices, Material& material, GraphicsDevice& device, GraphicsCommandList& command_list)
+    {
+        this->indices = indices;
+        this->material = &material;
+        this->index_buffer = std::make_unique<IndexBuffer>(device, command_list, this->indices);
+    }
+    
+    void Submesh::Draw(GraphicsCommandList& command_list, UINT texture_slot, UINT sampler_slot)
+    {
+        command_list.BindIndexBuffer(*this->index_buffer);
+        if(this->material->has_texture)
+        {
+            command_list.BindTexture(*this->material->texture, texture_slot, sampler_slot);
+        }
+        command_list.SendDrawCall();
+    }
+    
 	Model::Model(const std::vector<OBJVertex>& vertices,
                  const std::vector<UINT>& indices,
                  const std::unordered_map<UINT, std::vector<UINT>>& submeshes,

@@ -27,7 +27,12 @@ namespace DXR
     
     struct Submesh
     {
-        UINT pad;
+        std::vector<UINT> indices;//TODO(Tiago): does the submess really need to store its indices? Seems kinda of like a waste of RAM
+        Material* material;//NOTE(Tiago): non owning pointer, actual material is in the model
+        std::unique_ptr<IndexBuffer> index_buffer = nullptr;
+        
+        Submesh(const std::vector<UINT>& indices, Material& material, GraphicsDevice& device, GraphicsCommandList& command_list);
+        void Draw(GraphicsCommandList& command_list, UINT texture_slot, UINT sampler_slot);
     };
     
 	struct Model
@@ -36,6 +41,7 @@ namespace DXR
 		std::vector<OBJVertex> vertices;
 		std::vector<UINT> indices;
         std::vector<Material> materials;
+        std::vector<Submesh> submeshes;
 		XMFLOAT3 AABB[2] = {{0,0,0},{1,1,1}};
         public:
 		Model() = default;
