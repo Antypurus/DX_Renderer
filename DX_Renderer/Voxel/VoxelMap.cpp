@@ -177,12 +177,11 @@ namespace DXR
 					FLOAT g = base[1];
 					FLOAT b = base[2];
 					FLOAT a = base[3];
-					a = 5;
 				}
 			}
 		}
 		data[0] = 0;
-		voxel_map_readback_buffer->Unmap(0, &read_range);
+		voxel_map_readback_buffer->Unmap(0, nullptr);
         
 		TransitionResourceBarrier barrier2(*voxel_volume_texture.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		barrier2.ExecuteResourceBarrier(command_list);
