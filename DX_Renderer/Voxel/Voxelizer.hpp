@@ -14,6 +14,8 @@ namespace DXR
     struct GraphicsDevice;
     struct GraphicsCommandList;
     struct Model;
+    struct Swapchain;
+    struct RootSignature;//TODO(Tiago): Build root signature specifically for voxelization?
     
     struct Voxelizer
     {
@@ -32,7 +34,12 @@ namespace DXR
         XMMATRIX clip_space_conversion_matrix;
         
         Voxelizer() = default;
-        Voxelizer(GraphicsDevice& device, GraphicsCommandList& command_list);
+        Voxelizer(GraphicsDevice& device,
+                  GraphicsCommandList& command_list,
+                  Swapchain& swapchain,
+                  RootSignature& root_signature,
+                  Model& model,
+                  XMMATRIX mvp);
     };
     
 }

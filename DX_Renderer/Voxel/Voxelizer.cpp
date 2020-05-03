@@ -5,7 +5,12 @@
 namespace DXR
 {
     
-    Voxelizer::Voxelizer(GraphicsDevice& device, GraphicsCommandList& command_list)
+    Voxelizer::Voxelizer(GraphicsDevice& device,
+                         GraphicsCommandList& command_list,
+                         Swapchain& swapchain,
+                         RootSignature& root_signature,
+                         Model& model,
+                         XMMATRIX mvp)
     {
         
     }
