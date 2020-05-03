@@ -30,6 +30,7 @@ namespace DXR
 	struct VoxelMap
 	{
 		ComPtr<ID3D12Resource> voxel_volume_texture = nullptr;
+        ComPtr<ID3D12Resource> voxel_map_readback_buffer = nullptr;
 		UINT width = 0;
 		UINT height = 0;
 		UINT depth = 0;
@@ -49,6 +50,7 @@ namespace DXR
         private:
 		void CreateVoxelMap(GraphicsDevice& device);
 		void CreateUAV(GraphicsDevice& device);
+        void CreateReadbackBuffer(GraphicsDevice& device);
 	};
     
 }
