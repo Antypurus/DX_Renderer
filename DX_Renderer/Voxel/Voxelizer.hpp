@@ -57,7 +57,7 @@ namespace DXR
                   XMMATRIX mvp);
         private:
         void CalculateVoxelizationSupportData();
-        void CreateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix);
+        void UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix);
         void UpdateVoxelizationCBuffer();
         void CreateVoxelizationShaders();
     };

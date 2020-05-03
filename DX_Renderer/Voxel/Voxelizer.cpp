@@ -30,6 +30,7 @@ namespace DXR
         std::vector<Voxelization_CBuffer> intermediate;
         intermediate.push_back({XMMatrixIdentity(), XMMatrixIdentity()});
         this->voxelization_cbuffer = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device,intermediate);
+        this->CalculateVoxelizationSupportData();
     }
     
     void Voxelizer::CalculateVoxelizationSupportData()
@@ -53,7 +54,7 @@ namespace DXR
 		XMStoreFloat3(&voxel_space, voxel_space_vector);
     }
     
-    void Voxelizer::CreateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
+    void Voxelizer::UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
     {
         XMMATRIX voxel_matrix;
         XMMATRIX m1,m2;
