@@ -2,7 +2,6 @@
 #include "../Core/Components/GraphicsDevice.hpp"
 #include "../Core/Components/Command List/GraphicsCommandList.hpp"
 #include "../Camera/Camera.hpp"
-#include "../Model Loader/ModelLoader.hpp"
 #include "../Core/Components/Swapchain.hpp"
 
 #include <string>
@@ -16,6 +15,8 @@ namespace DXR
                          Model& model,
                          XMMATRIX mvp)
     {
+        this->model_vertex_buffer = model.GenerateVertexBuffer(device, command_list);
+        this->model_index_buffer = model.GenerateIndexBuffer(device,command_list);
         this->CreateVoxelizationShaders();
         this->voxel_map = VoxelMap(device,VOXEL_WIDTH,VOXEL_HEIGHT,VOXEL_DEPTH);
         this->model = &model;
@@ -31,6 +32,21 @@ namespace DXR
         intermediate.push_back({XMMatrixIdentity(), XMMatrixIdentity()});
         this->voxelization_cbuffer = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device,intermediate);
         this->CalculateVoxelizationSupportData();
+    }
+    
+    void Voxelizer::Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, XMMATRIX model_matrix, UINT constant_buffer_slot, UINT voxel_map_uav_slot)
+    {
+        voxel_map.Clear(command_list);
+        this->SetViewport(command_list);
+        this->UpdateVoxelizationMatrices(camera, model_matrix);
+        this->UpdateVoxelizationCBuffer();
+        command_list.SetGraphicsRootSignature(root_signature);
+        command_list->SetPipelineState(pso.GetPipelineStateObject());
+        command_list.BindConstantBuffer(*voxelization_cbuffer, constant_buffer_slot);
+        this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
+        command_list.BindVertexBuffer(model_vertex_buffer);
+        command_list.BindIndexBuffer(model_index_buffer);
+        command_list.SendDrawCall();
     }
     
     void Voxelizer::CalculateVoxelizationSupportData()
@@ -85,6 +101,19 @@ namespace DXR
         const std::wstring PS_entrypoint = L"VoxelPSMain";
         this->voxelization_vertex_shader = VertexShader::CompileShaderFromFile(voxel_shader_path, VS_entrypoint);
         this->voxelization_pixel_shader = PixelShader::CompileShaderFromFile(voxel_shader_path, PS_entrypoint);
+    }
+    
+    
+    void Voxelizer::SetViewport(GraphicsCommandList& command_list)
+    {
+        D3D12_VIEWPORT viewport = {};
+        viewport.Width = (FLOAT)VOXEL_WIDTH;
+		viewport.Height = (FLOAT)VOXEL_HEIGHT;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		command_list->RSSetViewports(1, &viewport);
     }
     
 }

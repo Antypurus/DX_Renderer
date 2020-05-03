@@ -38,25 +38,17 @@ namespace DXR
 		UINT heap_index = 0xFF;
 		DescriptorHeap* descriptor_heap = nullptr;
         
-		XMMATRIX voxel_space_matrix;
-		XMMATRIX clip_space_matrix;
-        
         DescriptorHeap clear_heap;
         
 		std::unique_ptr<ConstantBuffer<Voxel_cbuffer>> voxel_constant_buffer = nullptr;
         
         VoxelMap() = default;
 		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
-		void Bind(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, PipelineStateObject& pso, XMFLOAT3 AABB[2], XMMATRIX model = XMMatrixIdentity());
+		void BindUAV(GraphicsCommandList& command_list, UINT slot);
+        void Clear(GraphicsCommandList& command_list);
         private:
 		void CreateVoxelMap(GraphicsDevice& device);
 		void CreateUAV(GraphicsDevice& device);
-		void SetViewport(GraphicsCommandList& command_list);
-		void CreateVoxelMatrix(Camera& camera, XMFLOAT3 AABB[2], XMMATRIX model = XMMatrixIdentity());
-		void CreateClipMatrix(Camera& camera, XMFLOAT3 AABB[2], XMMATRIX model = XMMatrixIdentity());
-		void CreateVoxelConstantBuffer(GraphicsDevice& device);
-		void UpdateVoxelConstantBuffer();
-        void Clear(GraphicsCommandList& command_list);
 	};
     
 }

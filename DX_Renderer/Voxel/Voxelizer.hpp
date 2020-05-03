@@ -6,6 +6,9 @@
 #include "../Core/Components/RayTracing/AccelerationStructure.hpp"
 #include "../Core/Components/Resource/GPU Buffers/ConstantBuffer.hpp"
 #include "VoxelMap.hpp"
+#include "../Core/Components/Vertices/VertexBuffer.hpp"
+#include "../Core/Components/Vertices/IndexBuffer.hpp"
+#include "../Model Loader/ModelLoader.hpp"
 
 #include <directxmath.h>
 #include <memory>
@@ -38,6 +41,8 @@ namespace DXR
         PixelShader voxelization_pixel_shader;
         VoxelMap voxel_map;
         Model* model;
+        VertexBuffer<OBJVertex> model_vertex_buffer;
+        IndexBuffer model_index_buffer;
         PipelineStateObject pso;
         TLAS acceleration_structure;
         std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer;
@@ -55,11 +60,13 @@ namespace DXR
                   RootSignature& root_signature,
                   Model& model,
                   XMMATRIX mvp);
+        void Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, XMMATRIX model_matrix, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
         private:
         void CalculateVoxelizationSupportData();
         void UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix);
         void UpdateVoxelizationCBuffer();
         void CreateVoxelizationShaders();
+        void SetViewport(GraphicsCommandList& command_list);
     };
     
 }
