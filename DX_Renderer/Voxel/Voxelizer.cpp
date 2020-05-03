@@ -17,6 +17,7 @@ namespace DXR
                          XMMATRIX mvp)
     {
         this->CreateVoxelizationShaders();
+        this->voxel_map = VoxelMap(device,VOXEL_WIDTH,VOXEL_HEIGHT,VOXEL_DEPTH);
     }
     
     void Voxelizer::CreateVoxelizationShaders()
