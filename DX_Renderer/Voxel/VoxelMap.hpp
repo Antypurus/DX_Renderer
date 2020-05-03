@@ -13,6 +13,7 @@ namespace DXR
 	using namespace Microsoft::WRL;
 	using namespace DirectX;
     
+    struct Fence;
 	struct GraphicsDevice;
 	struct DescriptorHeap;
 	struct GraphicsCommandList;
@@ -35,6 +36,7 @@ namespace DXR
 		UINT height = 0;
 		UINT depth = 0;
 		DXGI_FORMAT format;
+        UINT format_byte_size;
         
 		UINT heap_index = 0xFF;
 		DescriptorHeap* descriptor_heap = nullptr;
@@ -47,9 +49,10 @@ namespace DXR
 		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
 		void BindUAV(GraphicsCommandList& command_list, UINT slot);
         void Clear(GraphicsCommandList& command_list);
+        void ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
         private:
-		void CreateVoxelMap(GraphicsDevice& device);
-		void CreateUAV(GraphicsDevice& device);
+        void CreateVoxelMap(GraphicsDevice& device);
+        void CreateUAV(GraphicsDevice& device);
         void CreateReadbackBuffer(GraphicsDevice& device);
 	};
     
