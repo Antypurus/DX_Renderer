@@ -172,7 +172,7 @@ namespace DXR
 			{
 				for (size_t h = 0; h < height; ++h)
 				{
-					FLOAT* base = &data[w + d * depth + h * height];
+					FLOAT* base = &data[w * 4*4 + d * depth + h * height];
 					FLOAT r = base[0];
 					FLOAT g = base[1];
 					FLOAT b = base[2];
