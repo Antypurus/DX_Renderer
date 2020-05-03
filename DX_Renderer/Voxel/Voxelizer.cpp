@@ -26,6 +26,9 @@ namespace DXR
                                         OBJVertex::GetInputLayout(),
                                         Swapchain::m_backbuffer_format,
                                         DepthStencilBuffer::DepthStencilBufferFormat);
+        
+        std::vector<Voxelization_CBuffer> intermediate;
+        this->voxelization_cbuffer = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device,intermediate);
     }
     
     void Voxelizer::CreateVoxelizationShaders()
