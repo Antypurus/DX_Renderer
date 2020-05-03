@@ -34,17 +34,47 @@ namespace DXR
     
     void Voxelizer::CalculateVoxelizationSupportData()
     {
+        using namespace std;
         
+        XMFLOAT3* AABB = model->AABB;
+		XMVECTOR extent_vector = XMVectorSubtract({ AABB[1].x,AABB[1].y,AABB[1].z,1 }, { AABB[0].x,AABB[0].y,AABB[0].z,1 });
+		XMStoreFloat3(&extent, extent_vector);
+		extent.x *= float(VOXEL_WIDTH + 2.0f) / float(VOXEL_WIDTH);
+		extent.y *= float(VOXEL_HEIGHT + 2.0f) / float(VOXEL_HEIGHT);
+		extent.z *= float(VOXEL_DEPTH + 2.0f) / float(VOXEL_DEPTH);
+		//extent.x = extent.y = extent.z = max(extent.x, max(extent.y, extent.z));
+        
+		XMVECTOR center_vector = XMVectorAdd({ AABB[1].x,AABB[1].y,AABB[1].z,1 }, { AABB[0].x,AABB[0].y,AABB[0].z,1 });
+		center_vector = XMVectorScale(center_vector, 0.5f);
+		XMStoreFloat3(&center, center_vector);
+        
+		XMVECTOR voxel_space_vector = XMVectorScale({ extent.x,extent.y,extent.z,1 }, 0.5f);
+		voxel_space_vector = XMVectorSubtract(center_vector, voxel_space_vector);
+		XMStoreFloat3(&voxel_space, voxel_space_vector);
     }
     
-    void CreateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
+    void Voxelizer::CreateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
     {
+        XMMATRIX voxel_matrix;
+        XMMATRIX m1,m2;
+        m1 = XMMatrixTranslation(-voxel_space.x, -voxel_space.y, -voxel_space.z);
+		m2 = XMMatrixScaling(VOXEL_WIDTH / extent.x, VOXEL_HEIGHT / extent.y, VOXEL_DEPTH / extent.z);
+        voxel_matrix = m1 * m2;
+        voxel_space_conversion_matrix = model_matrix * camera.ViewMatrix() * voxel_matrix;
         
+        XMMATRIX clip_matrix;
+        m1 = XMMatrixTranslation(-center.x, -center.y, -voxel_space.z);
+		m2 = XMMatrixScaling(2.0f / extent.x, 2.0f / extent.y, 1.0f / extent.z);
+        clip_matrix = m1 * m2;
+        clip_space_conversion_matrix = model_matrix * camera.ViewMatrix() * clip_matrix;
     }
     
-    void UpdateVoxelizationCBuffer()
+    void Voxelizer::UpdateVoxelizationCBuffer()
     {
-        
+        voxelization_cbuffer->UpdateData({{
+                                                 clip_space_conversion_matrix,
+                                                 voxel_space_conversion_matrix
+                                             }});
     }
     
     void Voxelizer::CreateVoxelizationShaders()
