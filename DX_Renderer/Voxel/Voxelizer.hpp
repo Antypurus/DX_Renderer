@@ -50,7 +50,6 @@ namespace DXR
         Voxelizer() = default;
         Voxelizer(GraphicsDevice& device,
                   GraphicsCommandList& command_list,
-                  Swapchain& swapchain,
                   RootSignature& root_signature,
                   Model& model,
                   XMMATRIX mvp);

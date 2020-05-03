@@ -3,6 +3,7 @@
 #include "../Core/Components/Command List/GraphicsCommandList.hpp"
 #include "../Camera/Camera.hpp"
 #include "../Model Loader/ModelLoader.hpp"
+#include "../Core/Components/Swapchain.hpp"
 
 #include <string>
 
@@ -11,13 +12,20 @@ namespace DXR
     
     Voxelizer::Voxelizer(GraphicsDevice& device,
                          GraphicsCommandList& command_list,
-                         Swapchain& swapchain,
                          RootSignature& root_signature,
                          Model& model,
                          XMMATRIX mvp)
     {
         this->CreateVoxelizationShaders();
         this->voxel_map = VoxelMap(device,VOXEL_WIDTH,VOXEL_HEIGHT,VOXEL_DEPTH);
+        this->model = &model;
+        this->pso = PipelineStateObject(device,
+                                        this->voxelization_vertex_shader.GetShaderBytecode(),
+                                        this->voxelization_pixel_shader.GetShaderBytecode(),
+                                        root_signature,
+                                        OBJVertex::GetInputLayout(),
+                                        Swapchain::m_backbuffer_format,
+                                        DepthStencilBuffer::DepthStencilBufferFormat);
     }
     
     void Voxelizer::CreateVoxelizationShaders()
