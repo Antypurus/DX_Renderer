@@ -26,9 +26,25 @@ namespace DXR
                                         OBJVertex::GetInputLayout(),
                                         Swapchain::m_backbuffer_format,
                                         DepthStencilBuffer::DepthStencilBufferFormat);
-        
+        //NOTE(Tiago): dummy/placeholder data is required to create the constant buffer while the matrices are not yet computed
         std::vector<Voxelization_CBuffer> intermediate;
+        intermediate.push_back({XMMatrixIdentity(), XMMatrixIdentity()});
         this->voxelization_cbuffer = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device,intermediate);
+    }
+    
+    void Voxelizer::CalculateVoxelizationSupportData()
+    {
+        
+    }
+    
+    void CreateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
+    {
+        
+    }
+    
+    void UpdateVoxelizationCBuffer()
+    {
+        
     }
     
     void Voxelizer::CreateVoxelizationShaders()

@@ -13,6 +13,8 @@
 namespace DXR
 {
     
+    using namespace DirectX;
+    
     struct Camera;
     struct GraphicsDevice;
     struct GraphicsCommandList;

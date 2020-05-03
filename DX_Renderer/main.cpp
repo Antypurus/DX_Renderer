@@ -25,6 +25,7 @@
 #include "Camera/Camera.hpp"
 #include "Core/Components/Motion Estimation/MotionEstimation.hpp"
 #include "Voxel/VoxelMap.hpp"
+#include "Voxel/Voxelizer.hpp"
 
 struct CBuffer
 {
@@ -150,6 +151,8 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::MotionEstimator estimator(device);
 	DXR::VoxelMap map(device, 128, 128, 128);
     
+	DXR::Voxelizer voxelizer(device,commandList,root_signature,sib_model,mvp);
+
 	while (window.ShouldContinue)
 	{
 		//estimator.EstimateMotion(device,swapchain);
