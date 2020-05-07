@@ -42,7 +42,7 @@ namespace DXR
 		DescriptorHeap m_heap;
 	public:
 		Sampler() = default;
-		Sampler(GraphicsDevice& Device, const SamplerSettings& settings = {AddressMode::Wrap,Filter::Anisotropic,16});
+		Sampler(GraphicsDevice& Device, const SamplerSettings& settings = {AddressMode::Wrap,Filter::Linear,1});
 		void operator=(const Sampler& sampler);
 	private:
 		void CreateSampler(GraphicsDevice& device, const SamplerSettings& settings) const;

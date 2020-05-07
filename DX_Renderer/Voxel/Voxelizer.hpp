@@ -9,6 +9,7 @@
 #include "../Core/Components/Vertices/VertexBuffer.hpp"
 #include "../Core/Components/Vertices/IndexBuffer.hpp"
 #include "../Model Loader/ModelLoader.hpp"
+#include "../Core/Components/Vertices/Vertex.hpp"
 
 #include <directxmath.h>
 #include <memory>
@@ -46,6 +47,8 @@ namespace DXR
         PipelineStateObject pso;
         TLAS acceleration_structure;
         std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer;
+        std::unique_ptr<VertexBuffer<Vertex>> voxel_cube_vertex_buffer;
+        std::unique_ptr<IndexBuffer> voxel_cube_index_buffer;
         //NOTE(Tiago):Voxelization matrices support data
         XMFLOAT3 extent;
         XMFLOAT3 center;
@@ -67,6 +70,7 @@ namespace DXR
         void UpdateVoxelizationCBuffer();
         void CreateVoxelizationShaders();
         void SetViewport(GraphicsCommandList& command_list);
+        void CreateVoxelCube(GraphicsDevice& device, GraphicsCommandList& command_list);
     };
     
 }

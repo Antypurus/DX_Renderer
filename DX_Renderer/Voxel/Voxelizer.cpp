@@ -116,4 +116,18 @@ namespace DXR
 		command_list->RSSetViewports(1, &viewport);
     }
     
+    void Voxelizer::CreateVoxelCube(GraphicsDevice& device, GraphicsCommandList& command_list)
+    {
+        const Vertex vertices[] = {
+            {{-0.5,  0.5, -0.5},{0,0}},
+            {{ 0.5,  0.5, -0.5},{0,0}},
+            {{ 0.5,  0.5,  0.5},{0,0}},
+            {{ 0.5, -0.5, -0.5},{0,0}},
+            {{ 0.5, -0.5,  0.5},{0,0}},
+            {{-0.5, -0.5, -0.5},{0,0}},
+            {{-0.5, -0.5,  0.5},{0,0}},
+            {{-0.5,  0.5,  0.5},{0,0}}
+        };
+    }
+    
 }
