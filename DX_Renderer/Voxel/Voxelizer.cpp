@@ -15,6 +15,7 @@ namespace DXR
                          Model& model,
                          XMMATRIX mvp)
     {
+        this->CreateVoxelCube(device, command_list);
         this->model_vertex_buffer = model.GenerateVertexBuffer(device, command_list);
         this->model_index_buffer = model.GenerateIndexBuffer(device,command_list);
         this->CreateVoxelizationShaders();
@@ -118,7 +119,7 @@ namespace DXR
     
     void Voxelizer::CreateVoxelCube(GraphicsDevice& device, GraphicsCommandList& command_list)
     {
-        const Vertex vertices[] = {
+        std::vector<Vertex> vertices = {
             {{-0.5,  0.5, -0.5},{0,0}},
             {{ 0.5,  0.5, -0.5},{0,0}},
             {{ 0.5,  0.5,  0.5},{0,0}},
@@ -128,6 +129,25 @@ namespace DXR
             {{-0.5, -0.5,  0.5},{0,0}},
             {{-0.5,  0.5,  0.5},{0,0}}
         };
+        std::vector<UINT> indices = {
+            6,4,2,
+            6,2,7,
+            4,3,1,
+            4,1,2,
+            7,2,1,
+            7,1,0,
+            5,6,0,
+            6,7,0,
+            5,0,1,
+            5,1,3,
+            5,3,6,
+            3,4,6
+        };
+        voxel_cube_vertex_buffer = std::make_unique<VertexBuffer<Vertex>>(device, command_list, vertices);
+        voxel_cube_index_buffer = std::make_unique<IndexBuffer>(device, command_list, indices);
+        voxel_cube_blas = std::make_unique<BLAS>(device, command_list, *voxel_cube_vertex_buffer, *voxel_cube_index_buffer);
+        acceleration_structure.AddInstance(*voxel_cube_blas, XMMatrixIdentity(), 0);
+        acceleration_structure.BuildTLAS(device,command_list);
     }
     
 }

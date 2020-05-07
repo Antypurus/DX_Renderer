@@ -46,6 +46,7 @@ namespace DXR
         IndexBuffer model_index_buffer;
         PipelineStateObject pso;
         TLAS acceleration_structure;
+        std::unique_ptr<BLAS> voxel_cube_blas;
         std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer;
         std::unique_ptr<VertexBuffer<Vertex>> voxel_cube_vertex_buffer;
         std::unique_ptr<IndexBuffer> voxel_cube_index_buffer;
