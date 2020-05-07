@@ -4,6 +4,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <memory>
+#include <cmath>
 
 #include "../Core/Components/Resource/DescriptorHeap.hpp"
 
@@ -22,11 +23,26 @@ namespace DXR
 	struct PipelineStateObject;
 	template<typename T> struct ConstantBuffer;
     
+    static UINT Align(UINT Original, UINT AlignTo);
+    
 	struct Voxel_cbuffer
 	{
 		DirectX::XMMATRIX clip_space_matrix;
 		DirectX::XMMATRIX voxel_space_matrix;
 	};
+    
+    struct CPU_voxel_map
+    {
+        std::unique_ptr<BYTE[]> voxel_map_buffer = nullptr;
+        UINT width;
+        UINT height;
+        UINT depth;
+        UINT row_pitch;
+        
+        CPU_voxel_map() = default;
+        CPU_voxel_map(float* data, UINT width, UINT height, UINT depth, UINT row_pitch);
+        XMFLOAT4 Get(UINT x, UINT y, UINT z);
+    };
     
 	struct VoxelMap
 	{
@@ -49,7 +65,7 @@ namespace DXR
 		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
 		void BindUAV(GraphicsCommandList& command_list, UINT slot);
         void Clear(GraphicsCommandList& command_list);
-        void ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
+        CPU_voxel_map ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
         private:
         void CreateVoxelMap(GraphicsDevice& device);
         void CreateUAV(GraphicsDevice& device);

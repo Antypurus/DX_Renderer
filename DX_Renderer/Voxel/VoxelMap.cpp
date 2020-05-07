@@ -15,6 +15,33 @@
 
 namespace DXR
 {
+    UINT Align(UINT Original, UINT AlignTo)
+    {
+		return std::lround(std::ceil(Original / (double)AlignTo)) * AlignTo;
+	}
+    
+    CPU_voxel_map::CPU_voxel_map(float* data, UINT width, UINT height, UINT depth, UINT row_pitch)
+        :width(width),height(height),depth(depth),row_pitch(row_pitch)
+    {
+        voxel_map_buffer = std::make_unique<BYTE[]>(row_pitch * height * depth);
+        memcpy((void*)voxel_map_buffer.get(), data, row_pitch * height * depth);
+    }
+    
+    XMFLOAT4 CPU_voxel_map::Get(UINT x, UINT y, UINT z)
+    {
+        float red = 0;
+        float green = 0;
+        float blue = 0;
+        float alpha = 0;
+        
+        float* base = (float*)&voxel_map_buffer[z * (height * row_pitch) + y * row_pitch + x*4];
+        red = base[0];
+        green = base[1];
+        blue = base[2];
+        alpha = base[3];
+        return {red, green, blue, alpha};
+    }
+    
 	VoxelMap::VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth)
 	{
 		this->format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -105,7 +132,7 @@ namespace DXR
 		buffer_desc.Alignment = 0;
 		buffer_desc.MipLevels = 1;
 		buffer_desc.DepthOrArraySize = 1;
-		buffer_desc.Width = width * height * depth * format_byte_size;
+		buffer_desc.Width = Align(width * format_byte_size, 256) * height * depth;
 		buffer_desc.Height = 1;
 		buffer_desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 		buffer_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -128,7 +155,7 @@ namespace DXR
 		voxel_map_readback_buffer->SetName(L"Voxel Map Readback buffer");
 	}
     
-	void VoxelMap::ReadVoxelMap(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence)
+    CPU_voxel_map VoxelMap::ReadVoxelMap(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence)
 	{
 		TransitionResourceBarrier barrier1(*voxel_volume_texture.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		barrier1.ExecuteResourceBarrier(command_list);
@@ -141,7 +168,7 @@ namespace DXR
 		destination.PlacedFootprint.Footprint.Width = width;
 		destination.PlacedFootprint.Footprint.Height = height;
 		destination.PlacedFootprint.Footprint.Depth = depth;
-		destination.PlacedFootprint.Footprint.RowPitch = 2048;
+		destination.PlacedFootprint.Footprint.RowPitch = Align(width * format_byte_size, 256);
         
 		D3D12_TEXTURE_COPY_LOCATION source = {};
 		source.pResource = voxel_volume_texture.Get();
@@ -165,26 +192,16 @@ namespace DXR
 		device.GetGraphicsCommandQueue().Flush(fence);
 		FLOAT* data = nullptr;
 		voxel_map_readback_buffer->Map(0, &read_range, (void**)&data);
-        //TODO(Tiago): just here to test going over the data set, now i need to copy this for my own usage i guess
-		for (size_t d = 0; d < depth; ++d)
-		{
-			for (size_t w = 0; w < width; ++w)
-			{
-				for (size_t h = 0; h < height; ++h)
-				{
-					FLOAT* base = &data[w * 4*4 + d * depth + h * height];
-					FLOAT r = base[0];
-					FLOAT g = base[1];
-					FLOAT b = base[2];
-					FLOAT a = base[3];
-				}
-			}
-		}
-		data[0] = 0;
-		voxel_map_readback_buffer->Unmap(0, nullptr);
         
-		TransitionResourceBarrier barrier2(*voxel_volume_texture.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-		barrier2.ExecuteResourceBarrier(command_list);
-	}
+        //TODO(Tiago): Update an already existing voxel map instead of creating a new one? seems like it would be less stressfull if it had to be done every frame
+        CPU_voxel_map ret = {data, width, height, depth, Align(width * format_byte_size,256)};
+        
+        voxel_map_readback_buffer->Unmap(0, nullptr);
+        
+        TransitionResourceBarrier barrier2(*voxel_volume_texture.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+        barrier2.ExecuteResourceBarrier(command_list);
+        
+        return ret;
+    }
     
 }
