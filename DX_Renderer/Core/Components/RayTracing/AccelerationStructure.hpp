@@ -76,6 +76,7 @@ namespace DXR
 		void BuildTLAS(GraphicsDevice& Device, GraphicsCommandList& CommandList);
 		void AddInstance(const BLAS& blas, const XMMATRIX& Transform, UINT HitGroup);
 		D3D12_GPU_VIRTUAL_ADDRESS GetTLASGPUAddress();
+		UINT GetInstanceCount();
 	private:
 	};
 

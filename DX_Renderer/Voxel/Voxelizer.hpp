@@ -65,6 +65,7 @@ namespace DXR
                   Model& model,
                   XMMATRIX mvp);
         void Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, XMMATRIX model_matrix, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
+        void BuildAccelerationStructure(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence);
         private:
         void CalculateVoxelizationSupportData();
         void UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix);
