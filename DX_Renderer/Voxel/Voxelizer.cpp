@@ -146,7 +146,11 @@ namespace DXR
         voxel_cube_vertex_buffer = std::make_unique<VertexBuffer<Vertex>>(device, command_list, vertices);
         voxel_cube_index_buffer = std::make_unique<IndexBuffer>(device, command_list, indices);
         voxel_cube_blas = std::make_unique<BLAS>(device, command_list, *voxel_cube_vertex_buffer, *voxel_cube_index_buffer);
-        acceleration_structure.AddInstance(*voxel_cube_blas, XMMatrixIdentity(), 0);
+        //TODO(Tiago): just here for testing purposes
+        XMMATRIX translation = XMMatrixTranspose(DirectX::XMMatrixTranslation(10,0,0));
+        acceleration_structure.AddInstance(*voxel_cube_blas, translation, 0);
+        acceleration_structure.AddInstance(*voxel_cube_blas, XMMatrixScaling(1,1,1), 0);
+        acceleration_structure.AddInstance(*voxel_cube_blas, XMMatrixScaling(2,2,2), 0);
         acceleration_structure.BuildTLAS(device,command_list);
     }
     

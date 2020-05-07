@@ -152,6 +152,8 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::Voxelizer voxelizer(device,commandList,root_signature,sib_model,mvp);
     
+	float x_off = 0;
+
 	while (window.ShouldContinue)
 	{
 		//estimator.EstimateMotion(device,swapchain);
@@ -174,6 +176,7 @@ void MainDirectXThread(DXR::Window& window)
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,1.0f,0.0f }, y_rotation_angle);
 			model *= DirectX::XMMatrixRotationAxis({ 0.0f,0.0f,1.0f }, z_rotation_angle);
 			model *= DirectX::XMMatrixScaling(scale, scale, scale);
+			model *= DirectX::XMMatrixTranslation(x_off,0,0);
 			raster_cbufer.mvp = model * view * projection;
 			constant_buffer.UpdateData({ raster_cbufer });
 		}
@@ -214,7 +217,7 @@ void MainDirectXThread(DXR::Window& window)
 		{
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
             
-			commandList.BindTLAS(tlas, 1);
+			commandList.BindTLAS(voxelizer.acceleration_structure, 1);
 			rt_out.Bind(commandList, 2);
             
 			D3D12_DISPATCH_RAYS_DESC rays = {};
