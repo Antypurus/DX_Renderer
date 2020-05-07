@@ -20,10 +20,38 @@ namespace DXR
 		return std::lround(std::ceil(Original / (double)AlignTo)) * AlignTo;
 	}
     
+    CPU_voxel_map::CPU_voxel_map(const CPU_voxel_map& other)
+        :width(other.width),height(other.height),depth(other.depth),row_pitch(other.row_pitch)
+    {
+        voxel_map_buffer = std::make_unique<BYTE[]>(row_pitch * height * depth);
+        memcpy((void*)voxel_map_buffer.get(), (void*)other.voxel_map_buffer.get(), row_pitch * height * depth);
+    }
+    
+    void CPU_voxel_map::operator=(const CPU_voxel_map& other)
+    {
+        width = other.width;
+        height = other.height;
+        depth = other.depth;
+        row_pitch = other.row_pitch;
+        voxel_map_buffer = std::make_unique<BYTE[]>(row_pitch * height * depth);
+        memcpy((void*)voxel_map_buffer.get(), (void*)other.voxel_map_buffer.get(), row_pitch * height * depth);
+    }
+    
+    CPU_voxel_map::CPU_voxel_map(UINT width, UINT height, UINT depth, UINT row_pitch)
+        :width(width),height(height),depth(depth),row_pitch(row_pitch)
+    {
+        voxel_map_buffer = std::make_unique<BYTE[]>(row_pitch * height * depth);
+    }
+    
     CPU_voxel_map::CPU_voxel_map(float* data, UINT width, UINT height, UINT depth, UINT row_pitch)
         :width(width),height(height),depth(depth),row_pitch(row_pitch)
     {
         voxel_map_buffer = std::make_unique<BYTE[]>(row_pitch * height * depth);
+        memcpy((void*)voxel_map_buffer.get(), data, row_pitch * height * depth);
+    }
+    
+    void CPU_voxel_map::Update(float* data)
+    {
         memcpy((void*)voxel_map_buffer.get(), data, row_pitch * height * depth);
     }
     
@@ -54,6 +82,8 @@ namespace DXR
 		this->CreateVoxelMap(device);
 		this->CreateReadbackBuffer(device);
 		this->CreateUAV(device);
+        
+        this->cpu_buffer = CPU_voxel_map::CPU_voxel_map(width, height, depth, Align(width * format_byte_size,256));
 	}
     
 	void VoxelMap::BindUAV(GraphicsCommandList& command_list, UINT slot)
@@ -155,7 +185,7 @@ namespace DXR
 		voxel_map_readback_buffer->SetName(L"Voxel Map Readback buffer");
 	}
     
-    CPU_voxel_map VoxelMap::ReadVoxelMap(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence)
+    CPU_voxel_map& VoxelMap::ReadVoxelMap(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence)
 	{
 		TransitionResourceBarrier barrier1(*voxel_volume_texture.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		barrier1.ExecuteResourceBarrier(command_list);
@@ -193,15 +223,14 @@ namespace DXR
 		FLOAT* data = nullptr;
 		voxel_map_readback_buffer->Map(0, &read_range, (void**)&data);
         
-        //TODO(Tiago): Update an already existing voxel map instead of creating a new one? seems like it would be less stressfull if it had to be done every frame
-        CPU_voxel_map ret = {data, width, height, depth, Align(width * format_byte_size,256)};
+        cpu_buffer.Update(data);
         
         voxel_map_readback_buffer->Unmap(0, nullptr);
         
         TransitionResourceBarrier barrier2(*voxel_volume_texture.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
         barrier2.ExecuteResourceBarrier(command_list);
         
-        return ret;
+        return cpu_buffer;
     }
     
 }

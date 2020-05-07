@@ -34,14 +34,18 @@ namespace DXR
     struct CPU_voxel_map
     {
         std::unique_ptr<BYTE[]> voxel_map_buffer = nullptr;
-        UINT width;
-        UINT height;
-        UINT depth;
-        UINT row_pitch;
+        UINT width = 0;
+        UINT height = 0;
+        UINT depth = 0;
+        UINT row_pitch = 0;
         
         CPU_voxel_map() = default;
+        CPU_voxel_map(const CPU_voxel_map& other);
+        CPU_voxel_map(UINT width, UINT height, UINT depth, UINT row_pitch);
         CPU_voxel_map(float* data, UINT width, UINT height, UINT depth, UINT row_pitch);
+        void operator=(const CPU_voxel_map& other);
         XMFLOAT4 Get(UINT x, UINT y, UINT z);
+        void Update(float* data);
     };
     
 	struct VoxelMap
@@ -61,11 +65,13 @@ namespace DXR
         
 		std::unique_ptr<ConstantBuffer<Voxel_cbuffer>> voxel_constant_buffer = nullptr;
         
+        CPU_voxel_map cpu_buffer;
+        
         VoxelMap() = default;
 		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
 		void BindUAV(GraphicsCommandList& command_list, UINT slot);
         void Clear(GraphicsCommandList& command_list);
-        CPU_voxel_map ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
+        CPU_voxel_map& ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
         private:
         void CreateVoxelMap(GraphicsDevice& device);
         void CreateUAV(GraphicsDevice& device);

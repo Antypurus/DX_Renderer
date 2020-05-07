@@ -210,6 +210,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindTexture(texture, 3, 4);
         
 		voxelizer.Voxelize(commandList, cam, root_signature, model, 0, 2);
+		auto& ret = voxelizer.voxel_map.ReadVoxelMap(device, commandList, fence).Get(42,98,100);
         
         swapchain.SetViewport(commandList, swapchain.GetBackbufferResolution());
         
