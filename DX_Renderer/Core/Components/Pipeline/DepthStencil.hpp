@@ -23,7 +23,7 @@ namespace DXR
 	{
         public:
         private:
-		BOOL m_depth_enabled = TRUE;
+		BOOL m_depth_enabled = FALSE;
 		D3D12_DEPTH_WRITE_MASK m_depth_write_mask = D3D12_DEPTH_WRITE_MASK_ALL;
 		D3D12_COMPARISON_FUNC m_depth_function = D3D12_COMPARISON_FUNC_LESS;
 		BOOL m_stencil_enabled = TRUE;

@@ -45,11 +45,11 @@ namespace DXR
     
 	void Voxelizer::Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, XMMATRIX model_matrix, UINT constant_buffer_slot, UINT voxel_map_uav_slot)
 	{
-        auto scale = XMMatrixScaling(VOXEL_SCALE,VOXEL_SCALE,VOXEL_SCALE);
+        auto scale = XMMatrixScaling(VOXEL_SCALE,VOXEL_SCALE, VOXEL_SCALE);
         //X-Axis View
-		//voxel_map.Clear(command_list);
+		voxel_map.Clear(command_list);
 		this->SetViewport(command_list);
-		this->UpdateVoxelizationMatrices(camera, XMMatrixRotationAxis({0.0f,0.0f,1.0f},0.0f * M_PI) * scale);
+		this->UpdateVoxelizationMatrices(camera,XMMatrixIdentity());
 		this->UpdateVoxelizationCBufferX();
 		command_list.SetGraphicsRootSignature(root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
@@ -60,7 +60,7 @@ namespace DXR
 		command_list.SendDrawCall();
         //Y-Axis View
 		this->SetViewport(command_list);
-		this->UpdateVoxelizationMatrices(camera, XMMatrixRotationAxis({0.0f,1.0f,0.0f},0.5f * M_PI) * scale);
+		this->UpdateVoxelizationMatrices(camera,XMMatrixRotationAxis({0.0f,1.0f,0.0f},0.5f * M_PI));
 		this->UpdateVoxelizationCBufferY();
 		command_list.SetGraphicsRootSignature(root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
@@ -71,7 +71,7 @@ namespace DXR
 		command_list.SendDrawCall();
         //Z-Axis View
 		this->SetViewport(command_list);
-		this->UpdateVoxelizationMatrices(camera, XMMatrixRotationAxis({1.0f,0.0f,0.0f},0.5f * M_PI) * scale);
+		this->UpdateVoxelizationMatrices(camera,XMMatrixRotationAxis({1.0f,0.0f,0.0f},0.5f * M_PI));
 		this->UpdateVoxelizationCBufferZ();
 		command_list.SetGraphicsRootSignature(root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
@@ -105,6 +105,7 @@ namespace DXR
     
 	void Voxelizer::UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
 	{
+        auto scale = XMMatrixScaling(VOXEL_SCALE,VOXEL_SCALE, VOXEL_SCALE);
 		XMMATRIX voxel_matrix;
 		XMMATRIX m1, m2;
 		m1 = XMMatrixTranslation(-voxel_space.x, -voxel_space.y, -voxel_space.z);
@@ -208,7 +209,7 @@ namespace DXR
 					for (size_t z = 0; z < VOXEL_DEPTH; ++z)
 					{
 						XMFLOAT4 color = buffer.Get(x, y, z);
-						if (color.w != 0)
+						if (color.w != 0.0f || color.z != 0.0f || color.y != 0.0f || color.x != 0.0f)
 						{
 							acceleration_structure.AddInstance(*voxel_cube_blas, XMMatrixTranspose(XMMatrixTranslation(x, y, z)), 0);
 						}

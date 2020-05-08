@@ -44,9 +44,13 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     PS_OUTPUT output;
     
     float3 gridPos = input.voxel_grip_position.xyz / input.voxel_grip_position.w;
-    int3 voxel_pos = int3(gridPos);
+    int3 voxel_pos = int3(gridPos.x -1, gridPos.y -1, gridPos.z -1);
+    int3 voxel_pos_left = int3(gridPos.x - 1, gridPos.y - 1, gridPos.z - 1 - 1);
+    int3 voxel_pos_right = int3(gridPos.x - 1, gridPos.y - 1, gridPos.z - 1 + 1);
     
     voxel_map[voxel_pos] = gText.Sample(gsampler, input.uv);
+    voxel_map[voxel_pos_left] = gText.Sample(gsampler, input.uv);
+    voxel_map[voxel_pos_right] = gText.Sample(gsampler, input.uv);
     
     output.color = voxel_map[voxel_pos];
     //discard;
