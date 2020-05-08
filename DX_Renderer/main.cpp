@@ -48,6 +48,10 @@ void MainDirectXThread(DXR::Window& window)
 
 	DXR::RootSignature root_signature;
 
+	DXR::DescriptorTableRootParameter cbv_desc_table;
+	cbv_desc_table.AddCBVEntry(0);
+	root_signature.AddDescriptorTableRootParameter(cbv_desc_table);
+
 	DXR::DescriptorTableRootParameter uav_desc_table;
 	uav_desc_table.AddUAVEntry(0);
 
@@ -61,8 +65,8 @@ void MainDirectXThread(DXR::Window& window)
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
 
-	DXR::DescriptorRootParameter cbv_root_parameter(DXR::RootParameterDescriptorType::CBV, 0);
-	root_signature.AddDescriptorRootParameter(cbv_root_parameter);
+	//DXR::DescriptorRootParameter cbv_root_parameter(DXR::RootParameterDescriptorType::CBV, 1);
+	//root_signature.AddDescriptorRootParameter(cbv_root_parameter);
 
 	DXR::DescriptorRootParameter acceleration_structure_root_parameter(DXR::RootParameterDescriptorType::SRV, 1);
 	root_signature.AddDescriptorRootParameter(acceleration_structure_root_parameter);
@@ -113,7 +117,7 @@ void MainDirectXThread(DXR::Window& window)
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
-	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.8, 0.8, 0.8);
+	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.5, 0.5, 0.5);
 
 	DirectX::XMMATRIX mvp = model * view * projection;
 	CBuffer raster_cbufer;
@@ -124,9 +128,9 @@ void MainDirectXThread(DXR::Window& window)
 	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	float x_rotation_angle = 0;
-	float y_rotation_angle = 1;
+	float y_rotation_angle = 0;
 	float z_rotation_angle = 0;
-	float scale = 0.8;
+	float scale = 0.5;
 
 	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sibenik/sibenik.obj", device, commandList);
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
@@ -199,7 +203,7 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.SetViewport(commandList, swapchain.GetBackbufferResolution());
 		commandList->SetPipelineState(pso.GetPipelineStateObject());
 
-		commandList.BindConstantBuffer(constant_buffer, 0);
+		commandList.BindConstantBuffer(constant_buffer, 1);
 
 		sib_model.Draw(commandList, 3, 4);
 
@@ -208,10 +212,10 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
 
-		commandList.BindConstantBuffer(constant_buffer, 0);
+		commandList.BindConstantBuffer(constant_buffer, 1);
 		commandList.BindTexture(texture, 3, 4);
 
-		voxelizer.Voxelize(commandList, cam, root_signature, model, 0, 2);
+		voxelizer.Voxelize(commandList, cam, root_signature, model, 1, 2);
 
 		voxelizer.BuildAccelerationStructure(device, commandList, fence);
 
@@ -222,7 +226,7 @@ void MainDirectXThread(DXR::Window& window)
 			{
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
 
-			commandList.BindTLAS(voxelizer.acceleration_structure, 1);
+			commandList.BindTLAS(voxelizer.acceleration_structure, 0);
 			rt_out.Bind(commandList, 2);
 
 			D3D12_DISPATCH_RAYS_DESC rays = {};

@@ -35,6 +35,7 @@ namespace DXR
 #define VOXEL_WIDTH 128
 #define VOXEL_HEIGHT 128
 #define VOXEL_DEPTH 128
+#define VOXEL_SCALE 0.5f
     
     struct Voxelizer
     {
@@ -47,7 +48,9 @@ namespace DXR
         PipelineStateObject pso;
         TLAS acceleration_structure;
         std::unique_ptr<BLAS> voxel_cube_blas;
-        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer;
+        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_x;
+        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_y;
+        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_z;
         std::unique_ptr<VertexBuffer<Vertex>> voxel_cube_vertex_buffer;
         std::unique_ptr<IndexBuffer> voxel_cube_index_buffer;
         //NOTE(Tiago):Voxelization matrices support data
@@ -69,7 +72,9 @@ namespace DXR
         private:
         void CalculateVoxelizationSupportData();
         void UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix);
-        void UpdateVoxelizationCBuffer();
+        void UpdateVoxelizationCBufferX();
+        void UpdateVoxelizationCBufferY();
+        void UpdateVoxelizationCBufferZ();
         void CreateVoxelizationShaders();
         void SetViewport(GraphicsCommandList& command_list);
         void CreateVoxelCube(GraphicsDevice& device, GraphicsCommandList& command_list);

@@ -193,6 +193,8 @@ namespace DXR
 		mouse_button_down_callback.callback = [this](HWND window_instance, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			this->is_mouse_button_pressed = true;
+            int x_mouse_pos = GET_X_LPARAM(lParam);
+			int y_mouse_pos = GET_Y_LPARAM(lParam);
 		};
 		window->RegisterWindowEventCallback(WM_RBUTTONDOWN, mouse_button_down_callback);
 		//NOTE(Tiago): Register callback for when right mouse button is lifted

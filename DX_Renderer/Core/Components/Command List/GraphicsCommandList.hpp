@@ -79,7 +79,7 @@ namespace DXR
 	template <typename T>
         void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
 	{
-		//this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
-		this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
+		this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
+		//this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
 	}
 }
