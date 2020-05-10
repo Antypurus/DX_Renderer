@@ -70,6 +70,7 @@ namespace DXR
         VoxelMap() = default;
 		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
 		void BindUAV(GraphicsCommandList& command_list, UINT slot);
+        void BindComputeUAV(GraphicsCommandList& command_list, UINT slot);
         void Clear(GraphicsCommandList& command_list);
         CPU_voxel_map& ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
         D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle();

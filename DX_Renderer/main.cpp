@@ -154,11 +154,12 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::Voxelizer voxelizer(device, commandList, root_signature, sib_model, mvp);
     DXR::VoxelMap light_map(device, 128, 128, 128);
+    light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
     RTCBuffer rt_light;
     rt_light.light_position = {1,1,1};
     rt_light.voxel_space_matrix = voxelizer.voxel_space_conversion_matrix;
-    rt_light.ray_angle_delta = {1.0f,1.0f};
+    rt_light.ray_angle_delta = {100.0f,100.0f};
     
     DXR::ConstantBuffer<RTCBuffer> rtc_buffer(device,{rt_light});
     rtc_buffer->SetName(L"RTX Shading CBuffer");
@@ -244,8 +245,8 @@ void MainDirectXThread(DXR::Window& window)
                 
                 commandList.BindTLAS(voxelizer.acceleration_structure, 0);
                 //rt_out.Bind(commandList, 2);
-                light_map.BindUAV(commandList,2);
-                commandList.BindConstantBuffer(rtc_buffer,1);
+                light_map.BindComputeUAV(commandList,2);
+                commandList.BindComputeConstantBuffer(rtc_buffer,1);
                 
                 D3D12_DISPATCH_RAYS_DESC rays = {};
                 
@@ -263,7 +264,7 @@ void MainDirectXThread(DXR::Window& window)
                 rays.Depth = 128;
                 rays.Width = 128;//swapchain.GetBackbufferResolution().Width;
                 rays.Height = 128;//swapchain.GetBackbufferResolution().Height;
-                //commandList->DispatchRays(&rays);
+                commandList->DispatchRays(&rays);
                 
                 //rt_out.CopyToBackbuffer(commandList,swapchain);
             }

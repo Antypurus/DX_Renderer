@@ -64,6 +64,9 @@ namespace DXR
         
 		template<typename T>
             void BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot);
+        
+        template<typename T>
+            void BindComputeConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot);
         private:
 		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);
@@ -80,6 +83,13 @@ namespace DXR
         void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
 	{
 		this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
+		//this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
+	}
+    
+    template <typename T>
+        void GraphicsCommandList::BindComputeConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
+	{
+		this->m_command_list->SetComputeRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
 		//this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
 	}
 }

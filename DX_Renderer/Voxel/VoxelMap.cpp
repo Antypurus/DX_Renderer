@@ -92,6 +92,12 @@ namespace DXR
 		command_list->SetGraphicsRootDescriptorTable(slot, (*descriptor_heap).Get(heap_index));//TODO(Tiago): Make the slot not hardcoded
 	}
     
+    void VoxelMap::BindComputeUAV(GraphicsCommandList& command_list, UINT slot)
+	{
+		// Bind voxel map to slot 2
+		command_list->SetComputeRootDescriptorTable(slot, (*descriptor_heap).Get(heap_index));//TODO(Tiago): Make the slot not hardcoded
+	}
+    
     D3D12_GPU_DESCRIPTOR_HANDLE VoxelMap::GetGPUHandle()
     {
         return (*descriptor_heap).Get(heap_index);
