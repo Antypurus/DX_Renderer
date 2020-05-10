@@ -159,7 +159,7 @@ void MainDirectXThread(DXR::Window& window)
     light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
     RTCBuffer rt_light;
-    rt_light.light_position = {7,-2,0};
+    rt_light.light_position = {3.5,-4.1,-0.1};
     rt_light.voxel_space_matrix = voxelizer.voxel_space_conversion_matrix;
     rt_light.ray_angle_delta = {100.0f,100.0f};
     
@@ -222,7 +222,7 @@ void MainDirectXThread(DXR::Window& window)
         commandList->SetPipelineState(pso.GetPipelineStateObject());
         
         commandList.BindConstantBuffer(constant_buffer, 1);
-        light_map.BindUAV(commandList,2);
+        voxelizer.voxel_map.BindUAV(commandList,2);
         sib_model.Draw(commandList, 3, 4);
         
         commandList.SendDrawCall();
@@ -264,9 +264,9 @@ void MainDirectXThread(DXR::Window& window)
                 rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
                 rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
                 
-                rays.Depth = 128;
-                rays.Width = 128;//swapchain.GetBackbufferResolution().Width;
-                rays.Height = 128;//swapchain.GetBackbufferResolution().Height;
+                rays.Depth = 256;
+                rays.Width = 256;//swapchain.GetBackbufferResolution().Width;
+                rays.Height = 256;//swapchain.GetBackbufferResolution().Height;
                 commandList->DispatchRays(&rays);
                 
                 //rt_out.CopyToBackbuffer(commandList,swapchain);
