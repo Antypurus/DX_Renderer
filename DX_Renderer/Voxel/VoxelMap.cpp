@@ -92,6 +92,11 @@ namespace DXR
 		command_list->SetGraphicsRootDescriptorTable(slot, (*descriptor_heap).Get(heap_index));//TODO(Tiago): Make the slot not hardcoded
 	}
     
+    D3D12_GPU_DESCRIPTOR_HANDLE VoxelMap::GetGPUHandle()
+    {
+        return (*descriptor_heap).Get(heap_index);
+    }
+    
 	void VoxelMap::CreateVoxelMap(GraphicsDevice& device)
 	{
 		D3D12_RESOURCE_DESC resource_desc;
