@@ -38,10 +38,10 @@ void raygen()
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    //float3 direction = float3(DispatchRaysIndex().x, DispatchRaysIndex().y, DispatchRaysIndex().z);
-    float3 direction = float3(1, 0, 0);
+    float3 direction = float3(DispatchRaysIndex().x - 64, DispatchRaysIndex().y - 64, DispatchRaysIndex().z - 64);
+    //float3 direction = float3(1, 0, 0);
     
-    ray.Origin = mul(voxel_space_matrix, float4(light_position, 1.0f)).xyz;
+    ray.Origin = (mul(voxel_space_matrix, float4(light_position, 1.0f))).xyz;
     ray.Direction = direction;
     ray.TMin = 0;
     ray.TMax = 100000;
@@ -49,8 +49,6 @@ void raygen()
     TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
     
     int3 map_pos = int3(0, 1, 0);
-    //RenderTarget[map_pos] = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    //RenderTarget[DispatchRaysIndex().xy] = payload.color;
 }
 
 [shader("intersection")]
