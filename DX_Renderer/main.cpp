@@ -283,9 +283,9 @@ void MainDirectXThread(DXR::Window& window)
 				rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
 				rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
 
-				rays.Depth = 128;
-				rays.Width = 128;//swapchain.GetBackbufferResolution().Width;
-				rays.Height = 128;//swapchain.GetBackbufferResolution().Height;
+				rays.Depth = 1280;
+				rays.Width = 720;//swapchain.GetBackbufferResolution().Width;
+				rays.Height = 1;//swapchain.GetBackbufferResolution().Height;
 				commandList->DispatchRays(&rays);
 
 				//rt_out.CopyToBackbuffer(commandList,swapchain);

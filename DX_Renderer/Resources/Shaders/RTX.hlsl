@@ -38,7 +38,7 @@ void raygen()
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    float3 direction = float3(DispatchRaysIndex().x - 64, DispatchRaysIndex().y - 64, DispatchRaysIndex().z - 64);
+    float3 direction = float3(d, 1);
     //float3 direction = float3(1, 0, 0);
     
     ray.Origin = (mul(voxel_space_matrix, float4(light_position, 1.0f))).xyz;
