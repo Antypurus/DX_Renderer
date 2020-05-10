@@ -38,8 +38,9 @@ void raygen()
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    float3 direction = float3(cos(DispatchRaysIndex().x), sin(DispatchRaysIndex().y), sin(DispatchRaysIndex().z));
-            
+    //float3 direction = float3(DispatchRaysIndex().x, DispatchRaysIndex().y, DispatchRaysIndex().z);
+    float3 direction = float3(1, 0, 0);
+    
     ray.Origin = mul(voxel_space_matrix, float4(light_position, 1.0f)).xyz;
     ray.Direction = direction;
     ray.TMin = 0;
@@ -48,7 +49,7 @@ void raygen()
     TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
     
     int3 map_pos = int3(0, 1, 0);
-    RenderTarget[map_pos] = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    //RenderTarget[map_pos] = float4(1.0f, 1.0f, 1.0f, 1.0f);
     //RenderTarget[DispatchRaysIndex().xy] = payload.color;
 }
 
@@ -60,16 +61,12 @@ void intersection()
 [shader("miss")]
 void miss(inout RayPayload data : SV_RayPayload)
 {
-    int3 map_pos = int3(1, 0, 0);
-    RenderTarget[map_pos] = float4(1.0f, 1.0f, 1.0f, 1.0f);
     data.color = float4(0, 0, 1.0f,1.0f);
 }
 
 [shader("anyhit")]
 void anyhit(inout RayPayload data, BuiltinIntersectionAttribs hit)
 {
-    int3 map_pos = int3(2, 0, 0);
-    RenderTarget[map_pos] = float4(1.0f, 1.0f, 1.0f, 1.0f);
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
 
@@ -83,5 +80,6 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     float3 hit_pos = ray_origin + mul(ray_dir, dist);
     int3 map_pos = int3(hit_pos.xyz);
     RenderTarget[map_pos] = float4(hit_pos, 1);
+    
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }

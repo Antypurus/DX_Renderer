@@ -27,7 +27,7 @@ namespace DXR
 		this->CreateDescriptorHeap(Device);
 		this->CreateShaderResourceViewDescription(Device);
         
-		this->m_sampler = Sampler(Device);
+		this->m_sampler = Sampler(Device,{AddressMode::Wrap,Filter::Anisotropic,16});
 	}
     
     Texture::Texture(const Texture& other)

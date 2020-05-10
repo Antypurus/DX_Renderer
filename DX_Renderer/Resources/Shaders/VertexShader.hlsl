@@ -7,6 +7,7 @@ cbuffer MVPBuffer : register(b0)
 Texture2D gText: register(t0);
 SamplerState gsampler: register(s0);
 RWTexture3D<float4> irradiance_map : register(u0);
+Texture3D irradiance_map_tex : register(t0,space1);
 
 struct VS_OUTPUT
 {
@@ -14,7 +15,7 @@ struct VS_OUTPUT
 	float2 uv:UV;
     float3 normal: NORMAL;
     float3 color : COLOR;
-    float3 voxel_pos : VOX;
+    float4 voxel_pos : VOX;
 };
 
 struct VS_INPUT
@@ -33,7 +34,8 @@ VS_OUTPUT VSMain(VS_INPUT input)
 	output.uv = input.uv;
     output.normal = input.normal;
 	output.color = input.color;
-    output.voxel_pos = mul(voxel_mat, float4(input.pos, 1.0f)).xyz;
+	
+    output.voxel_pos = mul(voxel_mat, float4(input.pos, 1.0f));
 
 	return output;
 }
@@ -48,7 +50,8 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
 	PS_OUTPUT output;
 
     float4 col = gText.Sample(gsampler, input.uv);
-    output.color = mul(col, 0.25f) + mul(irradiance_map[int3(input.voxel_pos.xyz)], 0.75f);
+    float4 other_col = irradiance_map_tex.Sample(gsampler, input.voxel_pos.xyz / 128.0f);
 
+    output.color = mul(col, 0.25) + (col, other_col.w);
 	return output;
 }
