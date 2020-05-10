@@ -55,6 +55,7 @@ namespace DXR
     
 	void Camera::Rotate(float pitch, float yaw)
 	{
+		/*
 		has_changed = true;
 		if (pitch > CAM_MAX_PITCH)
 		{
@@ -64,6 +65,7 @@ namespace DXR
 		{
 			pitch = -CAM_MAX_PITCH;
 		}
+		*/
 		float pitch_delta = pitch - this->pitch;
 		float yaw_delta = yaw = this->yaw;
 		this->pitch = pitch;
@@ -84,6 +86,7 @@ namespace DXR
 	{
 		has_changed = true;
 		pitch += pitch_delta;
+		/*
 		if (pitch > CAM_MAX_PITCH)
 		{
 			pitch_delta = CAM_MAX_PITCH - pitch;
@@ -94,6 +97,7 @@ namespace DXR
 			pitch_delta = -CAM_MAX_PITCH - pitch;
 			pitch = -CAM_MAX_PITCH;
 		}
+		*/
 		yaw += yaw_delta;
 		XMVECTOR rotation_quat = XMQuaternionRotationRollPitchYaw(ToRadian(pitch_delta), ToRadian(yaw_delta), 0);
 		XMVECTOR view_direction_vector = {

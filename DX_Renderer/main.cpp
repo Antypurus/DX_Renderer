@@ -30,6 +30,7 @@
 struct CBuffer
 {
 	DirectX::XMMATRIX mvp;
+    DirectX::XMMATRIX voxel;
 };
 
 __declspec(align(16)) struct RTCBuffer
@@ -129,6 +130,7 @@ void MainDirectXThread(DXR::Window& window)
 	DirectX::XMMATRIX mvp = model * view * projection;
 	CBuffer raster_cbufer;
 	raster_cbufer.mvp = mvp;
+    raster_cbufer.voxel = DirectX::XMMatrixIdentity();
 	DXR::ConstantBuffer<CBuffer> constant_buffer(device, { raster_cbufer });
     
     
@@ -157,7 +159,7 @@ void MainDirectXThread(DXR::Window& window)
     light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
     RTCBuffer rt_light;
-    rt_light.light_position = {1,1,1};
+    rt_light.light_position = {7,-2,0};
     rt_light.voxel_space_matrix = voxelizer.voxel_space_conversion_matrix;
     rt_light.ray_angle_delta = {100.0f,100.0f};
     
@@ -199,6 +201,7 @@ void MainDirectXThread(DXR::Window& window)
             model *= DirectX::XMMatrixScaling(scale, scale, scale);
             model *= DirectX::XMMatrixTranslation(x_off, 0, 0);
             raster_cbufer.mvp = model * view * projection;
+            raster_cbufer.voxel = voxelizer.voxel_space_conversion_matrix;
             constant_buffer.UpdateData({ raster_cbufer });
         }
         
@@ -219,7 +222,7 @@ void MainDirectXThread(DXR::Window& window)
         commandList->SetPipelineState(pso.GetPipelineStateObject());
         
         commandList.BindConstantBuffer(constant_buffer, 1);
-        
+        light_map.BindUAV(commandList,2);
         sib_model.Draw(commandList, 3, 4);
         
         commandList.SendDrawCall();
