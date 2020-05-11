@@ -59,7 +59,6 @@ namespace DXR
 		command_list.BindIndexBuffer(model_index_buffer);
 		command_list.SendDrawCall();
         //Y-Axis View
-#if 1
 		this->SetViewport(command_list);
 		this->UpdateVoxelizationMatrices(camera,XMMatrixRotationAxis({0.0f,1.0f,0.0f},0.5f * M_PI));
 		this->UpdateVoxelizationCBufferY();
@@ -81,7 +80,6 @@ namespace DXR
 		command_list.BindVertexBuffer(model_vertex_buffer);
 		command_list.BindIndexBuffer(model_index_buffer);
 		command_list.SendDrawCall();
-#endif
 	}
     
 	void Voxelizer::CalculateVoxelizationSupportData()

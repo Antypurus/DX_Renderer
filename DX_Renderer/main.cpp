@@ -161,7 +161,7 @@ void MainDirectXThread(DXR::Window& window)
 	tlas.BuildTLAS(device, commandList);
 
 	DXR::Voxelizer voxelizer(device, commandList, root_signature, sib_model, mvp);
-	DXR::VoxelMap light_map(device, 128, 128, 128);
+	DXR::VoxelMap light_map(device, 512, 512, 128);
 	light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
 
 	RTCBuffer rt_light;
@@ -283,9 +283,9 @@ void MainDirectXThread(DXR::Window& window)
 				rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
 				rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
 
-				rays.Depth = 128;
-				rays.Width = 128;//swapchain.GetBackbufferResolution().Width;
-				rays.Height = 128;//swapchain.GetBackbufferResolution().Height;
+				rays.Depth = 1024;
+				rays.Width = 1;//swapchain.GetBackbufferResolution().Width;
+				rays.Height = 1024;//swapchain.GetBackbufferResolution().Height;
 				commandList->DispatchRays(&rays);
 
 				//rt_out.CopyToBackbuffer(commandList,swapchain);
