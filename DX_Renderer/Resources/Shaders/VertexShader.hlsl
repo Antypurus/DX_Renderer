@@ -49,9 +49,10 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
 
+    int3 voxel = int3((input.voxel_pos.xyz / input.voxel_pos.w - float3(1, 1, 1)));
     float4 col = gText.Sample(gsampler, input.uv);
-    float4 other_col = irradiance_map_tex.Sample(gsampler, input.voxel_pos.xyz / 128.0f);
+    float4 other_col = irradiance_map[voxel];
 
-    output.color = mul(col, 0.25) + (col, other_col.w);
+    output.color = 0.25 * col + 0.75 * other_col;
 	return output;
 }

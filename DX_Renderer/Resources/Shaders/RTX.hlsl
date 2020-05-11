@@ -38,10 +38,9 @@ void raygen()
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    float3 direction = float3(d, 1);
-    //float3 direction = float3(1, 0, 0);
+    float3 direction = float3(-1,DispatchRaysIndex().yz) - float3(64,64,64);
     
-    ray.Origin = (mul(voxel_space_matrix, float4(light_position, 1.0f))).xyz;
+    ray.Origin = light_position;
     ray.Direction = direction;
     ray.TMin = 0;
     ray.TMax = 100000;
@@ -76,8 +75,9 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     float3 ray_dir = WorldRayDirection();
     
     float3 hit_pos = ray_origin + mul(ray_dir, dist);
-    int3 map_pos = int3(hit_pos.xyz);
-    RenderTarget[map_pos] = float4(hit_pos, 1);
+    hit_pos = mul(voxel_space_matrix, float4(hit_pos, 1.0f)).xyz;
+    int3 map_pos = int3(hit_pos.x - 1,hit_pos.y -1,hit_pos.z -1);
+    RenderTarget[map_pos] = float4(1,1,1, 1);
     
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }

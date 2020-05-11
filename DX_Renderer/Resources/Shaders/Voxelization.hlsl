@@ -48,7 +48,7 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     
     voxel_map[voxel_pos] = gText.Sample(gsampler, input.uv);
     
-    output.color = input.voxel_grip_position / 128.0f;
+    output.color = input.voxel_grip_position / 256.0f;
     discard;
     
     return output;
