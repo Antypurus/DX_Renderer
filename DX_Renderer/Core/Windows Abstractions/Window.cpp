@@ -166,7 +166,7 @@ namespace DXR
 		this->m_window_resolution.Height = abs(clientRect.top - clientRect.bottom);
 		this->m_window_resolution.Width = abs(clientRect.right - clientRect.left);
 
-		SetCapture(this->m_window_handle);
+		//SetCapture(this->m_window_handle);
 	}
 
 }
