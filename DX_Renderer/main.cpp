@@ -313,7 +313,7 @@ void MainDirectXThread(DXR::Window& window)
 int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
-	DXR::Window window{ hInstance,nCmdShow,{1920,1080},"DX Renderer" };
+	DXR::Window window{ hInstance,nCmdShow,{1280,720},"DX Renderer" };
 
 	std::thread main_dx12_thread(MainDirectXThread, std::ref(window));
 

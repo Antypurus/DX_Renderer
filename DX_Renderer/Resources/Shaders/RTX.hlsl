@@ -80,7 +80,8 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     hit_pos = mul(voxel_space_matrix, float4(hit_pos, 1.0f)).xyz;
     int3 map_pos = int3(hit_pos.x - 1,hit_pos.y -1,hit_pos.z -1);
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
-    RenderTarget[map_pos] = float4(normalize(hit_pos), 1);
+    float dist_fall = mul(voxel_space_matrix,float4(dist, dist, dist, dist)).r;
+    RenderTarget[map_pos] = float4(normalize(hit_pos)/dist_fall, 1);
     
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }

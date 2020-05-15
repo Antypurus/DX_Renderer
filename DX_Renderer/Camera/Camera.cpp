@@ -26,10 +26,10 @@ namespace DXR
 		if (has_changed)
 		{
 			XMVECTOR focus_position = {
-				position.x + view_direction.x,
-				position.y + view_direction.y,
-				position.z + view_direction.z,1.0f };
-			view_matrix = XMMatrixLookAtLH({ position.x,position.y,position.z,1.0f },
+				view_direction.x,
+				view_direction.y,
+				view_direction.z,1.0f };
+			view_matrix = XMMatrixLookToLH({ position.x,position.y,position.z,1.0f },
                                            focus_position,
                                            { up_direction.x,up_direction.y,up_direction.z,1.0f });
 			has_changed = false;
@@ -85,29 +85,22 @@ namespace DXR
 	void Camera::DeltaRotate(float pitch_delta, float yaw_delta)
 	{
 		has_changed = true;
+		yaw += yaw_delta;
 		pitch += pitch_delta;
-		/*
 		if (pitch > CAM_MAX_PITCH)
 		{
-			pitch_delta = CAM_MAX_PITCH - pitch;
-			pitch = CAM_MAX_PITCH;
+            pitch = CAM_MAX_PITCH;
 		}
 		else if (pitch < -CAM_MAX_PITCH)
 		{
-			pitch_delta = -CAM_MAX_PITCH - pitch;
 			pitch = -CAM_MAX_PITCH;
 		}
-		*/
-		yaw += yaw_delta;
-		XMVECTOR rotation_quat = XMQuaternionRotationRollPitchYaw(ToRadian(pitch_delta), ToRadian(yaw_delta), 0);
-		XMVECTOR view_direction_vector = {
-			view_direction.x,
-			view_direction.y,
-			view_direction.z,
-			1.0f
-		};
+        
+		XMVECTOR rotation_quat = XMQuaternionRotationRollPitchYaw(ToRadian(pitch), ToRadian(yaw), 0);
+		XMVECTOR view_direction_vector = {0,0,1,0};
 		view_direction_vector = XMVector3Rotate(view_direction_vector, rotation_quat);
 		XMStoreFloat3(&view_direction, view_direction_vector); //NOTE(Tiago): Converts the vector to a float3
+
 		UpdateRightDirection();
 	}
     
@@ -199,6 +192,8 @@ namespace DXR
 			this->is_mouse_button_pressed = true;
             int x_mouse_pos = GET_X_LPARAM(lParam);
 			int y_mouse_pos = GET_Y_LPARAM(lParam);
+            this->previous_mouse_x = x_mouse_pos;
+            this->previous_mouse_y = y_mouse_pos;
 		};
 		window->RegisterWindowEventCallback(WM_RBUTTONDOWN, mouse_button_down_callback);
 		//NOTE(Tiago): Register callback for when right mouse button is lifted
