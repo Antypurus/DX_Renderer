@@ -36,7 +36,7 @@ namespace DXR
 		this->CalculateVoxelizationSupportData();
 	}
     
-	void Voxelizer::Voxelize(GraphicsCommandList& command_list, RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot)
+	void Voxelizer::Voxelize(GraphicsCommandList& command_list, RootSignature& root_signature)
 	{
 		voxel_map.Clear(command_list);
 		this->SetViewport(command_list);

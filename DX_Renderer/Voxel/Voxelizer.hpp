@@ -67,7 +67,7 @@ namespace DXR
                   RootSignature& root_signature,
                   Model& model,
                   XMMATRIX mvp);
-        void Voxelize(GraphicsCommandList& command_list,RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
+        void Voxelize(GraphicsCommandList& command_list,RootSignature& root_signature);
         void BuildAccelerationStructure(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence);
         private:
         void VoxelizeSubmesh(Submesh& submesh, GraphicsCommandList& command_list);
