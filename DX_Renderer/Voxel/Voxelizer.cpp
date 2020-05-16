@@ -31,15 +31,7 @@ namespace DXR
                                         OBJVertex::GetInputLayout(),
                                         Swapchain::m_backbuffer_format,
                                         DepthStencilBuffer::DepthStencilBufferFormat);
-		//NOTE(Tiago): dummy/placeholder data is required to create the constant buffer while the matrices are not yet computed
-		std::vector<Voxelization_CBuffer> intermediate;
-		intermediate.push_back({ XMMatrixIdentity(), XMMatrixIdentity() });
-		this->voxelization_cbuffer_x = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device, intermediate);
-        this->voxelization_cbuffer_y = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device, intermediate);
-        this->voxelization_cbuffer_z = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device, intermediate);
-        this->voxelization_cbuffer_x->GetResource()->SetName(L"X Axis Voxelization CBuffer");
-        this->voxelization_cbuffer_y->GetResource()->SetName(L"Y Axis Voxelization CBuffer");
-        this->voxelization_cbuffer_z->GetResource()->SetName(L"Z Axis Voxelization CBuffer");
+		this->CreateVoxelizationConstantBuffers(device,command_list);
 		this->CalculateVoxelizationSupportData();
 	}
     
@@ -50,14 +42,19 @@ namespace DXR
 		command_list.SetGraphicsRootSignature(root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
 		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
-		command_list.BindVertexBuffer(model_vertex_buffer);
-		command_list.BindIndexBuffer(model_index_buffer);
-        //Z-Axis View
-		this->ZAxisVoxelizationCall(command_list, constant_buffer_slot);
-        //X-Axis View
-		this->XAxisVoxelizationCall(command_list, constant_buffer_slot);
-        //Y-Axis View
-		this->YAxisVoxelizationCall(command_list, constant_buffer_slot);
+        command_list.BindVertexBuffer(model_vertex_buffer);
+		// Per Submesh Component
+        for(auto& submesh:model->submeshes)
+        {
+            //TODO(Tiago): Bind Material Data
+            command_list.BindIndexBuffer(*submesh.index_buffer);
+            //Z-Axis View
+            this->ZAxisVoxelizationCall(command_list, constant_buffer_slot);
+            //X-Axis View
+            this->XAxisVoxelizationCall(command_list, constant_buffer_slot);
+            //Y-Axis View
+            this->YAxisVoxelizationCall(command_list, constant_buffer_slot);
+        }
 	}
     
     void Voxelizer::XAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot)
@@ -82,6 +79,19 @@ namespace DXR
         this->UpdateVoxelizationCBufferZ();
         command_list.BindConstantBuffer(*voxelization_cbuffer_z, constant_buffer_slot);
         command_list.SendDrawCall();
+    }
+    
+    void Voxelizer::CreateVoxelizationConstantBuffers(GraphicsDevice& device, GraphicsCommandList& command_list)
+    {
+        //NOTE(Tiago): dummy/placeholder data is required to create the constant buffer while the matrices are not yet computed
+		std::vector<Voxelization_CBuffer> intermediate;
+		intermediate.push_back({ XMMatrixIdentity(), XMMatrixIdentity() });
+		this->voxelization_cbuffer_x = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device, intermediate);
+        this->voxelization_cbuffer_y = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device, intermediate);
+        this->voxelization_cbuffer_z = std::make_unique<ConstantBuffer<Voxelization_CBuffer>>(device, intermediate);
+        this->voxelization_cbuffer_x->GetResource()->SetName(L"X Axis Voxelization CBuffer");
+        this->voxelization_cbuffer_y->GetResource()->SetName(L"Y Axis Voxelization CBuffer");
+        this->voxelization_cbuffer_z->GetResource()->SetName(L"Z Axis Voxelization CBuffer");
     }
     
 	void Voxelizer::CalculateVoxelizationSupportData()

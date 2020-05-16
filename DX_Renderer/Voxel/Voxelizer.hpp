@@ -46,12 +46,13 @@ namespace DXR
         IndexBuffer model_index_buffer;
         PipelineStateObject pso;
         TLAS acceleration_structure;
-        std::unique_ptr<BLAS> voxel_cube_blas;
-        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_x;
-        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_y;
-        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_z;
-        std::unique_ptr<VertexBuffer<Vertex>> voxel_cube_vertex_buffer;
-        std::unique_ptr<IndexBuffer> voxel_cube_index_buffer;
+        std::unique_ptr<RootSignature> voxelization_root_signature = nullptr;
+        std::unique_ptr<BLAS> voxel_cube_blas = nullptr;
+        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_x = nullptr;
+        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_y = nullptr;
+        std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_z = nullptr;
+        std::unique_ptr<VertexBuffer<Vertex>> voxel_cube_vertex_buffer = nullptr;
+        std::unique_ptr<IndexBuffer> voxel_cube_index_buffer = nullptr;
         //NOTE(Tiago):Voxelization matrices support data
         XMFLOAT3 extent;
         XMFLOAT3 center;
@@ -69,6 +70,7 @@ namespace DXR
         void Voxelize(GraphicsCommandList& command_list,RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
         void BuildAccelerationStructure(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence);
         private:
+        void CreateVoxelizationConstantBuffers(GraphicsDevice& device, GraphicsCommandList& command_list);
         void XAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);
         void YAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);
         void ZAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);
