@@ -32,9 +32,9 @@ namespace DXR
         XMMATRIX voxel_space_transformation_matrix;
     };
     
-#define VOXEL_WIDTH 256
-#define VOXEL_HEIGHT 256
-#define VOXEL_DEPTH 256
+#define VOXEL_WIDTH 128
+#define VOXEL_HEIGHT 128
+#define VOXEL_DEPTH 128
     
     struct Voxelizer
     {
@@ -46,7 +46,7 @@ namespace DXR
         IndexBuffer model_index_buffer;
         PipelineStateObject pso;
         TLAS acceleration_structure;
-        std::unique_ptr<RootSignature> voxelization_root_signature = nullptr;
+        RootSignature voxelization_root_signature;
         std::unique_ptr<BLAS> voxel_cube_blas = nullptr;
         std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_x = nullptr;
         std::unique_ptr<ConstantBuffer<Voxelization_CBuffer>> voxelization_cbuffer_y = nullptr;
@@ -70,6 +70,8 @@ namespace DXR
         void Voxelize(GraphicsCommandList& command_list,RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
         void BuildAccelerationStructure(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence);
         private:
+        void VoxelizeSubmesh(Submesh& submesh, GraphicsCommandList& command_list);
+        void CreateVoxelizationRootSignature(GraphicsDevice& device);
         void CreateVoxelizationConstantBuffers(GraphicsDevice& device, GraphicsCommandList& command_list);
         void XAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);
         void YAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);

@@ -18,6 +18,7 @@ namespace DXR
                          Model& model,
                          XMMATRIX mvp)
 	{
+        this->CreateVoxelizationRootSignature(device);
 		this->CreateVoxelCube(device, command_list);
 		this->model_vertex_buffer = model.GenerateVertexBuffer(device, command_list);
 		this->model_index_buffer = model.GenerateIndexBuffer(device, command_list);
@@ -39,23 +40,32 @@ namespace DXR
 	{
 		voxel_map.Clear(command_list);
 		this->SetViewport(command_list);
-		command_list.SetGraphicsRootSignature(root_signature);
+		command_list.SetGraphicsRootSignature(voxelization_root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
-		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
+		this->voxel_map.BindUAV(command_list, 1);
         command_list.BindVertexBuffer(model_vertex_buffer);
 		// Per Submesh Component
         for(auto& submesh:model->submeshes)
         {
-            //TODO(Tiago): Bind Material Data
+            this->VoxelizeSubmesh(submesh, command_list);
+        }
+        command_list.SetGraphicsRootSignature(root_signature);
+	}
+    
+    void Voxelizer::VoxelizeSubmesh(Submesh& submesh, GraphicsCommandList& command_list)
+    {
+        if(submesh.material->has_texture)
+        {
+            command_list.BindTexture(*submesh.material->texture,2,3);
             command_list.BindIndexBuffer(*submesh.index_buffer);
             //Z-Axis View
-            this->ZAxisVoxelizationCall(command_list, constant_buffer_slot);
+            this->ZAxisVoxelizationCall(command_list, 0);
             //X-Axis View
-            this->XAxisVoxelizationCall(command_list, constant_buffer_slot);
+            this->XAxisVoxelizationCall(command_list, 0);
             //Y-Axis View
-            this->YAxisVoxelizationCall(command_list, constant_buffer_slot);
+            this->YAxisVoxelizationCall(command_list, 0);
         }
-	}
+    }
     
     void Voxelizer::XAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot)
     {
@@ -79,6 +89,28 @@ namespace DXR
         this->UpdateVoxelizationCBufferZ();
         command_list.BindConstantBuffer(*voxelization_cbuffer_z, constant_buffer_slot);
         command_list.SendDrawCall();
+    }
+    
+    void Voxelizer::CreateVoxelizationRootSignature(GraphicsDevice& device)
+    {
+        DXR::DescriptorTableRootParameter cbv_desc_table;
+        cbv_desc_table.AddCBVEntry(0);
+        
+        DXR::DescriptorTableRootParameter uav_desc_table;
+        uav_desc_table.AddUAVEntry(0);
+        
+        DXR::DescriptorTableRootParameter srv_desc_table;
+        srv_desc_table.AddSRVEntry(0);
+        
+        DXR::DescriptorTableRootParameter sampler_desc_table;
+        sampler_desc_table.AddSamplerEntry(0);
+        
+        voxelization_root_signature.AddDescriptorTableRootParameter(cbv_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(uav_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(srv_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
+        
+        voxelization_root_signature.CreateRootSignature(device);
     }
     
     void Voxelizer::CreateVoxelizationConstantBuffers(GraphicsDevice& device, GraphicsCommandList& command_list)
