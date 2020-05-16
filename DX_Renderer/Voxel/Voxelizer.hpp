@@ -66,11 +66,14 @@ namespace DXR
                   RootSignature& root_signature,
                   Model& model,
                   XMMATRIX mvp);
-        void Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
+        void Voxelize(GraphicsCommandList& command_list,RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
         void BuildAccelerationStructure(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence);
         private:
+        void XAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);
+        void YAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);
+        void ZAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot);
         void CalculateVoxelizationSupportData();
-        void UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix);
+        void UpdateVoxelizationMatrices(XMMATRIX& model_matrix);
         void UpdateVoxelizationCBufferX();
         void UpdateVoxelizationCBufferY();
         void UpdateVoxelizationCBufferZ();

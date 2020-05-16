@@ -251,7 +251,7 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindConstantBuffer(constant_buffer, 1);
 		commandList.BindTexture(texture, 3, 4);
         
-		voxelizer.Voxelize(commandList, cam, root_signature, 1, 2);
+		voxelizer.Voxelize(commandList, root_signature, 1, 2);
         
 		voxelizer.BuildAccelerationStructure(device, commandList, fence);
         

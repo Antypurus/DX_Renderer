@@ -43,43 +43,46 @@ namespace DXR
 		this->CalculateVoxelizationSupportData();
 	}
     
-	void Voxelizer::Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot)
+	void Voxelizer::Voxelize(GraphicsCommandList& command_list, RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot)
 	{
 		voxel_map.Clear(command_list);
+		this->SetViewport(command_list);
+		command_list.SetGraphicsRootSignature(root_signature);
+		command_list->SetPipelineState(pso.GetPipelineStateObject());
+		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
+		command_list.BindVertexBuffer(model_vertex_buffer);
+		command_list.BindIndexBuffer(model_index_buffer);
         //Z-Axis View
-		this->SetViewport(command_list);
-		this->UpdateVoxelizationMatrices(camera,XMMatrixIdentity());
-		this->UpdateVoxelizationCBufferX();
-		command_list.SetGraphicsRootSignature(root_signature);
-		command_list->SetPipelineState(pso.GetPipelineStateObject());
-		command_list.BindConstantBuffer(*voxelization_cbuffer_x, constant_buffer_slot);
-		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
-		command_list.BindVertexBuffer(model_vertex_buffer);
-		command_list.BindIndexBuffer(model_index_buffer);
-		command_list.SendDrawCall();
+		this->ZAxisVoxelizationCall(command_list, constant_buffer_slot);
         //X-Axis View
-		this->SetViewport(command_list);
-		this->UpdateVoxelizationMatrices(camera,XMMatrixRotationAxis({0.0f,1.0f,0.0f},0.5f * M_PI));
-		this->UpdateVoxelizationCBufferY();
-		command_list.SetGraphicsRootSignature(root_signature);
-		command_list->SetPipelineState(pso.GetPipelineStateObject());
-		command_list.BindConstantBuffer(*voxelization_cbuffer_y, constant_buffer_slot);
-		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
-		command_list.BindVertexBuffer(model_vertex_buffer);
-		command_list.BindIndexBuffer(model_index_buffer);
-		command_list.SendDrawCall();
+		this->XAxisVoxelizationCall(command_list, constant_buffer_slot);
         //Y-Axis View
-		this->SetViewport(command_list);
-		this->UpdateVoxelizationMatrices(camera,XMMatrixRotationAxis({1.0f,0.0f,0.0f},0.5f * M_PI));
-		this->UpdateVoxelizationCBufferZ();
-		command_list.SetGraphicsRootSignature(root_signature);
-		command_list->SetPipelineState(pso.GetPipelineStateObject());
-		command_list.BindConstantBuffer(*voxelization_cbuffer_z, constant_buffer_slot);
-		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
-		command_list.BindVertexBuffer(model_vertex_buffer);
-		command_list.BindIndexBuffer(model_index_buffer);
-		command_list.SendDrawCall();
+		this->YAxisVoxelizationCall(command_list, constant_buffer_slot);
 	}
+    
+    void Voxelizer::XAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot)
+    {
+        this->UpdateVoxelizationMatrices(XMMatrixRotationAxis({0.0f,1.0f,0.0f},0.5f * M_PI));
+		this->UpdateVoxelizationCBufferX();
+        command_list.BindConstantBuffer(*voxelization_cbuffer_x, constant_buffer_slot);
+        command_list.SendDrawCall();
+    }
+    
+    void Voxelizer::YAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot)
+    {
+        this->UpdateVoxelizationMatrices(XMMatrixRotationAxis({1.0f,0.0f,0.0f},0.5f * M_PI));
+		this->UpdateVoxelizationCBufferY();
+        command_list.BindConstantBuffer(*voxelization_cbuffer_y, constant_buffer_slot);
+        command_list.SendDrawCall();
+    }
+    
+    void Voxelizer::ZAxisVoxelizationCall(GraphicsCommandList& command_list, UINT constant_buffer_slot)
+    {
+        this->UpdateVoxelizationMatrices(XMMatrixIdentity());
+        this->UpdateVoxelizationCBufferZ();
+        command_list.BindConstantBuffer(*voxelization_cbuffer_z, constant_buffer_slot);
+        command_list.SendDrawCall();
+    }
     
 	void Voxelizer::CalculateVoxelizationSupportData()
 	{
@@ -102,7 +105,7 @@ namespace DXR
 		XMStoreFloat3(&voxel_space, voxel_space_vector);
 	}
     
-	void Voxelizer::UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
+	void Voxelizer::UpdateVoxelizationMatrices(XMMATRIX& model_matrix)
 	{
 		XMMATRIX voxel_matrix;
 		XMMATRIX m1, m2;
