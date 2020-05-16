@@ -32,10 +32,9 @@ namespace DXR
         XMMATRIX voxel_space_transformation_matrix;
     };
     
-#define VOXEL_WIDTH 128
-#define VOXEL_HEIGHT 128
-#define VOXEL_DEPTH 128
-#define VOXEL_SCALE 1.0f
+#define VOXEL_WIDTH 256
+#define VOXEL_HEIGHT 256
+#define VOXEL_DEPTH 256
     
     struct Voxelizer
     {
@@ -67,7 +66,7 @@ namespace DXR
                   RootSignature& root_signature,
                   Model& model,
                   XMMATRIX mvp);
-        void Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, XMMATRIX model_matrix, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
+        void Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot);
         void BuildAccelerationStructure(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence);
         private:
         void CalculateVoxelizationSupportData();

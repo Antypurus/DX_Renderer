@@ -43,11 +43,10 @@ namespace DXR
 		this->CalculateVoxelizationSupportData();
 	}
     
-	void Voxelizer::Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, XMMATRIX model_matrix, UINT constant_buffer_slot, UINT voxel_map_uav_slot)
+	void Voxelizer::Voxelize(GraphicsCommandList& command_list, Camera& camera, RootSignature& root_signature, UINT constant_buffer_slot, UINT voxel_map_uav_slot)
 	{
-        auto scale = XMMatrixScaling(VOXEL_SCALE,VOXEL_SCALE, VOXEL_SCALE);
-        //X-Axis View
 		voxel_map.Clear(command_list);
+        //Z-Axis View
 		this->SetViewport(command_list);
 		this->UpdateVoxelizationMatrices(camera,XMMatrixIdentity());
 		this->UpdateVoxelizationCBufferX();
@@ -58,25 +57,25 @@ namespace DXR
 		command_list.BindVertexBuffer(model_vertex_buffer);
 		command_list.BindIndexBuffer(model_index_buffer);
 		command_list.SendDrawCall();
-        //Y-Axis View
+        //X-Axis View
 		this->SetViewport(command_list);
 		this->UpdateVoxelizationMatrices(camera,XMMatrixRotationAxis({0.0f,1.0f,0.0f},0.5f * M_PI));
 		this->UpdateVoxelizationCBufferY();
 		command_list.SetGraphicsRootSignature(root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
 		command_list.BindConstantBuffer(*voxelization_cbuffer_y, constant_buffer_slot);
-		//this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
+		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
 		command_list.BindVertexBuffer(model_vertex_buffer);
 		command_list.BindIndexBuffer(model_index_buffer);
 		command_list.SendDrawCall();
-        //Z-Axis View
+        //Y-Axis View
 		this->SetViewport(command_list);
 		this->UpdateVoxelizationMatrices(camera,XMMatrixRotationAxis({1.0f,0.0f,0.0f},0.5f * M_PI));
 		this->UpdateVoxelizationCBufferZ();
 		command_list.SetGraphicsRootSignature(root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
 		command_list.BindConstantBuffer(*voxelization_cbuffer_z, constant_buffer_slot);
-		//this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
+		this->voxel_map.BindUAV(command_list, voxel_map_uav_slot);
 		command_list.BindVertexBuffer(model_vertex_buffer);
 		command_list.BindIndexBuffer(model_index_buffer);
 		command_list.SendDrawCall();
@@ -105,7 +104,6 @@ namespace DXR
     
 	void Voxelizer::UpdateVoxelizationMatrices(Camera& camera, XMMATRIX& model_matrix)
 	{
-        auto scale = XMMatrixScaling(VOXEL_SCALE,VOXEL_SCALE, VOXEL_SCALE);
 		XMMATRIX voxel_matrix;
 		XMMATRIX m1, m2;
 		m1 = XMMatrixTranslation(-voxel_space.x, -voxel_space.y, -voxel_space.z);
