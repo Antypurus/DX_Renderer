@@ -36,8 +36,10 @@ __declspec(align(16)) struct CBuffer
 __declspec(align(16)) struct RTCBuffer
 {
 	DirectX::XMMATRIX voxel_space_matrix;
+	DirectX::XMFLOAT4 light_color;
 	DirectX::XMFLOAT3 light_position;
-	DirectX::XMFLOAT2 ray_angle_delta;
+    float light_radius;
+    float light_extent;
 };
 
 void MainDirectXThread(DXR::Window& window)
@@ -167,9 +169,11 @@ void MainDirectXThread(DXR::Window& window)
 	RTCBuffer rt_light;
 	rt_light.light_position = { 3.6, -4.1, -0.1};
 	rt_light.voxel_space_matrix = voxelizer.voxel_space_conversion_matrix;
-	rt_light.ray_angle_delta = { 100.0f,100.0f };
+	rt_light.light_color = {1.0f,1.0f,1.0f,1.0f};
+    rt_light.light_radius = 0.5f;
+    rt_light.light_extent = 0.5f;
     
-	DXR::ConstantBuffer<RTCBuffer> rtc_buffer(device, { rt_light });
+    DXR::ConstantBuffer<RTCBuffer> rtc_buffer(device, { rt_light });
 	rtc_buffer->SetName(L"RTX Shading CBuffer");
     
 	DXR::RayGenSBTEntry raygen(rgs);
@@ -195,6 +199,9 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
 		ImGui::SliderFloat("Model Scale", &scale, 0, 1);
 		ImGui::SliderFloat3("Light Position", (float*)&rt_light.light_position,-10,10);
+		ImGui::ColorPicker3("Light Color", (float*)&rt_light.light_color);
+		ImGui::SliderFloat("Light Radius",&rt_light.light_radius, 0.001, 1);
+		ImGui::SliderFloat("Light Extent",&rt_light.light_extent, 0.001, 1);
 		ImGui::End();
         
 		{

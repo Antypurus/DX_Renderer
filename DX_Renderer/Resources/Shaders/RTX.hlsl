@@ -7,8 +7,10 @@ struct BuiltinIntersectionAttribs
 cbuffer RTCBuffer:register(b0)
 {
     float4x4 voxel_space_matrix;
+    float4 light_color;
     float3 light_position;
-    float2 ray_angle_delta;
+    float light_radius;
+    float light_extent;
 };
 
 RaytracingAccelerationStructure Scene : register(t1);
@@ -27,12 +29,12 @@ struct RayPayload
 [shader("raygeneration")]
 void raygen()
 {
-// Initialize the ray payload
+    // Initialize the ray payload
     RayPayload payload;
     payload.color = float4(0, 0, 0, 0);
-
-// Get the location within the dispatched 2D grid of work items
-// (often maps to pixels, so this could represent a pixel coordinate).
+    
+    // Get the location within the dispatched 2D grid of work items
+    // (often maps to pixels, so this could represent a pixel coordinate).
     uint2 launchIndex = DispatchRaysIndex().xy;
     float2 dims = float2(DispatchRaysDimensions().xy);
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
@@ -46,7 +48,7 @@ void raygen()
     ray.Direction = direction;
     ray.TMin = 0;
     ray.TMax = 100000;
-            
+    
     TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
     
     int3 map_pos = int3(0, 1, 0);
@@ -80,8 +82,8 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     hit_pos = mul(voxel_space_matrix, float4(hit_pos, 1.0f)).xyz;
     int3 map_pos = int3(hit_pos.x - 1,hit_pos.y -1,hit_pos.z -1);
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
-    float dist_fall = mul(voxel_space_matrix,float4(dist, dist, dist, dist)).r;
-    RenderTarget[map_pos] = float4(normalize(hit_pos)/dist_fall, 1);
+    float falloff = pow(light_extent / max(dist, light_radius), 2);
+    RenderTarget[map_pos] = float4(light_color.xyz * falloff, 1);
     
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
