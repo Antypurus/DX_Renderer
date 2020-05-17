@@ -30,6 +30,7 @@
 __declspec(align(16)) struct CBuffer
 {
 	DirectX::XMMATRIX mvp;
+    DirectX::XMMATRIX vp;
 	DirectX::XMMATRIX voxel;
 };
 
@@ -58,7 +59,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::RootSignature root_signature;
     
-	DXR::DescriptorTableRootParameter cbv_desc_table;
+    DXR::DescriptorTableRootParameter cbv_desc_table;
 	cbv_desc_table.AddCBVEntry(0);
     
 	DXR::DescriptorTableRootParameter uav_desc_table;
@@ -73,11 +74,15 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::DescriptorTableRootParameter voxel_desc_table;
 	voxel_desc_table.AddSRVEntry(0,1);
     
+    DXR::DescriptorTableRootParameter light_desc_table;
+	light_desc_table.AddCBVEntry(0,1);
+    
 	root_signature.AddDescriptorTableRootParameter(cbv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(uav_desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
 	root_signature.AddDescriptorTableRootParameter(voxel_desc_table);
+    root_signature.AddDescriptorTableRootParameter(light_desc_table);
     
 	DXR::DescriptorRootParameter acceleration_structure_root_parameter(DXR::RootParameterDescriptorType::SRV, 1);
 	root_signature.AddDescriptorRootParameter(acceleration_structure_root_parameter);
@@ -138,6 +143,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	CBuffer light_buff;
 	light_buff.mvp = mvp;
+    light_buff.vp = view * projection;
 	light_buff.voxel = DirectX::XMMatrixIdentity();
 	DXR::ConstantBuffer<CBuffer> light_cbuffer(device, { light_buff });
     
@@ -163,7 +169,7 @@ void MainDirectXThread(DXR::Window& window)
 	tlas.BuildTLAS(device, commandList);
     
 	DXR::Voxelizer voxelizer(device, commandList, root_signature, sib_model, mvp);
-	DXR::VoxelMap light_map(device, 128, 128, 128);
+	DXR::VoxelMap light_map(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH);
 	light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
 	RTCBuffer rt_light;
@@ -198,7 +204,7 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::SliderAngle("Y Rotation", &y_rotation_angle);
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
 		ImGui::SliderFloat("Model Scale", &scale, 0, 1);
-		ImGui::SliderFloat3("Light Position", (float*)&rt_light.light_position,-10,10);
+		ImGui::SliderFloat3("Light Position", (float*)&rt_light.light_position,-20,20);
 		ImGui::ColorPicker3("Light Color", (float*)&rt_light.light_color);
 		ImGui::SliderFloat("Light Radius",&rt_light.light_radius, 0.001, 1);
 		ImGui::SliderFloat("Light Extent",&rt_light.light_extent, 0.001, 1);
@@ -214,6 +220,7 @@ void MainDirectXThread(DXR::Window& window)
 			model *= DirectX::XMMatrixScaling(scale, scale, scale);
 			model *= DirectX::XMMatrixTranslation(x_off, 0, 0);
 			raster_cbufer.mvp = model * view * projection;
+            raster_cbufer.vp = view * projection;
 			raster_cbufer.voxel = voxelizer.voxel_space_conversion_matrix;
 			light_buff.mvp = DirectX::XMMatrixTranslation(rt_light.light_position.x,rt_light.light_position.y,rt_light.light_position.z) * view * projection;
 			light_buff.voxel = voxelizer.voxel_space_conversion_matrix;
@@ -237,6 +244,7 @@ void MainDirectXThread(DXR::Window& window)
 		swapchain.SetViewport(commandList, swapchain.GetBackbufferResolution());
 		commandList->SetPipelineState(pso.GetPipelineStateObject());
         
+        commandList.BindConstantBuffer(rtc_buffer,6);
 		commandList.BindConstantBuffer(constant_buffer, 1);
 		light_map.BindUAV(commandList, 2);
 		light_map.BindSRV(commandList, 5);
