@@ -3,14 +3,14 @@
 
 #include <d3d12.h>
 #include <wrl.h>
-     
+
 #include <dxcapi.h>
 
 namespace DXR
 {
-
+    
 	using namespace Microsoft;
-
+    
 #define VERTEX_SHADER		L"vs_6_4"
 #define HULL_SHADER			L"hs_6_4"
 #define DOMAIN_SHADER		L"ds_6_4"
@@ -18,7 +18,7 @@ namespace DXR
 #define PIXEL_SHADER		L"ps_6_4"
 #define COMPUTE_SHADER		L"cs_6_4"
 #define RAYTRACING_SHADER	L"lib_6_4"
-
+    
 	enum class ShaderType
 	{
 		None = -1,
@@ -30,35 +30,36 @@ namespace DXR
 		ComputerShader = 5,
 		RayTracingShader = 6
 	};
-
+    
 	struct Shader
 	{
-	public:
+        public:
 		virtual ~Shader() = default;
-	protected:
-		WRL::ComPtr<IDxcBlob> m_shader_code;
+        protected:
+		WRL::ComPtr<IDxcBlob> m_shader_code = nullptr;
 		ShaderType m_shader_type = ShaderType::None;
 		std::wstring m_shader_type_name = L"";
-	public:
+        public:
+        Shader() = default;
 		D3D12_SHADER_BYTECODE GetShaderBytecode();
-		static D3D12_SHADER_BYTECODE NoShaderBytecode(); 
-	protected:
+		static D3D12_SHADER_BYTECODE NoShaderBytecode();
+        protected:
 		Shader(ShaderType shaderType);
 		virtual void CompileFromFile(const std::wstring& filename, const std::wstring& entryPoint);
 	};
-
+    
 	
 	struct ShaderCompiler
 	{
-	private:
+        private:
 		const static uint32_t m_shader_encoding = CP_UTF8;
 		static ShaderCompiler m_instance;
 		WRL::ComPtr<IDxcCompiler2> m_compiler;
 		WRL::ComPtr<IDxcLibrary> m_library;
-	public:
+        public:
 		static ShaderCompiler GetInstance();
 		static IDxcBlob* CompileFromFile(const std::wstring& Filepath, const std::wstring& Entrypoint, const std::wstring ShaderType);
-	private:
+        private:
 		ShaderCompiler();
 	};
 }

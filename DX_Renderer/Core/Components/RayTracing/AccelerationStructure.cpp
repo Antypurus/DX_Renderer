@@ -66,6 +66,11 @@ namespace DXR
 		return this->m_tlas_buffer->GetGPUAddress();
 	}
 
+	UINT TLAS::GetInstanceCount()
+	{
+		return m_blas_instances.size();
+	}
+
 	void TLAS::BuildTLAS(GraphicsDevice& Device, GraphicsCommandList& CommandList)
 	{
 		D3D12_RAYTRACING_INSTANCE_DESC* instances = new D3D12_RAYTRACING_INSTANCE_DESC[this->m_blas_instances.size()];

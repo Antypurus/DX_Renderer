@@ -107,7 +107,7 @@ namespace DXR
 		}
 		case DXR::PrimitiveTopology::Triangles:
 		{
-			this->m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			this->m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			break;
 		}
 		default:

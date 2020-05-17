@@ -4,8 +4,20 @@ struct BuiltinIntersectionAttribs
     float2 barycentrics; // the triangle are: (1-x-y, x, y)
 };
 
+cbuffer RTCBuffer:register(b0)
+{
+    float4x4 voxel_space_matrix;
+    float3 light_position;
+    float2 ray_angle_delta;
+};
+
 RaytracingAccelerationStructure Scene : register(t1);
-RWTexture2D<float4> RenderTarget : register(u0);
+RWTexture3D<float4> RenderTarget : register(u0);
+
+float nrand(float2 uv)
+{
+    return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
+}
 
 struct RayPayload
 {
@@ -26,14 +38,18 @@ void raygen()
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    ray.Origin = float3(d.x, -d.y, 1);
-    ray.Direction = float3(0, 0, -1);
+    float3 direction = float3(DispatchRaysIndex().xyz) - float3(512, 512, 512);
+    float4 origin = mul(voxel_space_matrix, float4(light_position, 1.0f));
+    
+    //ray.Origin = (origin.xyz / origin.w) - float3(1, 1, 1);
+    ray.Origin = light_position;
+    ray.Direction = direction;
     ray.TMin = 0;
     ray.TMax = 100000;
-    
+            
     TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
     
-    RenderTarget[DispatchRaysIndex().xy] = payload.color;
+    int3 map_pos = int3(0, 1, 0);
 }
 
 [shader("intersection")]
@@ -56,5 +72,16 @@ void anyhit(inout RayPayload data, BuiltinIntersectionAttribs hit)
 [shader("closesthit")]
 void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
 {
+    float dist = RayTCurrent();
+    float3 ray_origin = WorldRayOrigin();
+    float3 ray_dir = WorldRayDirection();
+    
+    float3 hit_pos = ray_origin + mul(ray_dir, dist);
+    hit_pos = mul(voxel_space_matrix, float4(hit_pos, 1.0f)).xyz;
+    int3 map_pos = int3(hit_pos.x - 1,hit_pos.y -1,hit_pos.z -1);
+    //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
+    float dist_fall = mul(voxel_space_matrix,float4(dist, dist, dist, dist)).r;
+    RenderTarget[map_pos] = float4(normalize(hit_pos)/dist_fall, 1);
+    
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }

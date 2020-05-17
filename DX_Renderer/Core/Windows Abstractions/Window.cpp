@@ -5,23 +5,30 @@ namespace DXR
 {
 	LRESULT WindowMessageCallbackProcedure(HWND WindowHandle, UINT Message, WPARAM WParam, LPARAM LParam)
 	{
-		switch(Message)
+		switch (Message)
 		{
-			case WM_CLOSE:
-				INFO_LOG(L"Receibed WM_CLOSE Window Message");
+		case WM_CLOSE:
+		{
+			INFO_LOG(L"Receibed WM_CLOSE Window Message");
+			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
+			DestroyWindow(WindowHandle);
+			current_window->ShouldContinue = false;
+			break;
+		}
+		case WM_DESTROY:
+		{
+			INFO_LOG(L"Receibed WM_DESTROY Window Message");
+			current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
+			PostQuitMessage(0);
+			break;
+		}
+		default:
+		{
+			if (current_window)
 				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-				DestroyWindow(WindowHandle);
-				current_window->ShouldContinue = false;
-				break;
-			case WM_DESTROY:
-				INFO_LOG(L"Receibed WM_DESTROY Window Message");
-				current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-				PostQuitMessage(0);
-				break;
-			default:
-				if(current_window)
-					current_window->HandleMessage(Message, WindowHandle, WParam, LParam);
-				return DefWindowProc(WindowHandle, Message, WParam, LParam);
+			return DefWindowProc(WindowHandle, Message, WParam, LParam);
+			break;
+		}
 		}
 		return 0;
 	}
@@ -54,7 +61,7 @@ namespace DXR
 	void Window::UpdateWindow()
 	{
 		MSG message;
-		const BOOL updateStatus = GetMessage(&message, this->m_window_handle, 0, 0);
+		const BOOL updateStatus = PeekMessage(&message, NULL, 0, 0, PM_REMOVE);
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
@@ -114,7 +121,7 @@ namespace DXR
 
 		INFO_LOG(L"Registering Window Class");
 		// register the window class
-		if(!RegisterClassEx(&windowClass))
+		if (!RegisterClassEx(&windowClass))
 		{
 			ERROR_LOG(L"Failed To Register Window Class");
 			this->ShouldContinue = false;
@@ -138,7 +145,7 @@ namespace DXR
 
 		INFO_LOG(L"Creating Win32 Window");
 		//validate window creation
-		if(this->m_window_handle == nullptr)
+		if (this->m_window_handle == nullptr)
 		{
 			ERROR_LOG(L"Failed To Create Win32 Window");
 			this->ShouldContinue = false;
@@ -155,9 +162,11 @@ namespace DXR
 
 		// specified resolution is the windows res but not the client or drawable resolution, need to fix that
 		RECT clientRect = {};
-		GetClientRect(this->m_window_handle,&clientRect);
+		GetClientRect(this->m_window_handle, &clientRect);
 		this->m_window_resolution.Height = abs(clientRect.top - clientRect.bottom);
 		this->m_window_resolution.Width = abs(clientRect.right - clientRect.left);
+
+		//SetCapture(this->m_window_handle);
 	}
 
 }

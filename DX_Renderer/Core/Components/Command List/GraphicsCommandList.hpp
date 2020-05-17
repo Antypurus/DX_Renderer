@@ -20,7 +20,7 @@ namespace DXR
 	struct TLAS;
 	template<typename VertexStruct> struct VertexBuffer;
 	using namespace Microsoft;
-
+    
 	enum class PrimitiveTopology
 	{
 		None,
@@ -28,19 +28,20 @@ namespace DXR
 		Lines,
 		Triangles
 	};
-
+    
 	struct GraphicsCommandList
 	{
-	public:
+        public:
 		const static PrimitiveTopology DefaultPrimitiveTopology = PrimitiveTopology::Triangles;
 		friend GraphicsDevice;
-	private:
+        private:
 		WRL::ComPtr<ID3D12CommandAllocator> m_command_allocator;
 		WRL::ComPtr<ID3D12GraphicsCommandList4> m_command_list;
 		IndexBuffer* m_current_index_buffer = nullptr;
 		mutable PrimitiveTopology m_current_primitive_topology = PrimitiveTopology::None;
-	public:
-		ID3D12GraphicsCommandList4* operator->() const;
+        public:
+		GraphicsCommandList() = default;
+        ID3D12GraphicsCommandList4* operator->() const;
 		[[nodiscard]] ID3D12GraphicsCommandList4* GetRAWInterface() const;
 		[[nodiscard]] ID3D12CommandAllocator* GetCommandAllocator() const;
 		void ResetCommandAllocator() const;
@@ -57,28 +58,38 @@ namespace DXR
 		void Close() const;
 		void BindTLAS(TLAS& tlas, UINT slot);
 		void BindTexture(Texture& texture,UINT TexureSlot,UINT SamplerSlot);
-
+        
 		template<typename T>
-		void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);
-
+            void BindVertexBuffer(VertexBuffer<T>& VertexBuffer);
+        
 		template<typename T>
-		void BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot);
-	private:
+            void BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot);
+        
+        template<typename T>
+            void BindComputeConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot);
+        private:
 		GraphicsCommandList(GraphicsDevice& device);
 		inline void CreateCommandAllocator(GraphicsDevice& device);
 		inline void CreateCommandList(GraphicsDevice& device);
 	};
-
+    
 	template <typename T>
-	void GraphicsCommandList::BindVertexBuffer(VertexBuffer<T>& VertexBuffer)
+        void GraphicsCommandList::BindVertexBuffer(VertexBuffer<T>& VertexBuffer)
 	{
 		this->m_command_list->IASetVertexBuffers(0, 1, &VertexBuffer.GetVertexBufferDescriptor());
 	}
-
+    
 	template <typename T>
-	void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
+        void GraphicsCommandList::BindConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
 	{
-		//this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
-		this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
+		this->m_command_list->SetGraphicsRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
+		//this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
+	}
+    
+    template <typename T>
+        void GraphicsCommandList::BindComputeConstantBuffer(ConstantBuffer<T>& ConstantBuffer, UINT Slot)
+	{
+		this->m_command_list->SetComputeRootDescriptorTable(Slot, ConstantBuffer.GetGPUHandle());
+		//this->m_command_list->SetGraphicsRootConstantBufferView(Slot, ConstantBuffer.m_resource->GetGPUVirtualAddress());
 	}
 }

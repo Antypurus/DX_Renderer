@@ -44,8 +44,10 @@ namespace DXR
 
 	void Vertex::operator=(Vertex other)
 	{
-		other.m_position = this->m_position;
+		this->m_position = other.m_position;
+		this->m_uv = other.m_uv;
 	}
+
 	void* Vertex::GetData()
 	{
 		return &this->m_position;
