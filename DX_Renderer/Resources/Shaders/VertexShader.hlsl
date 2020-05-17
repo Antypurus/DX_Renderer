@@ -73,6 +73,6 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     float4 other_col = irradiance_map_tex.Sample(gsampler, float3(vox.x / 256.0f,vox.y / 256.0f,vox.z / 768.0f));
     //float4 other_col = irradiance_map[voxel];
     
-    output.color = 0.25 * col + 0.75 * falloff * other_col * col;
+    output.color = 0.25 * col + 0.75 * other_col * col;
 	return output;
 }

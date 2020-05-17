@@ -84,6 +84,12 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
     //float falloff = pow(1 / max(dist, light_radius), 2);
     RenderTarget[map_pos] = float4(light_color);
+    RenderTarget[map_pos+int3(1,0,0)] = float4(light_color);
+    RenderTarget[map_pos+int3(-1,0,0)] = float4(light_color);
+    RenderTarget[map_pos+int3(0,1,0)] = float4(light_color);
+    RenderTarget[map_pos+int3(0,-1,0)] = float4(light_color);
+    RenderTarget[map_pos+int3(0,0,1)] = float4(light_color);
+    RenderTarget[map_pos+int3(0,0,-1)] = float4(light_color);
     
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
