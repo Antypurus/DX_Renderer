@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <locale>
 #include <codecvt>
+#include <vector>
 
 namespace DXR
 {
@@ -51,14 +52,35 @@ namespace DXR
                 
 				Material model_material;
 				model_material.name = material.name;
-				model_material.ambient_coefficient = { 0,0,0 };
-				model_material.diffuse_coefficient = { 0,0,0 };
-				model_material.specular_coefficient = { 0,0,0 };
+				model_material.ambient_coefficient = {
+                    (float)material.ambient[0],
+                    (float)material.ambient[1],
+                    (float)material.ambient[2]
+                };
+				model_material.diffuse_coefficient = {
+                    (float)material.diffuse[0],
+                    (float)material.diffuse[1],
+                    (float)material.diffuse[2]
+                };
+				model_material.specular_coefficient = {
+                    (float)material.specular[0],
+                    (float)material.specular[1],
+                    (float)material.specular[1]
+                };
+                model_material.specular_exponent = (float)material.shininess;
 				if (diffuse_texture_path != folder)
 				{
                     //NOTE(Tiago): if the texture is not kept alive, the system freaks out cuz it will be deleted at the end of the scope, but that will happen while the command list is open and that will create a massive issue, maybe in the future i need a system to schedule resources for deletion
 					model_material.has_texture = true;
 					model_material.texture = std::make_shared<Texture>(std::wstring(diffuse_texture_path.begin(), diffuse_texture_path.end()), device, command_list);
+                    
+                    MaterialCBuffer mat;
+                    mat.ambient_coefficient = model_material.ambient_coefficient;
+                    mat.diffuse_coefficient = model_material.diffuse_coefficient;
+                    mat.specular_coefficient = model_material.specular_coefficient;
+                    mat.specular_exponent = model_material.specular_exponent;
+					model_material.material_cbuffer = std::make_shared<ConstantBuffer<MaterialCBuffer>>(device, std::vector({mat}));
+					model_material.material_cbuffer->GetResource()->SetName(L"Material Properties");
 				}
                 model_materials.push_back(model_material);
 			}
@@ -141,6 +163,11 @@ namespace DXR
 		this->has_texture = other.has_texture;
 		this->texture = other.texture;
 	}
+    
+    ConstantBuffer<MaterialCBuffer>* Material::GetMaterialCBuffer()
+    {
+        return this->material_cbuffer.get();
+    }
     
     Submesh::Submesh(const std::vector<UINT>& indices, Material& material, GraphicsDevice& device, GraphicsCommandList& command_list)
     {
