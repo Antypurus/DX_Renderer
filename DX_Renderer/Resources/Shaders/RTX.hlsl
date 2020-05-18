@@ -40,7 +40,7 @@ void raygen()
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    float3 direction = float3(DispatchRaysIndex().xyz) - float3(512, 512, 512);
+    float3 direction = float3(DispatchRaysIndex().xyz) - float3(256, 256, 256);
     float4 origin = mul(voxel_space_matrix, float4(light_position, 1.0f));
     
     //ray.Origin = (origin.xyz / origin.w) - float3(1, 1, 1);
@@ -82,14 +82,14 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     hit_pos = mul(voxel_space_matrix, float4(hit_pos, 1.0f)).xyz;
     int3 map_pos = int3(hit_pos.x - 1,hit_pos.y -1,hit_pos.z -1);
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
-    //float falloff = pow(1 / max(dist, light_radius), 2);
-    RenderTarget[map_pos] = float4(light_color);
-    RenderTarget[map_pos+int3(1,0,0)] = float4(light_color);
-    RenderTarget[map_pos+int3(-1,0,0)] = float4(light_color);
-    RenderTarget[map_pos+int3(0,1,0)] = float4(light_color);
-    RenderTarget[map_pos+int3(0,-1,0)] = float4(light_color);
-    RenderTarget[map_pos+int3(0,0,1)] = float4(light_color);
-    RenderTarget[map_pos+int3(0,0,-1)] = float4(light_color);
+    float falloff = 1;
+    RenderTarget[map_pos] = falloff * float4(light_color);
+    RenderTarget[map_pos+int3(1,0,0)] = falloff * float4(light_color);
+    RenderTarget[map_pos+int3(-1,0,0)] = falloff * float4(light_color);
+    RenderTarget[map_pos+int3(0,1,0)] = falloff * float4(light_color);
+    RenderTarget[map_pos+int3(0,-1,0)] = falloff * float4(light_color);
+    RenderTarget[map_pos+int3(0,0,1)] = falloff * float4(light_color);
+    RenderTarget[map_pos+int3(0,0,-1)] = falloff * float4(light_color);
     
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
