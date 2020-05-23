@@ -73,7 +73,7 @@ namespace DXR
 	VoxelMap::VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth, MapType format, bool NeedsReadback)
 	{
 		this->format = static_cast<DXGI_FORMAT>(format);
-		this->format_byte_size = 4 * 4;
+		this->format_byte_size = this->DetermineFormatByteSize(format);
 		this->width = width;
 		this->height = height;
 		this->depth = depth;

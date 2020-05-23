@@ -169,7 +169,7 @@ void MainDirectXThread(DXR::Window& window)
 	tlas.BuildTLAS(device, commandList);
     
 	DXR::Voxelizer voxelizer(device, commandList, root_signature, sib_model, mvp);
-	DXR::VoxelMap light_map(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH);
+	DXR::VoxelMap light_map(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, DXR::MapType::R8G8B8A8Unorm, false);
 	light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
 	RTCBuffer rt_light;
