@@ -48,6 +48,16 @@ namespace DXR
         void Update(float* data);
     };
     
+    enum class MapType
+    {
+        R8Unorm         = DXGI_FORMAT_R8_UNORM,
+        R8Uint          = DXGI_FORMAT_R8_UINT,
+        R32Float        = DXGI_FORMAT_R32_FLOAT,
+        R32Uint         = DXGI_FORMAT_R32_UINT,
+        R8G8B8A8Unorm   = DXGI_FORMAT_R8G8B8A8_UNORM,
+        R11G11B10Float  = DXGI_FORMAT_R11G11B10_FLOAT,
+    };
+    
 	struct VoxelMap
 	{
 		ComPtr<ID3D12Resource> voxel_volume_texture = nullptr;
@@ -60,9 +70,9 @@ namespace DXR
         
 		UINT heap_index = 0xFF;
 		DescriptorHeap* descriptor_heap = nullptr;
-
+        
         UINT srv_heap_index;
-
+        
         
         DescriptorHeap clear_heap;
         
@@ -71,7 +81,7 @@ namespace DXR
         CPU_voxel_map cpu_buffer;
         
         VoxelMap() = default;
-		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth);
+		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth,MapType format, bool NeedsReadback = false);
 		void BindUAV(GraphicsCommandList& command_list, UINT slot);
         void BindComputeUAV(GraphicsCommandList& command_list, UINT slot);
         void BindSRV(GraphicsCommandList& command_list, UINT slot);
@@ -79,6 +89,7 @@ namespace DXR
         CPU_voxel_map& ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
         D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle();
         private:
+        UINT DetermineFormatByteSize(MapType format);
         void CreateVoxelMap(GraphicsDevice& device);
         void CreateUAV(GraphicsDevice& device);
         void CreateSRV(GraphicsDevice& device);
