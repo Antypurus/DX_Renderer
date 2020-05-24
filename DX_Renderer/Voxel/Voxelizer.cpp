@@ -23,7 +23,7 @@ namespace DXR
 		this->model_vertex_buffer = model.GenerateVertexBuffer(device, command_list);
 		this->model_index_buffer = model.GenerateIndexBuffer(device, command_list);
 		this->CreateVoxelizationShaders();
-		this->albedo_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, true);
+		this->albedo_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R32Float, true);
         this->ocupancy_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8Unorm, false);
         this->diffuse_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);
         this->specular_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);

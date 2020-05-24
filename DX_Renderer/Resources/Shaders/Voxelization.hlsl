@@ -4,7 +4,7 @@ cbuffer ConversionMatrixBuffer : register(b0)
     float4x4 VoxelSpaceMatrix;
 };
 
-RWTexture3D<float4> voxel_map : register(u0);
+RWTexture3D<uint> albedo_map : register(u0);
 Texture2D gText : register(t0);
 SamplerState gsampler : register(s0);
 
@@ -39,6 +39,36 @@ struct PS_OUTPUT
     float4 color : SV_TARGET;
 };
 
+uint Float4ToRGBA8Uint(float4 val)
+{
+    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
+}
+
+float4 RGBA8UintToFloat4(uint val)
+{
+    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
+}
+
+void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
+{
+    val.rgb *= 255.0;
+    uint packed_color = Float4ToRGBA8Uint(val);
+    uint previousStoredValue = 0;
+    uint currentStoredValue;
+    
+    InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
+    while (currentStoredValue != previousStoredValue)
+    {
+        previousStoredValue = currentStoredValue;
+        float4 rval = RGBA8UintToFloat4(currentStoredValue);
+        rval.rgb = (rval.rgb * rval.a); // Denormalize
+        float4 curValF = rval + val; // Add
+        curValF.rgb /= curValF.a; // Renormalize
+        packed_color = Float4ToRGBA8Uint(curValF);
+        InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
+    }
+}
+
 PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
 {
     PS_OUTPUT output;
@@ -46,7 +76,8 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     float3 gridPos = input.voxel_grip_position.xyz / input.voxel_grip_position.w;
     int3 voxel_pos = int3(gridPos.x -1, gridPos.y -1, gridPos.z -1);
     
-    voxel_map[voxel_pos] = gText.Sample(gsampler, input.uv);
+    float4 frag_color = gText.Sample(gsampler, input.uv);
+    AverageRGBA8Voxel(albedo_map, voxel_pos, frag_color);
     
     output.color = input.voxel_grip_position / 256.0f;
     discard;
