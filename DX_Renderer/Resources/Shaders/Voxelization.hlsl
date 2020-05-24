@@ -26,8 +26,8 @@ struct VS_OUTPUT
 {
     float4 position : SV_POSITION;
     float4 voxel_grip_position : VOXEL_POS;
+    float4 normal : NORMAL;
     float2 uv : UV;
-    float3 normal : NORMAL;
 };
 
 struct VS_INPUT
@@ -45,6 +45,7 @@ VS_OUTPUT VoxelVSMain(VS_INPUT input)
     output.position = mul(ClipSpaceMatrix, float4(input.pos, 1.0f));
     output.voxel_grip_position = mul(VoxelSpaceMatrix, float4(input.pos, 1.0f));
     output.uv = input.uv;
+    //output.normal = mul(VoxelSpaceMatrix, float4(input.normal, 1.0f));
     
     return output;
 }
@@ -93,7 +94,9 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     
     float4 frag_color = gText.Sample(gsampler, input.uv);
     AverageRGBA8Voxel(albedo_map, voxel_pos, frag_color);
-    
+    //AverageRGBA8Voxel(diffuse_map, voxel_pos, float4(diffuse_coefficient,1.0f));
+    //AverageRGBA8Voxel(specular_map, voxel_pos, float4(specular_coefficient, 1.0f));
+    //AverageRGBA8Voxel(normal_map, voxel_pos, input.normal);
     output.color = input.voxel_grip_position / 256.0f;
     discard;
     

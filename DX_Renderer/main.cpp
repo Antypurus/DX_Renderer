@@ -105,15 +105,6 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::VertexShader voxelization_vs = DXR::VertexShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/Voxelization.hlsl", L"VoxelVSMain");
 	DXR::PixelShader voxelization_ps = DXR::PixelShader::CompileShaderFromFile(L"./DX_Renderer/Resources/Shaders/Voxelization.hlsl", L"VoxelPSMain");
 
-	DXR::PipelineStateObject voxel_pso = {
-		device,
-		voxelization_vs.GetShaderBytecode(),
-		voxelization_ps.GetShaderBytecode(),
-		root_signature,
-		DXR::OBJVertex::GetInputLayout(),
-		DXR::Swapchain::m_backbuffer_format,
-		DXR::DepthStencilBuffer::DepthStencilBufferFormat };
-
 	DXR::Fence fence = device.CreateFence(0);
 	DXR::GraphicsCommandList commandList = device.CreateGraphicsCommandList();
 
