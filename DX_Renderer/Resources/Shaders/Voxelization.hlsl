@@ -4,7 +4,21 @@ cbuffer ConversionMatrixBuffer : register(b0)
     float4x4 VoxelSpaceMatrix;
 };
 
+cbuffer MaterialProperties : register(b1)
+{
+    float3 ambient_coefficient;
+    float3 diffuse_coefficient;
+    float3 specular_coefficient;
+    float specular_exponent;
+}
+
 RWTexture3D<uint> albedo_map : register(u0);
+RWTexture3D<uint> ocupancy_map : register(u1);
+RWTexture3D<uint> diffuse_map : register(u2);
+RWTexture3D<uint> specular_map : register(u3);
+RWTexture3D<uint> exponent_map : register(u4);
+RWTexture3D<uint> normal_map : register(u5);
+
 Texture2D gText : register(t0);
 SamplerState gsampler : register(s0);
 
@@ -13,6 +27,7 @@ struct VS_OUTPUT
     float4 position : SV_POSITION;
     float4 voxel_grip_position : VOXEL_POS;
     float2 uv : UV;
+    float3 normal : NORMAL;
 };
 
 struct VS_INPUT

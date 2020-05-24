@@ -69,6 +69,11 @@ namespace DXR
 		command_list.SetGraphicsRootSignature(voxelization_root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
 		this->albedo_map.BindUAV(command_list, 1);
+        this->ocupancy_map.BindUAV(command_list, 5);
+        this->diffuse_map.BindUAV(command_list, 6);
+        this->specular_map.BindUAV(command_list, 7);
+        this->exponent_map.BindUAV(command_list, 8);
+        this->normal_map.BindUAV(command_list, 9);
         command_list.BindVertexBuffer(model_vertex_buffer);
 		// Per Submesh Component
         for(auto& submesh:model->submeshes)
@@ -84,6 +89,7 @@ namespace DXR
         {
             command_list.BindTexture(*submesh.material->texture,2,3);
             command_list.BindIndexBuffer(*submesh.index_buffer);
+            command_list.BindConstantBuffer(*submesh.material->material_cbuffer,4);
             //Z-Axis View
             this->ZAxisVoxelizationCall(command_list, 0);
             //X-Axis View
@@ -122,8 +128,8 @@ namespace DXR
         DXR::DescriptorTableRootParameter cbv_desc_table;
         cbv_desc_table.AddCBVEntry(0);
         
-        DXR::DescriptorTableRootParameter uav_desc_table;
-        uav_desc_table.AddUAVEntry(0);
+        DXR::DescriptorTableRootParameter albedo_map_desc_table;
+        albedo_map_desc_table.AddUAVEntry(0);
         
         DXR::DescriptorTableRootParameter srv_desc_table;
         srv_desc_table.AddSRVEntry(0);
@@ -132,9 +138,34 @@ namespace DXR
         sampler_desc_table.AddSamplerEntry(0);
         
         voxelization_root_signature.AddDescriptorTableRootParameter(cbv_desc_table);
-        voxelization_root_signature.AddDescriptorTableRootParameter(uav_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(albedo_map_desc_table);
         voxelization_root_signature.AddDescriptorTableRootParameter(srv_desc_table);
         voxelization_root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
+        
+        DXR::DescriptorTableRootParameter material_props_desc_table;
+        material_props_desc_table.AddCBVEntry(1);
+        
+        DXR::DescriptorTableRootParameter ocupancy_map_desc_table;
+        ocupancy_map_desc_table.AddUAVEntry(1);
+        
+        DXR::DescriptorTableRootParameter diffuse_map_desc_table;
+        diffuse_map_desc_table.AddUAVEntry(2);
+        
+        DXR::DescriptorTableRootParameter specular_map_desc_table;
+        specular_map_desc_table.AddUAVEntry(3);
+        
+        DXR::DescriptorTableRootParameter exponent_map_desc_table;
+        exponent_map_desc_table.AddUAVEntry(4);
+        
+        DXR::DescriptorTableRootParameter normal_map_desc_table;
+        normal_map_desc_table.AddUAVEntry(5);
+        
+        voxelization_root_signature.AddDescriptorTableRootParameter(material_props_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(ocupancy_map_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(diffuse_map_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(specular_map_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(exponent_map_desc_table);
+        voxelization_root_signature.AddDescriptorTableRootParameter(normal_map_desc_table);
         
         voxelization_root_signature.CreateRootSignature(device);
     }

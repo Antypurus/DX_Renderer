@@ -246,8 +246,8 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.BindConstantBuffer(rtc_buffer, 6);
 		commandList.BindConstantBuffer(constant_buffer, 1);
-		voxelizer.albedo_map.BindUAV(commandList, 2);
-		voxelizer.albedo_map.BindSRV(commandList, 5);
+		light_map.BindUAV(commandList, 2);
+		light_map.BindSRV(commandList, 5);
 		sib_model.Draw(commandList, 3, 4);
 
 		commandList.SendDrawCall();
@@ -267,6 +267,9 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindTexture(texture, 3, 4);
 
 		voxelizer.Voxelize(commandList, root_signature);
+
+		commandList->SetPipelineState(pso.GetPipelineStateObject());
+		commandList.SetGraphicsRootSignature(root_signature);
 
 		//voxelizer.BuildAccelerationStructure(device, commandList, fence);
 

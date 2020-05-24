@@ -80,7 +80,7 @@ namespace DXR
                     mat.specular_coefficient = model_material.specular_coefficient;
                     mat.specular_exponent = model_material.specular_exponent;
 					model_material.material_cbuffer = std::make_shared<ConstantBuffer<MaterialCBuffer>>(device, std::vector({mat}));
-					model_material.material_cbuffer->GetResource()->SetName(L"Material Properties");
+					model_material.material_cbuffer->GetResource()->SetName(L"Material Properties CBuffer");
 				}
                 model_materials.push_back(model_material);
 			}
@@ -162,6 +162,7 @@ namespace DXR
 		this->specular_coefficient = other.specular_coefficient;
 		this->has_texture = other.has_texture;
 		this->texture = other.texture;
+        this->material_cbuffer = other.material_cbuffer;
 	}
     
     ConstantBuffer<MaterialCBuffer>* Material::GetMaterialCBuffer()
