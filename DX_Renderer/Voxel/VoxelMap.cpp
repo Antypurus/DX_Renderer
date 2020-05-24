@@ -72,7 +72,9 @@ namespace DXR
     
 	VoxelMap::VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth, MapType format, bool NeedsReadback)
 	{
-		this->format = static_cast<DXGI_FORMAT>(format);
+		this->resource_format = static_cast<DXGI_FORMAT>(format);
+        this->uav_format = static_cast<DXGI_FORMAT>(format);
+        this->srv_format = static_cast<DXGI_FORMAT>(format);
 		this->format_byte_size = this->DetermineFormatByteSize(format);
 		this->width = width;
 		this->height = height;
@@ -89,6 +91,44 @@ namespace DXR
             this->cpu_buffer = CPU_voxel_map::CPU_voxel_map(width, height, depth, Align(width * format_byte_size, 256));
         }
 	}
+    
+    VoxelMap::VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth, MapType format, MapType uav_format, bool NeedsReadback)
+	{
+		this->resource_format = static_cast<DXGI_FORMAT>(this->DetermineTypelessFormat(format));
+        this->uav_format = static_cast<DXGI_FORMAT>(uav_format);
+        this->srv_format = static_cast<DXGI_FORMAT>(format);
+		this->format_byte_size = this->DetermineFormatByteSize(format);
+		this->width = width;
+		this->height = height;
+		this->depth = depth;
+        
+		clear_heap = device.CreateConstantBufferDescriptorHeap(1, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+		this->CreateVoxelMap(device);
+		this->CreateUAV(device);
+		this->CreateSRV(device);
+        
+        if(NeedsReadback)
+        {
+            this->CreateReadbackBuffer(device);
+            this->cpu_buffer = CPU_voxel_map::CPU_voxel_map(width, height, depth, Align(width * format_byte_size, 256));
+        }
+	}
+    
+    DXGI_FORMAT VoxelMap::DetermineTypelessFormat(MapType format)
+    {
+        switch(format)
+        {
+            case(MapType::R8Unorm):return DXGI_FORMAT_R8_TYPELESS;break;
+            case(MapType::R8Uint):return DXGI_FORMAT_R8_TYPELESS;break;
+            case(MapType::R32Float):return DXGI_FORMAT_R32_TYPELESS;break;
+            case(MapType::R32Uint):return DXGI_FORMAT_R32_TYPELESS;break;
+            case(MapType::R8G8B8A8Unorm):return DXGI_FORMAT_R8G8B8A8_TYPELESS;break;
+            case(MapType::R11G11B10Float): return DXGI_FORMAT_R11G11B10_FLOAT; break;//NOTE(Tiago): no typeless format available
+            case(MapType::R32G32B32A32Float): return DXGI_FORMAT_R32G32B32A32_TYPELESS;break;
+            default: return static_cast<DXGI_FORMAT>(format);break;
+        }
+        return  static_cast<DXGI_FORMAT>(format);
+    }
     
     UINT VoxelMap::DetermineFormatByteSize(MapType format)
     {
@@ -138,7 +178,7 @@ namespace DXR
 		resource_desc.SampleDesc.Quality = 0;
 		resource_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 		resource_desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-		resource_desc.Format = this->format;
+        resource_desc.Format = this->resource_format;
 		resource_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
         
 		D3D12_HEAP_PROPERTIES heap_properties = {};
@@ -162,7 +202,7 @@ namespace DXR
 		this->descriptor_heap = &SRHeapManager::GetManager().descriptor_heap;
         
 		D3D12_UNORDERED_ACCESS_VIEW_DESC uav_desc = {};
-		uav_desc.Format = this->format;
+		uav_desc.Format = this->uav_format;
 		uav_desc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
 		uav_desc.Texture3D.MipSlice = 0;
 		uav_desc.Texture3D.FirstWSlice = 0;
@@ -182,7 +222,7 @@ namespace DXR
 	{
 		this->srv_heap_index = SRHeapManager::GetManager().Allocate();
 		D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
-		srv_desc.Format = format;
+		srv_desc.Format = srv_format;
 		srv_desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
 		srv_desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		srv_desc.Texture3D.MostDetailedMip = 0;
@@ -242,7 +282,7 @@ namespace DXR
 		destination.pResource = voxel_map_readback_buffer.Get();
 		destination.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 		destination.PlacedFootprint.Offset = 0;
-		destination.PlacedFootprint.Footprint.Format = format;
+		destination.PlacedFootprint.Footprint.Format = resource_format;
 		destination.PlacedFootprint.Footprint.Width = width;
 		destination.PlacedFootprint.Footprint.Height = height;
 		destination.PlacedFootprint.Footprint.Depth = depth;

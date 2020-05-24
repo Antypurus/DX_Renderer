@@ -66,7 +66,9 @@ namespace DXR
 		UINT width = 0;
 		UINT height = 0;
 		UINT depth = 0;
-		DXGI_FORMAT format;
+		DXGI_FORMAT resource_format;
+        DXGI_FORMAT uav_format;
+        DXGI_FORMAT srv_format;
         UINT format_byte_size;
         
 		UINT heap_index = 0xFF;
@@ -83,6 +85,7 @@ namespace DXR
         
         VoxelMap() = default;
 		VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth,MapType format, bool NeedsReadback = false);
+        VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth,MapType format, MapType uav_format, bool NeedsReadback = false);
 		void BindUAV(GraphicsCommandList& command_list, UINT slot);
         void BindComputeUAV(GraphicsCommandList& command_list, UINT slot);
         void BindSRV(GraphicsCommandList& command_list, UINT slot);
@@ -90,6 +93,7 @@ namespace DXR
         CPU_voxel_map& ReadVoxelMap(GraphicsDevice& device ,GraphicsCommandList& command_list,Fence& fence);
         D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle();
         private:
+        DXGI_FORMAT DetermineTypelessFormat(MapType format);
         UINT DetermineFormatByteSize(MapType format);
         void CreateVoxelMap(GraphicsDevice& device);
         void CreateUAV(GraphicsDevice& device);

@@ -16,7 +16,7 @@ cbuffer RTCBuffer:register(b0,space1)
 
 Texture2D gText: register(t0);
 SamplerState gsampler: register(s0);
-RWTexture3D<float4> irradiance_map : register(u0);
+RWTexture3D<uint> irradiance_map : register(u0);
 Texture3D irradiance_map_tex : register(t0,space1);
 
 struct VS_OUTPUT
@@ -59,6 +59,11 @@ struct PS_OUTPUT
 	float4 color:SV_TARGET;
 };
 
+float4 RGBA8UintToFloat4(uint val)
+{
+    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
+}
+
 PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
@@ -70,9 +75,10 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
                           (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
                           (input.u_pos.z-input.light_pos.z)*(input.u_pos.z-input.light_pos.z));
     float falloff = 1/abs(distance+0.1);
-    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(vox.x / 128.0f, vox.y / 128.0f, vox.z / 768.0f));
-    //float4 other_col = irradiance_map[voxel];
+    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(vox.x / 256.0f, vox.y / 256.0f, vox.z / 256.0f));
+    //uint irradiance_col = irradiance_map[voxel];
+    //float4 other_col = RGBA8UintToFloat4(irradiance_col);
     
-    output.color = 0.05 * col + 2 * falloff * other_col * col;
+    output.color = other_col;
 	return output;
 }
