@@ -56,6 +56,7 @@ namespace DXR
         R32Uint         = DXGI_FORMAT_R32_UINT,
         R8G8B8A8Unorm   = DXGI_FORMAT_R8G8B8A8_UNORM,
         R11G11B10Float  = DXGI_FORMAT_R11G11B10_FLOAT,
+        R32G32B32A32Float = DXGI_FORMAT_R32G32B32A32_FLOAT
     };
     
 	struct VoxelMap

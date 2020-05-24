@@ -100,6 +100,7 @@ namespace DXR
             case(MapType::R32Uint):return 4;break;
             case(MapType::R8G8B8A8Unorm):return 4;break;
             case(MapType::R11G11B10Float): return 4; break;
+            case(MapType::R32G32B32A32Float): return 4*4;break;
             default: return 0;break;
         }
         return 0;

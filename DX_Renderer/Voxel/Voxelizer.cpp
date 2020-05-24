@@ -23,7 +23,7 @@ namespace DXR
 		this->model_vertex_buffer = model.GenerateVertexBuffer(device, command_list);
 		this->model_index_buffer = model.GenerateIndexBuffer(device, command_list);
 		this->CreateVoxelizationShaders();
-		this->voxel_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, true);
+		this->voxel_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R32G32B32A32Float, true);
 		this->model = &model;
 		this->pso = PipelineStateObject(device,
                                         this->voxelization_vertex_shader.GetShaderBytecode(),

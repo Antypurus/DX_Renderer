@@ -279,7 +279,7 @@ void MainDirectXThread(DXR::Window& window)
 			{
 				commandList->SetPipelineState1(rtpso.GetRTPSO());
                 
-				commandList.BindTLAS(tlas, 0);
+				commandList.BindTLAS(voxelizer.acceleration_structure, 0);
 				//rt_out.Bind(commandList, 2);
 				light_map.Clear(commandList);
 				light_map.BindComputeUAV(commandList, 2);
