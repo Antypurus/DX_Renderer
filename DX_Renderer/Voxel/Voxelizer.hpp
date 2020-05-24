@@ -32,9 +32,9 @@ namespace DXR
         XMMATRIX voxel_space_transformation_matrix;
     };
     
-#define VOXEL_WIDTH 256
-#define VOXEL_HEIGHT 256
-#define VOXEL_DEPTH 256
+#define VOXEL_WIDTH 128
+#define VOXEL_HEIGHT 128
+#define VOXEL_DEPTH 128
     
     struct Voxelizer
     {
@@ -75,6 +75,7 @@ namespace DXR
         void Voxelize(GraphicsCommandList& command_list,RootSignature& root_signature);
         void BuildAccelerationStructure(GraphicsDevice& device, GraphicsCommandList& command_list, Fence& fence);
         private:
+        void CreateVoxelMaps(GraphicsDevice& device);
         void VoxelizeSubmesh(Submesh& submesh, GraphicsCommandList& command_list);
         void CreateVoxelizationRootSignature(GraphicsDevice& device);
         void CreateVoxelizationConstantBuffers(GraphicsDevice& device, GraphicsCommandList& command_list);

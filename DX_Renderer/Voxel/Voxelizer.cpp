@@ -23,13 +23,7 @@ namespace DXR
 		this->model_vertex_buffer = model.GenerateVertexBuffer(device, command_list);
 		this->model_index_buffer = model.GenerateIndexBuffer(device, command_list);
 		this->CreateVoxelizationShaders();
-		this->albedo_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm,MapType::R32Uint, true);
-        albedo_map.voxel_volume_texture->SetName(L"Albedo Map");
-        this->ocupancy_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8Unorm, false);
-        this->diffuse_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);
-        this->specular_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);
-        this->exponent_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R32Float, false);
-        this->normal_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);
+		this->CreateVoxelMaps(device);
 		this->model = &model;
 		this->pso = PipelineStateObject(device,
                                         this->voxelization_vertex_shader.GetShaderBytecode(),
@@ -41,6 +35,27 @@ namespace DXR
 		this->CreateVoxelizationConstantBuffers(device,command_list);
 		this->CalculateVoxelizationSupportData();
 	}
+    
+    void Voxelizer::CreateVoxelMaps(GraphicsDevice& device)
+    {
+        this->albedo_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm,MapType::R32Uint);
+        this->albedo_map.voxel_volume_texture->SetName(L"Albedo Map");
+        
+        this->ocupancy_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8Unorm,true);
+        this->ocupancy_map.voxel_volume_texture->SetName(L"Ocupancy Map");
+        
+        this->diffuse_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm,MapType::R32Uint);
+        this->diffuse_map.voxel_volume_texture->SetName(L"Diffuse Map");
+        
+        this->specular_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm,MapType::R32Uint);
+        this->specular_map.voxel_volume_texture->SetName(L"Specular Map");
+        
+        this->exponent_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R32Float);
+        this->exponent_map.voxel_volume_texture->SetName(L"Specular Exponent Map");
+        
+        this->normal_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm,MapType::R32Uint);
+        this->normal_map.voxel_volume_texture->SetName(L"Normal Map");
+    }
     
 	void Voxelizer::Voxelize(GraphicsCommandList& command_list, RootSignature& root_signature)
 	{
