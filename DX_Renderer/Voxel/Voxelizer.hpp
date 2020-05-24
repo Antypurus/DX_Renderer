@@ -32,15 +32,20 @@ namespace DXR
         XMMATRIX voxel_space_transformation_matrix;
     };
     
-#define VOXEL_WIDTH 128
-#define VOXEL_HEIGHT 128
-#define VOXEL_DEPTH 128
+#define VOXEL_WIDTH 256
+#define VOXEL_HEIGHT 256
+#define VOXEL_DEPTH 768
     
     struct Voxelizer
     {
         VertexShader voxelization_vertex_shader;
         PixelShader voxelization_pixel_shader;
-        VoxelMap voxel_map;
+        VoxelMap ocupancy_map;
+        VoxelMap albedo_map;
+        VoxelMap diffuse_map;
+        VoxelMap specular_map;
+        VoxelMap exponent_map;
+        VoxelMap normal_map;
         Model* model;
         VertexBuffer<OBJVertex> model_vertex_buffer;
         IndexBuffer model_index_buffer;

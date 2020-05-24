@@ -23,7 +23,12 @@ namespace DXR
 		this->model_vertex_buffer = model.GenerateVertexBuffer(device, command_list);
 		this->model_index_buffer = model.GenerateIndexBuffer(device, command_list);
 		this->CreateVoxelizationShaders();
-		this->voxel_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R32G32B32A32Float, true);
+		this->albedo_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, true);
+        this->ocupancy_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8Unorm, false);
+        this->diffuse_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);
+        this->specular_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);
+        this->exponent_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R32Float, false);
+        this->normal_map = VoxelMap(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, MapType::R8G8B8A8Unorm, false);
 		this->model = &model;
 		this->pso = PipelineStateObject(device,
                                         this->voxelization_vertex_shader.GetShaderBytecode(),
@@ -38,11 +43,16 @@ namespace DXR
     
 	void Voxelizer::Voxelize(GraphicsCommandList& command_list, RootSignature& root_signature)
 	{
-		voxel_map.Clear(command_list);
+		albedo_map.Clear(command_list);
+        ocupancy_map.Clear(command_list);
+        diffuse_map.Clear(command_list);
+        specular_map.Clear(command_list);
+        exponent_map.Clear(command_list);
+        normal_map.Clear(command_list);
 		this->SetViewport(command_list);
 		command_list.SetGraphicsRootSignature(voxelization_root_signature);
 		command_list->SetPipelineState(pso.GetPipelineStateObject());
-		this->voxel_map.BindUAV(command_list, 1);
+		this->albedo_map.BindUAV(command_list, 1);
         command_list.BindVertexBuffer(model_vertex_buffer);
 		// Per Submesh Component
         for(auto& submesh:model->submeshes)
@@ -244,7 +254,7 @@ namespace DXR
 	{
 		if (acceleration_structure.GetInstanceCount() == 0)
 		{
-			CPU_voxel_map& buffer = voxel_map.ReadVoxelMap(device, command_list, fence);
+			CPU_voxel_map& buffer = albedo_map.ReadVoxelMap(device, command_list, fence);//TODO(Tiago): Swap this to read from the ocupancy map, but since this part is kind of broken right not it doesnt really matter that much, we can kind even remove the creation of the acceleration structure.
 			for (size_t x = 0; x < VOXEL_WIDTH; ++x)
 			{
 				for (size_t y = 0; y < VOXEL_HEIGHT; ++y)
@@ -252,7 +262,7 @@ namespace DXR
 					for (size_t z = 0; z < VOXEL_DEPTH; ++z)
 					{
 						XMFLOAT4 color = buffer.Get(x, y, z);
-						if (color.w != 0.0f || color.z != 0.0f || color.y != 0.0f || color.x != 0.0f)
+						if (color.x != 0.0f||color.y != 0.0f||color.z != 0.0f||color.w != 0.0f)
 						{
 							acceleration_structure.AddInstance(*voxel_cube_blas, XMMatrixTranspose(XMMatrixTranslation(x, y, z)), 0);
 						}

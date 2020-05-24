@@ -62,12 +62,12 @@ namespace DXR
 		float blue = 0;
 		float alpha = 0;
         
-		float* base = (float*)&voxel_map_buffer[z * (height * row_pitch) + y * row_pitch + x * 4 * 4];
+		char* base = (char*)&voxel_map_buffer[z * (height * row_pitch) + y * row_pitch + x];
 		red = base[0];
 		green = base[1];
 		blue = base[2];
 		alpha = base[3];
-		return { red, green, blue, alpha };
+		return { (float)red, (float)green, (float)blue, (float)alpha };
 	}
     
 	VoxelMap::VoxelMap(GraphicsDevice& device, UINT width, UINT height, UINT depth, MapType format, bool NeedsReadback)
