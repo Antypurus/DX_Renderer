@@ -93,7 +93,6 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     int3 voxel_pos = int3(gridPos.x -1, gridPos.y -1, gridPos.z -1);
     
     ocupancy_map[voxel_pos] = uint(1);
-    uint val = ambient_coefficient.r;
     float4 frag_color = gText.Sample(gsampler, input.uv);
     AverageRGBA8Voxel(albedo_map, voxel_pos, frag_color);
     AverageRGBA8Voxel(diffuse_map, voxel_pos, diffuse_coefficient);

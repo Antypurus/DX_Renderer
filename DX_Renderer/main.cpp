@@ -281,7 +281,7 @@ void MainDirectXThread(DXR::Window& window)
 			light_map.Clear(commandList);
 			light_map.BindComputeUAV(commandList, 2);
 			commandList.BindComputeConstantBuffer(rtc_buffer, 1);
-			voxelizer.normal_map.BindComputeUAV(commandList,7);
+			voxelizer.albedo_map.BindComputeUAV(commandList,7);
 			
 
 			D3D12_DISPATCH_RAYS_DESC rays = {};
