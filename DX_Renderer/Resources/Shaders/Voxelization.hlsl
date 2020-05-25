@@ -76,7 +76,7 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
     while (currentStoredValue != previousStoredValue)
     {
         previousStoredValue = currentStoredValue;
-        float4 rval = saturate(RGBA8UintToFloat4(currentStoredValue));
+        float4 rval = RGBA8UintToFloat4(currentStoredValue);
         rval.rgb = (rval.rgb * rval.a); // Denormalize
         float4 curValF = rval + val; // Add
         curValF.rgb /= curValF.a; // Renormalize
@@ -94,12 +94,10 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     
     //ocupancy_map[voxel_pos] = uint(1);
     float4 frag_color = gText.Sample(gsampler, input.uv);
-    frag_color *= 256;
-    albedo_map[voxel_pos] = Float4ToRGBA8Uint(frag_color);
     //AverageRGBA8Voxel(albedo_map, voxel_pos, frag_color);
     //AverageRGBA8Voxel(diffuse_map, voxel_pos, diffuse_coefficient);
     //AverageRGBA8Voxel(specular_map, voxel_pos, specular_coefficient);
-    //AverageRGBA8Voxel(normal_map, voxel_pos, input.normal);
+    AverageRGBA8Voxel(normal_map, voxel_pos, input.normal);
     output.color = input.voxel_grip_position / 256.0f;
     discard;
     
