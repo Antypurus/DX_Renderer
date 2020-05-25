@@ -76,7 +76,7 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
     while (currentStoredValue != previousStoredValue)
     {
         previousStoredValue = currentStoredValue;
-        float4 rval = RGBA8UintToFloat4(currentStoredValue);
+        float4 rval = saturate(RGBA8UintToFloat4(currentStoredValue));
         rval.rgb = (rval.rgb * rval.a); // Denormalize
         float4 curValF = rval + val; // Add
         curValF.rgb /= curValF.a; // Renormalize
