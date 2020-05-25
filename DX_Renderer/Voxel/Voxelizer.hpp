@@ -32,9 +32,9 @@ namespace DXR
         XMMATRIX voxel_space_transformation_matrix;
     };
     
-#define VOXEL_WIDTH 64
-#define VOXEL_HEIGHT 64
-#define VOXEL_DEPTH 64
+#define VOXEL_WIDTH 128
+#define VOXEL_HEIGHT 128
+#define VOXEL_DEPTH 128
     
     struct Voxelizer
     {

@@ -75,7 +75,7 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
                           (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
                           (input.u_pos.z-input.light_pos.z)*(input.u_pos.z-input.light_pos.z));
     float falloff = 1/abs(distance+0.1);
-    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(vox.x / 64.0f, vox.y / 64.0f, vox.z / 64.0f));
+    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(vox.x / 128.0f, vox.y / 128.0f, vox.z / 128.0f));
     //uint irradiance_col = irradiance_map[voxel];
     //float4 other_col = RGBA8UintToFloat4(irradiance_col)/256;
     
