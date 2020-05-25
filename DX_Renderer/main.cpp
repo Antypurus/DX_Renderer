@@ -237,8 +237,8 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.BindConstantBuffer(rtc_buffer, 6);
 		commandList.BindConstantBuffer(constant_buffer, 1);
-		light_map.BindUAV(commandList, 2);
-		light_map.BindSRV(commandList, 5);
+		voxelizer.diffuse_map.BindUAV(commandList, 2);
+		voxelizer.diffuse_map.BindSRV(commandList, 5);
 		sib_model.Draw(commandList, 3, 4);
 
 		commandList.SendDrawCall();
@@ -277,6 +277,8 @@ void MainDirectXThread(DXR::Window& window)
 			light_map.Clear(commandList);
 			light_map.BindComputeUAV(commandList, 2);
 			commandList.BindComputeConstantBuffer(rtc_buffer, 1);
+			voxelizer.normal_map.BindComputeSRV(commandList,3);
+			
 
 			D3D12_DISPATCH_RAYS_DESC rays = {};
 

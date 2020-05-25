@@ -161,6 +161,11 @@ namespace DXR
 		command_list->SetGraphicsRootDescriptorTable(slot, (*descriptor_heap).Get(srv_heap_index));
 	}
     
+    void VoxelMap::BindComputeSRV(GraphicsCommandList& command_list, UINT slot)
+	{
+		command_list->SetComputeRootDescriptorTable(slot, (*descriptor_heap).Get(srv_heap_index));
+	}
+    
 	D3D12_GPU_DESCRIPTOR_HANDLE VoxelMap::GetGPUHandle()
 	{
 		return (*descriptor_heap).Get(heap_index);
