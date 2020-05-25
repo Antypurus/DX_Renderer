@@ -68,7 +68,7 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
     
-    int3 voxel = int3((input.voxel_pos.xyz / input.voxel_pos.w)) - int3(1, 1, 0);
+    int3 voxel = int3((input.voxel_pos.xyz / input.voxel_pos.w)) - int3(1, 1, 1);
     float4 col = gText.Sample(gsampler, input.uv);
     float distance = sqrt((input.u_pos.x-input.light_pos.x)*(input.u_pos.x-input.light_pos.x)+
                           (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
