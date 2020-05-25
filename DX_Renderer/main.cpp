@@ -241,8 +241,8 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.BindConstantBuffer(rtc_buffer, 6);
 		commandList.BindConstantBuffer(constant_buffer, 1);
-		light_map.BindUAV(commandList, 2);
-		light_map.BindSRV(commandList, 5);
+		voxelizer.normal_map.BindUAV(commandList, 2);
+		voxelizer.normal_map.BindSRV(commandList, 5);
 		sib_model.Draw(commandList, 3, 4);
 
 		commandList.SendDrawCall();

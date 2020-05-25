@@ -72,6 +72,11 @@ void anyhit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
 
+float4 RGBA8UintToFloat4(uint val)
+{
+    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
+}
+
 [shader("closesthit")]
 void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
 {
@@ -83,16 +88,16 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     hit_pos = mul(voxel_space_matrix, float4(hit_pos, 1.0f)).xyz;
     int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
-    float4 normal = normal_map[map_pos];
-    float cos_term = dot(ray_dir, normal.rgb);
-    float falloff = cos_term;
-    RenderTarget[map_pos] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(light_color);
+    uint packed_normal = normal_map[map_pos];
+    float4 normal = RGBA8UintToFloat4(packed_normal)/256;
+    float falloff = 1;
+    RenderTarget[map_pos] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(normal);
     float3 new_dir = float3(0, 0, 1);
     //reflect(ray_dir, float3(0, 0, 1));
     /*
