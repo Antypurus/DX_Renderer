@@ -92,16 +92,16 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     float4 normal = RGBA8UintToFloat4(packed_normal)/256;
     float falloff = 1;
     //dot(ray_dir, normal.rgb);
-    RenderTarget[map_pos] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(light_color);
+    RenderTarget[map_pos] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(normal);
     if(normal.w != 0)
     {
-    float3 new_dir = reflect(ray_dir, normal);
+    float3 new_dir = reflect(ray_dir, normal.rgb);
     
     RayDesc ray;
     float3 direction = new_dir;
