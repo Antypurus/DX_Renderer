@@ -15,9 +15,9 @@ namespace DXR
     
     struct MaterialCBuffer
     {
-        XMFLOAT3 ambient_coefficient = {1,1,1};
-        XMFLOAT3 diffuse_coefficient = {1,1,1};
-        XMFLOAT3 specular_coefficient = {0,0,0};
+        XMFLOAT4 ambient_coefficient = {1,1,1,0};
+        XMFLOAT4 diffuse_coefficient = {1,1,1,0};
+        XMFLOAT4 specular_coefficient = {0,0,0,0};
         float specular_exponent = 1;
     };
     

@@ -74,10 +74,10 @@ namespace DXR
 					model_material.has_texture = true;
 					model_material.texture = std::make_shared<Texture>(std::wstring(diffuse_texture_path.begin(), diffuse_texture_path.end()), device, command_list);
                     
-                    MaterialCBuffer mat;
-                    mat.ambient_coefficient = model_material.ambient_coefficient;
-                    mat.diffuse_coefficient = model_material.diffuse_coefficient;
-                    mat.specular_coefficient = model_material.specular_coefficient;
+					MaterialCBuffer mat = {};
+					mat.ambient_coefficient = {model_material.ambient_coefficient.x,model_material.ambient_coefficient.y,model_material.ambient_coefficient.z,0};
+                    mat.diffuse_coefficient = {model_material.diffuse_coefficient.x,model_material.diffuse_coefficient.y,model_material.diffuse_coefficient.z,0};;
+                    mat.specular_coefficient = {model_material.specular_coefficient.x,model_material.specular_coefficient.y,model_material.specular_coefficient.z,0};;
                     mat.specular_exponent = model_material.specular_exponent;
 					model_material.material_cbuffer = std::make_shared<ConstantBuffer<MaterialCBuffer>>(device, std::vector({mat}));
 					model_material.material_cbuffer->GetResource()->SetName(L"Material Properties CBuffer");

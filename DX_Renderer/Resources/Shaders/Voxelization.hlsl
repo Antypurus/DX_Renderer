@@ -3,21 +3,21 @@ cbuffer ConversionMatrixBuffer : register(b0)
     float4x4 ClipSpaceMatrix;
     float4x4 VoxelSpaceMatrix;
 };
-/*
+
 cbuffer MaterialProperties : register(b1)
 {
-    float3 ambient_coefficient;
-    float3 diffuse_coefficient;
-    float3 specular_coefficient;
-    float specular_exponent;
+    float4 ambient_coefficient;
+    float4 diffuse_coefficient;
+    float4 specular_coefficient;
+    float4 specular_exponent;
 }
-*/
+
 RWTexture3D<uint> albedo_map : register(u0);
-//RWTexture3D<uint> ocupancy_map : register(u1);
-//RWTexture3D<uint> diffuse_map : register(u2);
-//RWTexture3D<uint> specular_map : register(u3);
-//RWTexture3D<uint> exponent_map : register(u4);
-//RWTexture3D<uint> normal_map : register(u5);
+RWTexture3D<uint> ocupancy_map : register(u1);
+RWTexture3D<uint> diffuse_map : register(u2);
+RWTexture3D<uint> specular_map : register(u3);
+RWTexture3D<uint> exponent_map : register(u4);
+RWTexture3D<uint> normal_map : register(u5);
 
 Texture2D gText : register(t0);
 SamplerState gsampler : register(s0);
@@ -92,11 +92,13 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     float3 gridPos = input.voxel_grip_position.xyz / input.voxel_grip_position.w;
     int3 voxel_pos = int3(gridPos.x -1, gridPos.y -1, gridPos.z -1);
     
+    ocupancy_map[voxel_pos] = uint(1);
+    uint val = ambient_coefficient.r;
     float4 frag_color = gText.Sample(gsampler, input.uv);
     AverageRGBA8Voxel(albedo_map, voxel_pos, frag_color);
-    //AverageRGBA8Voxel(diffuse_map, voxel_pos, float4(diffuse_coefficient,1.0f));
-    //AverageRGBA8Voxel(specular_map, voxel_pos, float4(specular_coefficient, 1.0f));
-    //AverageRGBA8Voxel(normal_map, voxel_pos, input.normal);
+    AverageRGBA8Voxel(diffuse_map, voxel_pos, diffuse_coefficient);
+    AverageRGBA8Voxel(specular_map, voxel_pos, specular_coefficient);
+    AverageRGBA8Voxel(normal_map, voxel_pos, input.normal);
     output.color = input.voxel_grip_position / 256.0f;
     discard;
     
