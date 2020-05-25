@@ -63,7 +63,7 @@ void intersection()
 [shader("miss")]
 void miss(inout RayPayload data : SV_RayPayload)
 {
-    data.color = float4(0, 0, 1.0f,1.0f);
+    data.color = float4(0, 0, 0.0f,0.0f);
 }
 
 [shader("anyhit")]
@@ -84,17 +84,19 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     int3 map_pos = int3(hit_pos.x - 1,hit_pos.y -1,hit_pos.z -1);
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
     float falloff = 1;
+    if(data.color.w != 0.0f)
+    {
+        RenderTarget[map_pos] = falloff * float4(light_color);
+        RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(light_color);
+        RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(light_color);
+        RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(light_color);
+        RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(light_color);
+        RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(light_color);
+        RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(light_color);
+    }
     float4 normal = normal_map[map_pos];
-    RenderTarget[map_pos] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(normal);
-    RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(normal);
-    RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(normal);
-    RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(normal);
-    RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(normal);
-    RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(normal);
+    float3 new_dir = reflect(ray_dir, float3(0, 0, 1));
     
-    float3 new_dir = float3(1, 0, 0); //reflect(ray_dir, float3(normal.rgb));
-    /*
     RayDesc ray;
     float3 direction = new_dir;
     float3 origin = hit_pos;
@@ -103,7 +105,7 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     ray.TMin = 0;
     ray.TMax = 100000;
     
-    TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, data);
-    */
+    //TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, data);
+    
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }

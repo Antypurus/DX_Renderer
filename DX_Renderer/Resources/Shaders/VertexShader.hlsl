@@ -79,7 +79,7 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     //uint irradiance_col = irradiance_map[voxel];
     //float4 other_col = RGBA8UintToFloat4(irradiance_col)/256;
     
-    //output.color = 0.05 * col + 2 * falloff * other_col * col;
-    output.color = 0.05 * col + float4(input.normal, 1.0f);
+    output.color = 0.05 * col + 2 * falloff * other_col * col;
+    //output.color = 0.05 * col + float4(input.normal, 1.0f);
 	return output;
 }
