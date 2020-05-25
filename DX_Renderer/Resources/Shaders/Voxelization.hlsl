@@ -3,7 +3,7 @@ cbuffer ConversionMatrixBuffer : register(b0)
     float4x4 ClipSpaceMatrix;
     float4x4 VoxelSpaceMatrix;
 };
-
+/*
 cbuffer MaterialProperties : register(b1)
 {
     float3 ambient_coefficient;
@@ -11,13 +11,13 @@ cbuffer MaterialProperties : register(b1)
     float3 specular_coefficient;
     float specular_exponent;
 }
-
+*/
 RWTexture3D<uint> albedo_map : register(u0);
-RWTexture3D<uint> ocupancy_map : register(u1);
-RWTexture3D<uint> diffuse_map : register(u2);
-RWTexture3D<uint> specular_map : register(u3);
-RWTexture3D<uint> exponent_map : register(u4);
-RWTexture3D<uint> normal_map : register(u5);
+//RWTexture3D<uint> ocupancy_map : register(u1);
+//RWTexture3D<uint> diffuse_map : register(u2);
+//RWTexture3D<uint> specular_map : register(u3);
+//RWTexture3D<uint> exponent_map : register(u4);
+//RWTexture3D<uint> normal_map : register(u5);
 
 Texture2D gText : register(t0);
 SamplerState gsampler : register(s0);
