@@ -77,12 +77,16 @@ void MainDirectXThread(DXR::Window& window)
 	DXR::DescriptorTableRootParameter light_desc_table;
 	light_desc_table.AddCBVEntry(0, 1);
 
+	DXR::DescriptorTableRootParameter normal_map_desc_table;
+	normal_map_desc_table.AddUAVEntry(0, 1);
+
 	root_signature.AddDescriptorTableRootParameter(cbv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(uav_desc_table);
 	root_signature.AddDescriptorTableRootParameter(srv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(sampler_desc_table);
 	root_signature.AddDescriptorTableRootParameter(voxel_desc_table);
 	root_signature.AddDescriptorTableRootParameter(light_desc_table);
+	root_signature.AddDescriptorTableRootParameter(normal_map_desc_table);
 
 	DXR::DescriptorRootParameter acceleration_structure_root_parameter(DXR::RootParameterDescriptorType::SRV, 1);
 	root_signature.AddDescriptorRootParameter(acceleration_structure_root_parameter);
@@ -237,8 +241,8 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.BindConstantBuffer(rtc_buffer, 6);
 		commandList.BindConstantBuffer(constant_buffer, 1);
-		voxelizer.diffuse_map.BindUAV(commandList, 2);
-		voxelizer.diffuse_map.BindSRV(commandList, 5);
+		voxelizer.normal_map.BindUAV(commandList, 2);
+		voxelizer.normal_map.BindSRV(commandList, 5);
 		sib_model.Draw(commandList, 3, 4);
 
 		commandList.SendDrawCall();
@@ -277,7 +281,7 @@ void MainDirectXThread(DXR::Window& window)
 			light_map.Clear(commandList);
 			light_map.BindComputeUAV(commandList, 2);
 			commandList.BindComputeConstantBuffer(rtc_buffer, 1);
-			voxelizer.normal_map.BindComputeSRV(commandList,3);
+			voxelizer.normal_map.BindComputeUAV(commandList,5);
 			
 
 			D3D12_DISPATCH_RAYS_DESC rays = {};
@@ -293,9 +297,9 @@ void MainDirectXThread(DXR::Window& window)
 			rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
 			rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
 
-			rays.Depth = 2048;
+			rays.Depth = 512;
 			rays.Width = 1;//swapchain.GetBackbufferResolution().Width;
-			rays.Height = 2048;//swapchain.GetBackbufferResolution().Height;
+			rays.Height = 512;//swapchain.GetBackbufferResolution().Height;
 			commandList->DispatchRays(&rays);
 
 			//rt_out.CopyToBackbuffer(commandList,swapchain);

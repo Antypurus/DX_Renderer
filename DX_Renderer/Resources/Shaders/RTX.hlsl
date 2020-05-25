@@ -15,7 +15,7 @@ cbuffer RTCBuffer:register(b0)
 
 RaytracingAccelerationStructure Scene : register(t1);
 RWTexture3D<float4> RenderTarget : register(u0);
-Texture3D normal_map : register(t0,space1);
+RWTexture3D<uint> normal_map : register(u0, space1);
 
 float nrand(float2 uv)
 {
@@ -41,7 +41,7 @@ void raygen()
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
     RayDesc ray;
-    float3 direction = float3(DispatchRaysIndex().xyz) - float3(1024, 1024, 1024);
+    float3 direction = float3(DispatchRaysIndex().xyz) - float3(256, 256, 256);
     float4 origin = mul(voxel_space_matrix, float4(light_position, 1.0f));
     
     //ray.Origin = (origin.xyz / origin.w) - float3(1, 1, 1);
@@ -84,16 +84,16 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     int3 map_pos = int3(hit_pos.x - 1,hit_pos.y -1,hit_pos.z -1);
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
     float falloff = 1;
+    float4 normal = normal_map[map_pos];
     RenderTarget[map_pos] = falloff * float4(light_color);
-    RenderTarget[map_pos+int3(1,0,0)] = falloff * float4(light_color);
-    RenderTarget[map_pos+int3(-1,0,0)] = falloff * float4(light_color);
-    RenderTarget[map_pos+int3(0,1,0)] = falloff * float4(light_color);
-    RenderTarget[map_pos+int3(0,-1,0)] = falloff * float4(light_color);
-    RenderTarget[map_pos+int3(0,0,1)] = falloff * float4(light_color);
-    RenderTarget[map_pos+int3(0,0,-1)] = falloff * float4(light_color);
+    RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(normal);
+    RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(normal);
     
-    float4 normal = normal_map.Load(int4(map_pos, 0));
-    float3 new_dir = reflect(ray_dir, float3(normal.rgb));
+    float3 new_dir = float3(1, 0, 0); //reflect(ray_dir, float3(normal.rgb));
     /*
     RayDesc ray;
     float3 direction = new_dir;

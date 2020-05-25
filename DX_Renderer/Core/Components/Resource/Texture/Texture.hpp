@@ -18,7 +18,7 @@ namespace  DXR
 	{
         public:
 		friend GraphicsCommandList;
-        private:
+        public:
 		Sampler m_sampler;//TODO(Tiago): Unbind sampler from texture
 		TextureData m_texture_data;//NOTE(Tiago): Im wasting RAM by keeping the original CPU data after texture upload has occured. I Think at least!?
 		DXGI_FORMAT m_texture_format;
