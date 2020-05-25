@@ -68,14 +68,13 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
     
-    float3 vox = input.voxel_pos.xyz / input.voxel_pos.w - float3(1, 1, 1);
-    int3 voxel = int3((input.voxel_pos.xyz / input.voxel_pos.w - float3(1, 1, 1)));
+    int3 voxel = int3((input.voxel_pos.xyz / input.voxel_pos.w)) - int3(1, 1, 0);
     float4 col = gText.Sample(gsampler, input.uv);
     float distance = sqrt((input.u_pos.x-input.light_pos.x)*(input.u_pos.x-input.light_pos.x)+
                           (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
                           (input.u_pos.z-input.light_pos.z)*(input.u_pos.z-input.light_pos.z));
     float falloff = 1/abs(distance+0.1);
-    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(vox.x / 128.0f, vox.y / 128.0f, vox.z / 128.0f));
+    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(voxel.x / 128.0f, voxel.y / 128.0f, voxel.z / 128.0f));
     //uint irradiance_col = irradiance_map[voxel];
     //float4 other_col = RGBA8UintToFloat4(irradiance_col)/256;
     
