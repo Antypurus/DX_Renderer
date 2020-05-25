@@ -68,17 +68,19 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
     
-    int3 voxel = int3((input.voxel_pos.xyz / input.voxel_pos.w)) - int3(1, 1, 1);
+    float3 vox = input.voxel_pos.xyz / input.voxel_pos.w;
+    float3 fp_vox = vox - float3(1, 1, 1);
+    int3 voxel = int3(vox) - int3(1, 1, 1);
     float4 col = gText.Sample(gsampler, input.uv);
     float distance = sqrt((input.u_pos.x-input.light_pos.x)*(input.u_pos.x-input.light_pos.x)+
                           (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
                           (input.u_pos.z-input.light_pos.z)*(input.u_pos.z-input.light_pos.z));
     float falloff = 1/abs(distance+0.1);
-    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(voxel.x / 128.0f, voxel.y / 128.0f, voxel.z / 128.0f));
+    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 128.0f, fp_vox.y / 128.0f, fp_vox.z / 768.0f));
     //uint irradiance_col = irradiance_map[voxel];
     //float4 other_col = RGBA8UintToFloat4(irradiance_col)/256;
     
-    //output.color = 0.05 * col + 2 * falloff * other_col * col;
-    output.color = 0.05 * col + other_col;
+    output.color = 0.05 * col + 2 * falloff * other_col * col;
+    //output.color = 0.05 * col + other_col;
 	return output;
 }

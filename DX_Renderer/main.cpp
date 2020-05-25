@@ -241,8 +241,8 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.BindConstantBuffer(rtc_buffer, 6);
 		commandList.BindConstantBuffer(constant_buffer, 1);
-		voxelizer.normal_map.BindUAV(commandList, 2);
-		voxelizer.normal_map.BindSRV(commandList, 5);
+		light_map.BindUAV(commandList, 2);
+		light_map.BindSRV(commandList, 5);
 		sib_model.Draw(commandList, 3, 4);
 
 		commandList.SendDrawCall();
@@ -297,9 +297,9 @@ void MainDirectXThread(DXR::Window& window)
 			rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
 			rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
 
-			rays.Depth = 512;
+			rays.Depth = 1024;
 			rays.Width = 1;//swapchain.GetBackbufferResolution().Width;
-			rays.Height = 512;//swapchain.GetBackbufferResolution().Height;
+			rays.Height = 1024;//swapchain.GetBackbufferResolution().Height;
 			commandList->DispatchRays(&rays);
 
 			//rt_out.CopyToBackbuffer(commandList,swapchain);

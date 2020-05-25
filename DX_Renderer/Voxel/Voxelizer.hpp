@@ -34,7 +34,7 @@ namespace DXR
     
 #define VOXEL_WIDTH 128
 #define VOXEL_HEIGHT 128
-#define VOXEL_DEPTH 128
+#define VOXEL_DEPTH 768
     
     struct Voxelizer
     {
