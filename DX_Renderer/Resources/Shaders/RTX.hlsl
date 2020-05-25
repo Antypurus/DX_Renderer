@@ -101,16 +101,15 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(light_color);
     if(normal.w != 0)
     {
-    float3 new_dir = reflect(ray_dir, normal.rgb);
-    
-    RayDesc ray;
-    float3 direction = new_dir;
-    float3 origin = hit_pos;
-    ray.Origin = origin;
-    ray.Direction = direction;
-    ray.TMin = 0;
-    ray.TMax = 100000;
-    TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, data);
+        float3 new_dir = reflect(ray_dir, normal.rgb);
+        RayDesc ray;
+        float3 direction = new_dir;
+        float3 origin = hit_pos;
+        ray.Origin = origin;
+        ray.Direction = direction;
+        ray.TMin = 0;
+        ray.TMax = 100000;
+        TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, data);
     }
     
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
