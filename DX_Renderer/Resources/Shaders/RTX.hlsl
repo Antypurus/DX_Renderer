@@ -91,7 +91,6 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     uint packed_normal = normal_map[map_pos];
     float4 normal = RGBA8UintToFloat4(packed_normal)/256;
     float falloff = dot(ray_dir, -normal.rgb);
-    //dot(ray_dir, normal.rgb);
     RenderTarget[map_pos] = falloff * float4(light_color);
     RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(light_color);
     RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(light_color);

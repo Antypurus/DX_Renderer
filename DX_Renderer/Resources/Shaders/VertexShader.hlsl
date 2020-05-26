@@ -44,7 +44,7 @@ VS_OUTPUT VSMain(VS_INPUT input)
     
 	output.position = mul(MVP,float4(input.pos, 1.0f));
 	output.uv = input.uv;
-    output.normal = input.normal;
+    output.normal = normalize(input.normal) * 0.5 + 0.5;
 	output.color = input.color;
 	
     output.voxel_pos = mul(voxel_mat, float4(input.pos, 1.0f));
@@ -75,14 +75,15 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     float distance = sqrt((input.u_pos.x-input.light_pos.x)*(input.u_pos.x-input.light_pos.x)+
                           (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
                           (input.u_pos.z-input.light_pos.z)*(input.u_pos.z-input.light_pos.z));
-    float falloff = 1/abs(distance+0.1);
-    //float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 128.0f, fp_vox.y / 128.0f, fp_vox.z / 128.0f));
-    uint irradiance_col = irradiance_map[voxel];
-    float4 other_col = RGBA8UintToFloat4(irradiance_col);
-    other_col.rgb /= 255.0f;
-    other_col.a = 1;
+    float falloff = 1;
+    //1 / abs(distance + 0.1);
+    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 128.0f, fp_vox.y / 128.0f, fp_vox.z / 128.0f));
+    //uint irradiance_col = irradiance_map[voxel];
+    //float4 other_col = RGBA8UintToFloat4(irradiance_col);
+    //other_col.rgb *= other_col.a;
+    //normalize(other_col);
     
     //output.color = 0.05 * col + 2 * falloff * other_col * col;
-    output.color = 0.05 * col + other_col;
+    output.color = other_col;
 	return output;
 }
