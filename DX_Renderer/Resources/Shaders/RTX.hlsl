@@ -84,20 +84,21 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     float3 ray_origin = WorldRayOrigin();
     float3 ray_dir = WorldRayDirection();
     
-    float3 hit_pos = ray_origin + mul(ray_dir, dist);
-    hit_pos = mul(voxel_space_matrix, float4(hit_pos, 1.0f)).xyz;
+    float4 hit_pos = float4(ray_origin + mul(ray_dir, dist),1.0f);
+    hit_pos = mul(voxel_space_matrix, hit_pos);
+    hit_pos.rgb /= hit_pos.w;
     int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
     uint packed_normal = normal_map[map_pos];
     float4 normal = RGBA8UintToFloat4(packed_normal)/256;
     float falloff = dot(ray_dir, -normal.rgb);
     RenderTarget[map_pos] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(light_color);
-    RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(light_color);
+    //RenderTarget[map_pos + int3(1, 0, 0)] = falloff * float4(normal);
+    //RenderTarget[map_pos + int3(-1, 0, 0)] = falloff * float4(normal);
+    //RenderTarget[map_pos + int3(0, 1, 0)] = falloff * float4(normal);
+    //RenderTarget[map_pos + int3(0, -1, 0)] = falloff * float4(normal);
+    //RenderTarget[map_pos + int3(0, 0, 1)] = falloff * float4(normal);
+    //RenderTarget[map_pos + int3(0, 0, -1)] = falloff * float4(normal);
     /*
         if(normal.w != 0)
     {
