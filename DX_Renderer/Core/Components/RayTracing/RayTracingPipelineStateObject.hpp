@@ -19,7 +19,7 @@ namespace DXR
 	{
 	public:
 		const static UINT PayloadMaxSize = 64 * 1024;//64K For Payload Size
-		const static UINT MaxRayBounces = 3;
+		const static UINT MaxRayBounces = 10;
 	private:
 		ComPtr<ID3D12StateObject> m_rtpso = nullptr;
 		ComPtr<ID3D12StateObjectProperties> m_rtpso_properties = nullptr;
