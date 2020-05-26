@@ -150,7 +150,7 @@ void MainDirectXThread(DXR::Window& window)
 	float z_rotation_angle = 0;
 	float scale = 0.5;
 
-	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sibenik/sibenik.obj", device, commandList);
+	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sponza/sponza.obj", device, commandList);
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
 
@@ -241,8 +241,8 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.BindConstantBuffer(rtc_buffer, 6);
 		commandList.BindConstantBuffer(constant_buffer, 1);
-		light_map.BindUAV(commandList, 2);
-		light_map.BindSRV(commandList, 5);
+		voxelizer.normal_map.BindUAV(commandList, 2);
+		voxelizer.normal_map.BindSRV(commandList, 5);
 		sib_model.Draw(commandList, 3, 4);
 
 		commandList.SendDrawCall();
