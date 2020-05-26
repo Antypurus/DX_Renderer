@@ -29,21 +29,25 @@ float4 RGBA8UintToFloat4(uint val)
 
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
-    //val = float4(normalize(val.rgb) * 0.5 + 0.5, 1.0f);
-    val.rgb *= 255.0f;
-    uint packed_color = Float4ToRGBA8Uint(val);
+    uint packed_color = Float4ToRGBA8Uint(float4(val.rgb * val.a, 1.0f / 255.0f));
     uint previousStoredValue = 0;
     uint currentStoredValue;
+    
+    float4 currValue;
+    float3 average;
+    uint count;
     
     InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     while (currentStoredValue != previousStoredValue)
     {
         previousStoredValue = currentStoredValue;
-        //float4 rval = RGBA8UintToFloat4(currentStoredValue);
-        //rval.rgb = (rval.rgb * rval.a); // Denormalize
-        //float4 curValF = rval + val; // Add
-        //curValF.rgb /= curValF.a; // Renormalize
-        //packed_color = Float4ToRGBA8Uint(curValF);
+        currValue = RGBA8UintToFloat4(previousStoredValue);
+        
+        average = currValue.rgb;
+        count = currValue.a * 255.0f;
+        
+        average = (average * count + val.rgb) / (count + 1);
+        packed_color = Float4ToRGBA8Uint(float4(average, (count + 1) / 255.0f));
         InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     }
 }
