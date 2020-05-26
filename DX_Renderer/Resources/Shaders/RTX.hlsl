@@ -51,14 +51,14 @@ void raygen()
     RayDesc ray;
     ray.Origin = light_position;
     ray.Direction = direction;
-    ray.TMin = 0.001;
+    ray.TMin = 0.0;
     ray.TMax = 100000;
     
-    TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
+    TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
     
     ray.Origin = payload.origin;
     ray.Direction = payload.direction;
-    TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
+    TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
 }
 
 [shader("intersection")]
@@ -109,7 +109,7 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
 }
 
 [shader("closesthit")]
-void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
+void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
 {
     float dist = RayTCurrent();
     float3 ray_origin = WorldRayOrigin();
@@ -123,7 +123,7 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
     uint packed_normal = normal_map[map_pos];
     float4 normal = RGBA8UintToFloat4(packed_normal)/256;
-    float falloff = dot(normalize(ray_dir), -normal.rgb);
+    float falloff = saturate(dot(-normalize(ray_dir), normal.rgb));
     float4 final_irradiance = float4(falloff * data.color.rgb, data.color.a);
     //AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
     RenderTarget[map_pos + int3(0, 0, 0)] = final_irradiance;
@@ -134,7 +134,7 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     //RenderTarget[map_pos + int3(0, 0, 1)] = final_irradiance;
     //RenderTarget[map_pos + int3(0, 0, -1)] = final_irradiance;
    
-    float3 new_dir = reflect(ray_dir, -normal.rgb);
+    float3 new_dir = reflect(normalize(ray_dir), normal.rgb);
     data.color = float4(1, 0, 0, 1);
     data.direction = new_dir;
     data.origin = hit_position.rgb;
