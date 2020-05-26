@@ -25,6 +25,8 @@ float nrand(float2 uv)
 struct RayPayload
 {
     float4 color;
+    float3 origin;
+    float3 direction;
 };
 
 [shader("raygeneration")]
@@ -33,6 +35,8 @@ void raygen()
     // Initialize the ray payload
     RayPayload payload;
     payload.color = light_color;
+    payload.origin = float3(0, 0, 0);
+    payload.direction = float3(0, 0, 0);
     
     // Get the location within the dispatched 2D grid of work items
     // (often maps to pixels, so this could represent a pixel coordinate).
@@ -40,11 +44,11 @@ void raygen()
     float2 dims = float2(DispatchRaysDimensions().xy);
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
-    RayDesc ray;
     float3 direction = float3(DispatchRaysIndex().xyz) - float3(256, 256, 256);
     float4 origin = mul(voxel_space_matrix, float4(light_position, 1.0f));
     
     //ray.Origin = (origin.xyz / origin.w) - float3(1, 1, 1);
+    RayDesc ray;
     ray.Origin = light_position;
     ray.Direction = direction;
     ray.TMin = 0.001;
@@ -52,7 +56,9 @@ void raygen()
     
     TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
     
-    int3 map_pos = int3(0, 1, 0);
+    ray.Origin = payload.origin;
+    ray.Direction = payload.direction;
+    TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
 }
 
 [shader("intersection")]
@@ -121,25 +127,15 @@ void closesthit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     float4 final_irradiance = float4(falloff * data.color.rgb, data.color.a);
     //AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
     RenderTarget[map_pos + int3(0, 0, 0)] = final_irradiance;
-    RenderTarget[map_pos + int3(1, 0, 0)] = final_irradiance;
-    RenderTarget[map_pos + int3(-1, 0, 0)] = final_irradiance;
-    RenderTarget[map_pos + int3(0, 1, 0)] = final_irradiance;
-    RenderTarget[map_pos + int3(0, -1, 0)] = final_irradiance;
-    RenderTarget[map_pos + int3(0, 0, 1)] = final_irradiance;
-    RenderTarget[map_pos + int3(0, 0, -1)] = final_irradiance;
+    //RenderTarget[map_pos + int3(1, 0, 0)] = final_irradiance;
+    //RenderTarget[map_pos + int3(-1, 0, 0)] = final_irradiance;
+    //RenderTarget[map_pos + int3(0, 1, 0)] = final_irradiance;
+    //RenderTarget[map_pos + int3(0, -1, 0)] = final_irradiance;
+    //RenderTarget[map_pos + int3(0, 0, 1)] = final_irradiance;
+    //RenderTarget[map_pos + int3(0, 0, -1)] = final_irradiance;
    
-    float3 new_dir = reflect(normalize(ray_dir), -normal.rgb);
-    if (!(new_dir.r==0 && new_dir.g == 0 && new_dir.b ==0))
-    {
-        RayDesc ray;
-        //data.color = float4(1, 0, 0, 1);
-        float3 direction = new_dir;
-        float3 origin = hit_pos;
-        ray.Origin = origin;
-        ray.Direction = direction;
-        ray.TMin = 0.1;
-        ray.TMax = 100000;
-        //TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, data);
-    }
-    
+    float3 new_dir = reflect(ray_dir, -normal.rgb);
+    data.color = float4(1, 0, 0, 1);
+    data.direction = new_dir;
+    data.origin = hit_position.rgb;
 }
