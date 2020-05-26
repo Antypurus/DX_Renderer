@@ -34,7 +34,7 @@ namespace DXR
 		bool supports_ray_tracing = false;
 		static GraphicsDevice* Device;
         private:
-		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1;
+		enum D3D_FEATURE_LEVEL m_minimum_feature_level = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0;
 		WRL::ComPtr<IDXGIFactory2> m_dxgi_factory;
 		WRL::ComPtr<ID3D12Device5> m_device;
         WRL::ComPtr<ID3D12VideoDevice1> m_video_device;

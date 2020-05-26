@@ -14,12 +14,38 @@ cbuffer RTCBuffer : register(b0)
 };
 
 RaytracingAccelerationStructure Scene : register(t1);
-RWTexture3D<float4> RenderTarget : register(u0);
-RWTexture3D<uint> normal_map : register(u0, space1);
+RWTexture3D<uint> RenderTarget : register(u0);
+RWTexture3D<uint> normal_map : register(u1);
 
-float nrand(float2 uv)
+uint Float4ToRGBA8Uint(float4 val)
 {
-    return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
+    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
+}
+
+float4 RGBA8UintToFloat4(uint val)
+{
+    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
+}
+
+void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
+{
+    //val = float4(normalize(val.rgb) * 0.5 + 0.5, 1.0f);
+    val.rgb *= 255.0f;
+    uint packed_color = Float4ToRGBA8Uint(val);
+    uint previousStoredValue = 0;
+    uint currentStoredValue;
+    
+    InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
+    while (currentStoredValue != previousStoredValue)
+    {
+        previousStoredValue = currentStoredValue;
+        //float4 rval = RGBA8UintToFloat4(currentStoredValue);
+        //rval.rgb = (rval.rgb * rval.a); // Denormalize
+        //float4 curValF = rval + val; // Add
+        //curValF.rgb /= curValF.a; // Renormalize
+        //packed_color = Float4ToRGBA8Uint(curValF);
+        InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
+    }
 }
 
 struct RayPayload
@@ -55,10 +81,36 @@ void raygen()
     ray.TMax = 100000;
     
     TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
+    {
+        //Shade Primary Hit
+        float4 hit_pos = float4(payload.origin, 1.0f);
+        hit_pos = mul(voxel_space_matrix, hit_pos);
+        hit_pos.rgb /= hit_pos.w;
+        int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
+        //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
+        uint packed_normal = normal_map[map_pos];
+        float4 normal = RGBA8UintToFloat4(packed_normal) / 256;
+        float falloff = 1;
+        //saturate(dot(-normalize(ray_dir), normal.rgb));
+        float4 final_irradiance = float4(falloff * light_color.rgb * light_color.a, 1.0f);
+        AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos + int3(-1, 0, 0), final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 1, 0), final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, -1, 0), final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 0, 1), final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 0, -1), final_irradiance);
+        //RenderTarget[map_pos + int3(1, 0, 0)] = final_irradiance;
+        //RenderTarget[map_pos + int3(-1, 0, 0)] = final_irradiance;
+        //RenderTarget[map_pos + int3(0, 1, 0)] = final_irradiance;
+        //RenderTarget[map_pos + int3(0, -1, 0)] = final_irradiance;
+        //RenderTarget[map_pos + int3(0, 0, 1)] = final_irradiance;
+        //RenderTarget[map_pos + int3(0, 0, -1)] = final_irradiance;
+    }
     
     ray.Origin = payload.origin;
     ray.Direction = payload.direction;
-    TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
+    //TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
 }
 
 [shader("intersection")]
@@ -78,36 +130,6 @@ void anyhit(inout RayPayload data, BuiltinIntersectionAttribs hit)
     data.color = float4(1.0f, 0, 0.0f, 1.0f);
 }
 
-uint Float4ToRGBA8Uint(float4 val)
-{
-    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
-}
-
-float4 RGBA8UintToFloat4(uint val)
-{
-    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
-}
-
-void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
-{
-    val.rgb *= 255.0f;
-    uint packed_color = Float4ToRGBA8Uint(val);
-    uint previousStoredValue = 0;
-    uint currentStoredValue;
-    
-    InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
-    [allow_uav_condition] while (currentStoredValue != previousStoredValue)
-    {
-        previousStoredValue = currentStoredValue;
-        float4 rval = RGBA8UintToFloat4(currentStoredValue);
-        rval.rgb = (rval.rgb * rval.a); // Denormalize
-        float4 curValF = rval + val; // Add
-        curValF.rgb /= curValF.a; // Renormalize
-        packed_color = Float4ToRGBA8Uint(curValF);
-        InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
-    }
-}
-
 [shader("closesthit")]
 void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
 {
@@ -120,19 +142,8 @@ void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
     hit_pos = mul(voxel_space_matrix, hit_pos);
     hit_pos.rgb /= hit_pos.w;
     int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
-    //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
     uint packed_normal = normal_map[map_pos];
-    float4 normal = RGBA8UintToFloat4(packed_normal)/256;
-    float falloff = saturate(dot(-normalize(ray_dir), normal.rgb));
-    float4 final_irradiance = float4(falloff * data.color.rgb, data.color.a);
-    //AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
-    RenderTarget[map_pos + int3(0, 0, 0)] = final_irradiance;
-    //RenderTarget[map_pos + int3(1, 0, 0)] = final_irradiance;
-    //RenderTarget[map_pos + int3(-1, 0, 0)] = final_irradiance;
-    //RenderTarget[map_pos + int3(0, 1, 0)] = final_irradiance;
-    //RenderTarget[map_pos + int3(0, -1, 0)] = final_irradiance;
-    //RenderTarget[map_pos + int3(0, 0, 1)] = final_irradiance;
-    //RenderTarget[map_pos + int3(0, 0, -1)] = final_irradiance;
+    float4 normal = RGBA8UintToFloat4(packed_normal) / 256;
    
     float3 new_dir = reflect(normalize(ray_dir), normal.rgb);
     data.color = float4(1, 0, 0, 1);

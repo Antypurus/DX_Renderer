@@ -78,7 +78,7 @@ void MainDirectXThread(DXR::Window& window)
 	light_desc_table.AddCBVEntry(0, 1);
 
 	DXR::DescriptorTableRootParameter normal_map_desc_table;
-	normal_map_desc_table.AddUAVEntry(0, 1);
+	normal_map_desc_table.AddUAVEntry(1);
 
 	root_signature.AddDescriptorTableRootParameter(cbv_desc_table);
 	root_signature.AddDescriptorTableRootParameter(uav_desc_table);
@@ -164,7 +164,7 @@ void MainDirectXThread(DXR::Window& window)
 	tlas.BuildTLAS(device, commandList);
 
 	DXR::Voxelizer voxelizer(device, commandList, root_signature, sib_model, mvp);
-	DXR::VoxelMap light_map(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, DXR::MapType::R8G8B8A8Unorm, false);
+	DXR::VoxelMap light_map(device, VOXEL_WIDTH, VOXEL_HEIGHT, VOXEL_DEPTH, DXR::MapType::R8G8B8A8Unorm,DXR::MapType::R32Uint, false);
 	light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
 
 	RTCBuffer rt_light;
