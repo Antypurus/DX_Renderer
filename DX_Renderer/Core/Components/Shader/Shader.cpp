@@ -2,6 +2,7 @@
 #include <d3dcompiler.h>
 #include "../../../Tooling/Log.hpp"
 #include "../../../Tooling/Validate.hpp"
+#include <vector>
 
 namespace DXR
 {
@@ -85,6 +86,8 @@ namespace DXR
 
 	IDxcBlob* ShaderCompiler::CompileFromFile(const std::wstring& Filepath, const std::wstring& Entrypoint, const std::wstring ShaderType)
 	{
+		LPCWSTR options[2] = {DXC_ARG_DEBUG,DXC_ARG_SKIP_OPTIMIZATIONS};
+
 		auto encoding = m_shader_encoding;
 		auto instance = ShaderCompiler::GetInstance();
 
@@ -96,7 +99,7 @@ namespace DXR
 		//Note(Tiago): Include Handler Is Not Used ATM but it might be needed in the future
 		ComPtr<IDxcBlob> debug_blob;
 		LPWSTR debug_file = L"ShaderDebug";
-		HRESULT hr = (instance.m_compiler->CompileWithDebug(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), NULL, 0, NULL, 0, NULL, &result, &debug_file, debug_blob.GetAddressOf()));
+		HRESULT hr = (instance.m_compiler->CompileWithDebug(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), options, _countof(options), NULL, 0, NULL, &result, &debug_file, debug_blob.GetAddressOf()));
 
 		ComPtr<IDxcBlobEncoding> pErrors = nullptr;
 		result->GetErrorBuffer(&pErrors);
@@ -111,7 +114,7 @@ namespace DXR
 		}
 #else
 		//Note(Tiago): Include Handler Is Not Used ATM but it might be needed in the future
-		DXCall(instance.m_compiler->Compile(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), NULL, 0, NULL, 0, NULL, &result));
+		DXCall(instance.m_compiler->Compile(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), options, _countof(options), NULL, 0, NULL, &result));
 #endif
 		IDxcBlob* code;
 		result->GetResult(&code);

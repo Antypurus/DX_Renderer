@@ -45,8 +45,8 @@ VS_OUTPUT VoxelVSMain(VS_INPUT input)
     output.position = mul(ClipSpaceMatrix, float4(input.pos, 1.0f));
     output.voxel_grip_position = mul(VoxelSpaceMatrix, float4(input.pos, 1.0f));
     output.uv = input.uv;
-    //output.normal = float4(normalize(input.normal) * 0.5 + 0.5, 1.0f);
-    output.normal = float4(normalize(input.normal), 1.0f);
+    output.normal = float4(normalize(input.normal) * 0.5 + 0.5, 1.0f);
+    //output.normal = float4(input.normal, 1.0f);
     
     return output;
 }
@@ -55,6 +55,24 @@ struct PS_OUTPUT
 {
     float4 color : SV_TARGET;
 };
+
+uint PackFloat4(float4 val)
+{
+    return  ((uint(val.w) & 0x000000FF) << 24) |
+            ((uint(val.z * 255.0f) & 0x000000FF) << 16) |
+            ((uint(val.y * 255.0f) & 0x000000FF) << 8) |
+            ((uint(val.x * 255.0f) & 0x000000FF) << 0);
+}
+
+float4 UnpackFloat4(uint value)
+{
+    // Note: 1/255=0.003921568
+    return float4(
+        ((value >> 0) & 0xFF) * 0.003921568,
+        ((value >> 8) & 0xFF) * 0.003921568,
+        ((value >> 16) & 0xFF) * 0.003921568,
+        ((value >> 24) & 0xFF));
+}
 
 uint Float4ToRGBA8Uint(float4 val)
 {
@@ -68,20 +86,27 @@ float4 RGBA8UintToFloat4(uint val)
 
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
-    val.rgb *= 255.0f;
-    uint packed_color = Float4ToRGBA8Uint(val);
+    //val.rgb *= 255.0f;
+    uint packed_color = PackFloat4(float4(val.rgb, 1.0f));
     uint previousStoredValue = 0;
     uint currentStoredValue;
+    
+    float4 currValue;
+    float3 average;
+    uint count;
     
     InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     while (currentStoredValue != previousStoredValue)
     {
         previousStoredValue = currentStoredValue;
-        float4 rval = RGBA8UintToFloat4(currentStoredValue);
-        rval.rgb = (rval.rgb * rval.a); // Denormalize
-        float4 curValF = rval + val; // Add
-        curValF.rgb /= curValF.a; // Renormalize
-        packed_color = Float4ToRGBA8Uint(curValF);
+        currValue = UnpackFloat4(previousStoredValue);
+        
+        average = currValue.rgb;
+        count = currValue.a;
+        
+        average = (average * count + val.rgb) / (count + 1);
+        
+        packed_color = PackFloat4(float4(average, (count + 1)));
         InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     }
 }
