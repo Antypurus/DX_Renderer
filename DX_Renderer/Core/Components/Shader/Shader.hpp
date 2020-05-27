@@ -56,6 +56,7 @@ namespace DXR
 		static ShaderCompiler m_instance;
 		WRL::ComPtr<IDxcCompiler2> m_compiler;
 		WRL::ComPtr<IDxcLibrary> m_library;
+        WRL::ComPtr<IDxcIncludeHandler> m_include_handler;
         public:
 		static ShaderCompiler GetInstance();
 		static IDxcBlob* CompileFromFile(const std::wstring& Filepath, const std::wstring& Entrypoint, const std::wstring ShaderType);
