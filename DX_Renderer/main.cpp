@@ -28,6 +28,7 @@
 #include "Voxel/Voxelizer.hpp"
 #include "ThirdParty/NVAPI/nvapi.h"
 #include "ThirdParty/PerfTimers/PerformanceTimers.h"
+#include <fstream>
 
 __declspec(align(16)) struct CBuffer
 {
@@ -222,6 +223,11 @@ void MainDirectXThread(DXR::Window& window)
 		timers[i].RestoreDevice(device.GetRawInterface(), device.GetGraphicsCommandQueue().GetCommandQueueRawPtr(), 1);
 	}
 
+	std::vector<double> rt_times;
+	std::vector<double> vox_times;
+	std::vector<double> final_pass_times;
+	std::vector<double> total_times;
+
 	while (window.ShouldContinue)
 	{
 		// Start the Dear ImGui frame
@@ -276,9 +282,12 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindConstantBuffer(constant_buffer, 1);
 		light_map.BindUAV(commandList, 2);
 		light_map.BindSRV(commandList, 5);
-		sib_model.Draw(commandList, 3, 4);
 
-		commandList.SendDrawCall();
+		timers[2].Start(commandList.GetRAWInterface(),0);
+		sib_model.Draw(commandList, 3, 4);
+		timers[2].Stop(commandList.GetRAWInterface(),0);
+
+		//commandList.SendDrawCall();
 
 		//Render Light
 		{
@@ -294,7 +303,9 @@ void MainDirectXThread(DXR::Window& window)
 		commandList.BindConstantBuffer(constant_buffer, 1);
 		commandList.BindTexture(texture, 3, 4);
 
+		timers[1].Start(commandList.GetRAWInterface(),0);
 		voxelizer.Voxelize(commandList, root_signature);
+		timers[1].Stop(commandList.GetRAWInterface(),0);
 
 		commandList->SetPipelineState(pso.GetPipelineStateObject());
 		commandList.SetGraphicsRootSignature(root_signature);
@@ -336,7 +347,7 @@ void MainDirectXThread(DXR::Window& window)
 
 			timers[0].Start(commandList.GetRAWInterface(),0);
 			commandList->DispatchRays(&rays);
-			timers[0].EndFrame(commandList.GetRAWInterface());
+			timers[0].Stop(commandList.GetRAWInterface(),0);
 
 			//rt_out.CopyToBackbuffer(commandList,swapchain);
 		}
@@ -347,6 +358,11 @@ void MainDirectXThread(DXR::Window& window)
 
 		swapchain.PrepareBackbufferForPresentation(commandList);
 
+		for (unsigned int i = 0; i < 3; ++i)
+		{
+			timers[i].EndFrame(commandList.GetRAWInterface());
+		}
+
 		commandList.Close();
 		device.GetGraphicsCommandQueue().ExecuteCommandList(commandList);
 
@@ -356,15 +372,64 @@ void MainDirectXThread(DXR::Window& window)
 
 		commandList.FullReset(pso);
 
+
+		double rt_ms = timers[0].GetElapsedMS();
+		double vox_ms = timers[1].GetElapsedMS();
+		double final_pass_ms = timers[2].GetElapsedMS();
+		double total_time = rt_ms + vox_ms + final_pass_ms;
+
+		rt_times.push_back(rt_ms);
+		vox_times.push_back(vox_ms);
+		final_pass_times.push_back(final_pass_ms);
+		total_times.push_back(total_time);
+
 		for (unsigned int i = 0; i < 3; ++i)
 		{
-			double ms = timers[i].GetElapsedMS();
-			printf("timer:%d -> %f ms\n",i,ms);
 			timers[i].BeginFrame(commandList.GetRAWInterface());
 		}
 	}
 
 	DeinitNVAPI();
+
+	//average out everything
+	{
+		size_t sample_count = rt_times.size();;
+		double average_rt = 0;
+		for(auto ms:rt_times)
+		{
+			average_rt += ms;
+		}
+		average_rt /= sample_count;
+
+		double average_vox = 0;
+		for(auto ms:vox_times)
+		{
+			average_vox += ms;
+		}
+		average_vox /= sample_count;
+
+		double average_final_pass = 0;
+		for(auto ms:final_pass_times)
+		{
+			average_final_pass += ms;
+		}
+		average_final_pass /= sample_count;
+
+		double average_total = 0;
+		for(auto ms:total_times)
+		{
+			average_total += ms;
+		}
+		average_total /= sample_count;
+
+		std::ofstream file("perf_vals.txt");
+		file<<"Average Ray Tracing Dispatch Time (ms):"<<average_rt<<'\n';
+		file<<"Average Voxelization Time (ms):"<<average_vox<<'\n';
+		file<<"Average Final Pass Time (ms):"<<average_final_pass<<'\n';
+		file<<"Average Total Time (ms):"<<average_total<<'\n';
+		file<<"Sample Count:"<<sample_count<<'\n';
+		file.close();
+	}
 }
 
 int WINAPI CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
