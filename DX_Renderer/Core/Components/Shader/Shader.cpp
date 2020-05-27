@@ -93,7 +93,6 @@ namespace DXR
         
 		ComPtr<IDxcOperationResult> result;
 #ifndef NDEBUG
-		//Note(Tiago): Include Handler Is Not Used ATM but it might be needed in the future
 		ComPtr<IDxcBlob> debug_blob;
 		LPWSTR debug_file = L"ShaderDebug";
 		HRESULT hr = (instance.m_compiler->CompileWithDebug(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), NULL, 0, NULL, 0, instance.m_include_handler.Get(), &result, &debug_file, debug_blob.GetAddressOf()));
