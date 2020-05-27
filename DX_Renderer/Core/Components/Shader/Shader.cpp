@@ -86,7 +86,7 @@ namespace DXR
 
 	IDxcBlob* ShaderCompiler::CompileFromFile(const std::wstring& Filepath, const std::wstring& Entrypoint, const std::wstring ShaderType)
 	{
-		LPCWSTR options[2] = {DXC_ARG_DEBUG,DXC_ARG_SKIP_OPTIMIZATIONS};
+		LPCWSTR options[] = {DXC_ARG_DEBUG,DXC_ARG_SKIP_OPTIMIZATIONS,DXC_ARG_IEEE_STRICTNESS,DXC_ARG_WARNINGS_ARE_ERRORS};
 
 		auto encoding = m_shader_encoding;
 		auto instance = ShaderCompiler::GetInstance();
