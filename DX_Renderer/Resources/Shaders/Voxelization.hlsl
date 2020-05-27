@@ -58,26 +58,31 @@ struct PS_OUTPUT
 // Packs float4 in [0,1] range into [0-255] uint
 uint PackFloat4(float4 val)
 {
+    uint r = round(clamp(val.r, 0.0, 1.0) * 255.0);
+    uint g = round(clamp(val.g, 0.0, 1.0) * 255.0);
+    uint b = round(clamp(val.b, 0.0, 1.0) * 255.0);
+    uint a = round(clamp(val.a, 0.0, 1.0) * 255.0);
     return (
-        (uint(val.w) & 0x000000FF) << 24U |
-        (uint(val.z * 255) & 0x000000FF) << 16U |
-        (uint(val.y * 255) & 0x000000FF) << 8U |
-        (uint(val.x * 255) & 0x000000FF));
+        (uint(a) & 0x000000FF) << 24U |
+        (uint(b) & 0x000000FF) << 16U |
+        (uint(g) & 0x000000FF) << 8U |
+        (uint(r) & 0x000000FF));
 }
 
 // Unpacks values and returns float4 in [0,1] range
 float4 UnpackFloat4(uint val)
 {
-    return float4(
-            float((val & 0x000000FF)) / 255.0,
-            float((val & 0x0000FF00) >> 8U) / 255.0,
-            float((val & 0x00FF0000) >> 16U) / 255.0,
-            float((val & 0xFF000000) >> 24U));
+    uint r = (val & 0x000000FF);
+    uint g = (val & 0x0000FF00) >> 8U;
+    uint b = (val & 0x00FF0000) >> 16U;
+    uint a = (val & 0xFF000000) >> 24U;
+    return float4(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 }
 
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
-    uint packed_color = PackFloat4(float4(val.rgb, 1.0f));
+    val.rgb *= 255.0f;
+    uint packed_color = PackFloat4(float4(val.rgb, 1.0 / 255.0));
     uint previousStoredValue = 0;
     uint currentStoredValue;
     
@@ -92,11 +97,11 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
         currValue = UnpackFloat4(previousStoredValue);
         
         average = currValue.rgb;
-        count = uint(currValue.a);
+        count = round(currValue.a * 255.0);
         
         average = (average * count + val.rgb) / (count + 1);
         
-        packed_color = PackFloat4(float4(average, (count + 1)));
+        packed_color = PackFloat4(float4(average, (count + 1) / 255.0));
         InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     }
 }
