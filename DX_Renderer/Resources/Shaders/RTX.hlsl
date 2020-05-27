@@ -17,20 +17,29 @@ RaytracingAccelerationStructure Scene : register(t1);
 RWTexture3D<uint> RenderTarget : register(u0);
 RWTexture3D<uint> normal_map : register(u1);
 
-uint Float4ToRGBA8Uint(float4 val)
+// Packs float4 in [0,1] range into [0-255] uint
+uint PackFloat4(float4 val)
 {
-    return (uint(val.w) & 0x000000FF) << 24 | (uint(val.z) & 0x000000FF) << 16 | (uint(val.y) & 0x000000FF) << 8 | (uint(val.x) & 0x000000FF);
+    return (
+        (uint(val.w * 255) & 0x000000FF) << 24U |
+        (uint(val.z * 255) & 0x000000FF) << 16U |
+        (uint(val.y * 255) & 0x000000FF) << 8U |
+        (uint(val.x * 255) & 0x000000FF));
 }
 
-float4 RGBA8UintToFloat4(uint val)
+// Unpacks values and returns float4 in [0,1] range
+float4 UnpackFloat4(uint val)
 {
-    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
+    return float4(
+            float((val & 0x000000FF)) / 255.0,
+            float((val & 0x0000FF00) >> 8U) / 255.0,
+            float((val & 0x00FF0000) >> 16U) / 255.0,
+            float((val & 0xFF000000) >> 24U) / 255.0);
 }
 
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
-    val.rgb *= 255.0f;
-    uint packed_color = Float4ToRGBA8Uint(float4(val.rgb, 1.0f / 255.0f));
+    uint packed_color = PackFloat4(float4(val.rgb, 1.0f / 255.0f));
     uint previousStoredValue = 0;
     uint currentStoredValue;
     
@@ -42,14 +51,14 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
     while (currentStoredValue != previousStoredValue)
     {
         previousStoredValue = currentStoredValue;
-        currValue = RGBA8UintToFloat4(previousStoredValue);
+        currValue = UnpackFloat4(previousStoredValue);
         
         average = currValue.rgb;
-        count = currValue.a * 255.0f;
+        count = uint(currValue.a * 255.0f);
         
         average = (average * count + val.rgb) / (count + 1);
         
-        packed_color = Float4ToRGBA8Uint(float4(average, (count + 1) / 255.0f));
+        packed_color = PackFloat4(float4(average, (count + 1) / 255.0f));
         InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     }
 }
@@ -95,11 +104,12 @@ void raygen()
         int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
         //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
         uint packed_normal = normal_map[map_pos];
-        float4 normal = RGBA8UintToFloat4(packed_normal);
-        float falloff = saturate(dot(normalize(ray.Direction), -normal.rgb));
-        float4 final_irradiance = float4(falloff * light_color.rgb * light_color.a, 1.0f);
+        float4 normal = UnpackFloat4(packed_normal);
+        float falloff = 1;
+        //saturate(dot(normalize(ray.Direction), -normal.rgb));
+        float4 final_irradiance = float4(falloff * light_color.rgb, 1.0f);
         AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
-        AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
+        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(-1, 0, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 1, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, -1, 0), final_irradiance);
@@ -148,7 +158,7 @@ void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
     hit_pos.rgb /= hit_pos.w;
     int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
     uint packed_normal = normal_map[map_pos];
-    float4 normal = RGBA8UintToFloat4(packed_normal) / 256;
+    float4 normal = UnpackFloat4(packed_normal);
    
     float3 new_dir = reflect(normalize(ray_dir), normal.rgb);
     data.color = float4(1, 0, 0, 1);

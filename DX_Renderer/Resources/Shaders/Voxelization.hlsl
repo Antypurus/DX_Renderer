@@ -46,7 +46,6 @@ VS_OUTPUT VoxelVSMain(VS_INPUT input)
     output.voxel_grip_position = mul(VoxelSpaceMatrix, float4(input.pos, 1.0f));
     output.uv = input.uv;
     output.normal = float4(normalize(input.normal) * 0.5 + 0.5, 1.0f);
-    //output.normal = float4(normalize(input.normal), 1.0f);
     
     return output;
 }
@@ -59,35 +58,26 @@ struct PS_OUTPUT
 // Packs float4 in [0,1] range into [0-255] uint
 uint PackFloat4(float4 val)
 {
-    return (uint(val.x * 255.0f) << 24) | (uint(val.y * 255.0f) << 16) | (uint(val.z * 255.0f) << 8) | (uint(val.w * 255.0f) << 0);
+    return (
+        (uint(val.w * 255) & 0x000000FF) << 24U |
+        (uint(val.z * 255) & 0x000000FF) << 16U |
+        (uint(val.y * 255) & 0x000000FF) << 8U | 
+        (uint(val.x * 255) & 0x000000FF));
 }
 
 // Unpacks values and returns float4 in [0,1] range
-float4 UnpackFloat4(uint value)
+float4 UnpackFloat4(uint val)
 {
-    // Note: 1/255=0.003921568
     return float4(
-        ((value >> 24) & 0xFF) * 0.003921568,
-        ((value >> 16) & 0xFF) * 0.003921568,
-        ((value >> 8) & 0xFF) * 0.003921568,
-        ((value >> 0) & 0xFF) * 0.003921568);
-
-}
-
-uint Float4ToRGBA8Uint(float4 val)
-{
-    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
-}
-
-float4 RGBA8UintToFloat4(uint val)
-{
-    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
+            float((val & 0x000000FF)) / 255.0, 
+            float((val & 0x0000FF00) >> 8U) / 255.0,
+            float((val & 0x00FF0000) >> 16U) / 255.0,
+            float((val & 0xFF000000) >> 24U) / 255.0);
 }
 
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
-    val.rgb *= 255.0f;
-    uint packed_color = Float4ToRGBA8Uint(float4(val.rgb, uint(1)));
+    uint packed_color = PackFloat4(float4(val.rgb, 1.0f/255.0f));
     uint previousStoredValue = 0;
     uint currentStoredValue;
     
@@ -99,14 +89,14 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
     while (currentStoredValue != previousStoredValue)
     {
         previousStoredValue = currentStoredValue;
-        currValue = RGBA8UintToFloat4(previousStoredValue);
+        currValue = UnpackFloat4(previousStoredValue);
         
         average = currValue.rgb;
-        count = uint(currValue.a);
+        count = uint(currValue.a * 255.0f);
         
         average = (average * count + val.rgb) / (count + 1);
         
-        packed_color = Float4ToRGBA8Uint(float4(average, (count + 1)));
+        packed_color = PackFloat4(float4(average, (count + 1)/255.0f));
         InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     }
 }
@@ -121,7 +111,7 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     ocupancy_map[voxel_pos] = uint(1);
     float4 frag_color = gText.Sample(gsampler, input.uv);
     AverageRGBA8Voxel(albedo_map, voxel_pos, frag_color);
-    AverageRGBA8Voxel(diffuse_map, voxel_pos, diffuse_coefficient);
+    AverageRGBA8Voxel(diffuse_map, voxel_pos, normalize(diffuse_coefficient));
     AverageRGBA8Voxel(specular_map, voxel_pos, specular_coefficient);
     AverageRGBA8Voxel(normal_map, voxel_pos, input.normal);
     output.color = input.voxel_grip_position / 256.0f;
