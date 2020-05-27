@@ -45,7 +45,8 @@ VS_OUTPUT VoxelVSMain(VS_INPUT input)
     output.position = mul(ClipSpaceMatrix, float4(input.pos, 1.0f));
     output.voxel_grip_position = mul(VoxelSpaceMatrix, float4(input.pos, 1.0f));
     output.uv = input.uv;
-    output.normal = float4(normalize(input.normal) * 0.5 + 0.5, 1.0f);
+    //output.normal = float4(normalize(input.normal) * 0.5 + 0.5, 1.0f);
+    output.normal = float4(normalize(input.normal), 1.0f);
     
     return output;
 }

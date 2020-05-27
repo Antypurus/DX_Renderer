@@ -19,7 +19,7 @@ RWTexture3D<uint> normal_map : register(u1);
 
 uint Float4ToRGBA8Uint(float4 val)
 {
-    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
+    return (uint(val.w) & 0x000000FF) << 24 | (uint(val.z) & 0x000000FF) << 16 | (uint(val.y) & 0x000000FF) << 8 | (uint(val.x) & 0x000000FF);
 }
 
 float4 RGBA8UintToFloat4(uint val)
@@ -99,7 +99,7 @@ void raygen()
         float falloff = saturate(dot(normalize(ray.Direction), -normal.rgb));
         float4 final_irradiance = float4(falloff * light_color.rgb * light_color.a, 1.0f);
         AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(-1, 0, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 1, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, -1, 0), final_irradiance);
