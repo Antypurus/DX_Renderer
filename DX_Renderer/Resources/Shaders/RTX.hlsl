@@ -48,6 +48,7 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
         count = currValue.a * 255.0f;
         
         average = (average * count + val.rgb) / (count + 1);
+        
         packed_color = Float4ToRGBA8Uint(float4(average, (count + 1) / 255.0f));
         InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     }
