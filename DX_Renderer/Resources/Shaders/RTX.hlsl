@@ -1,4 +1,8 @@
 
+#define NV_SHADER_EXTN_SLOT u10
+#define NV_SHADER_EXTN_REGISTER_SPACE space0
+#include "ThirdParty/nvapi/nvHLSLExtns.h"
+
 struct BuiltinIntersectionAttribs
 { // Barycentric coordinates of hit in
     float2 barycentrics; // the triangle are: (1-x-y, x, y)
@@ -96,7 +100,12 @@ void raygen()
     ray.TMin = 0.0;
     ray.TMax = 100000;
     
-    TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
+    uint startTime = NvGetSpecial(9);
+    TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
+    uint endTime = NvGetSpecial(9);
+    uint deltaTime = endTime - startTime;
+    
+    
     {
         //Shade Primary Hit
         float4 hit_pos = float4(payload.origin, 1.0f);

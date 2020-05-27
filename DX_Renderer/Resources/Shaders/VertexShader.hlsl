@@ -1,6 +1,3 @@
-#define NV_SHADER_EXTN_SLOT u1
-#define NV_SHADER_EXTN_REGISTER_SPACE space0
-#include "ThirdParty/nvapi/nvHLSLExtns.h"
 
 cbuffer MVPBuffer : register(b0)
 {
