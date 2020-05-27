@@ -19,18 +19,18 @@ RWTexture3D<uint> normal_map : register(u1);
 
 uint Float4ToRGBA8Uint(float4 val)
 {
-    return (uint(val.w) & 0x000000FF) << 24U | (uint(val.z) & 0x000000FF) << 16U | (uint(val.y) & 0x000000FF) << 8U | (uint(val.x) & 0x000000FF);
+    return (uint(val.w * 255.0) & 0x000000FF) << 24U | (uint(val.z * 255.0) & 0x000000FF) << 16U | (uint(val.y * 255.0) & 0x000000FF) << 8U | (uint(val.x * 255.0) & 0x000000FF);
 }
 
 float4 RGBA8UintToFloat4(uint val)
 {
-    return float4(float((val & 0x000000FF)), float((val & 0x0000FF00) >> 8U), float((val & 0x00FF0000) >> 16U), float((val & 0xFF000000) >> 24U));
+    return float4(float((val & 0x000000FF))/255.0, float((val & 0x0000FF00) >> 8U)/255.0, float((val & 0x00FF0000) >> 16U)/255.0, float((val & 0xFF000000) >> 24U)/255.0);
 }
 
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
-    val.rgb *= 255.0f;
-    uint packed_color = Float4ToRGBA8Uint(float4(val.rgb, 1.0f / 255.0f));
+    //val.rgb *= 255.0f;
+    uint packed_color = Float4ToRGBA8Uint(float4(val.rgb, 1.0f));
     uint previousStoredValue = 0;
     uint currentStoredValue;
     
@@ -45,11 +45,11 @@ void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 va
         currValue = RGBA8UintToFloat4(previousStoredValue);
         
         average = currValue.rgb;
-        count = currValue.a * 255.0f;
+        count = currValue.a;
         
         average = (average * count + val.rgb) / (count + 1);
         
-        packed_color = Float4ToRGBA8Uint(float4(average, (count + 1) / 255.0f));
+        packed_color = Float4ToRGBA8Uint(float4(average, (count + 1)));
         InterlockedCompareExchange(voxel_map[voxel_coords], previousStoredValue, packed_color, currentStoredValue);
     }
 }
@@ -96,21 +96,10 @@ void raygen()
         //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
         uint packed_normal = normal_map[map_pos];
         float4 normal = RGBA8UintToFloat4(packed_normal);
+        //normal.rgb = (normal.rgb - 0.5) / 0.5;
         float falloff = saturate(dot(normalize(ray.Direction), -normal.rgb));
         float4 final_irradiance = float4(falloff * light_color.rgb * light_color.a, 1.0f);
         AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(-1, 0, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 1, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, -1, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 0, 1), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 0, -1), final_irradiance);
-        //RenderTarget[map_pos + int3(1, 0, 0)] = final_irradiance;
-        //RenderTarget[map_pos + int3(-1, 0, 0)] = final_irradiance;
-        //RenderTarget[map_pos + int3(0, 1, 0)] = final_irradiance;
-        //RenderTarget[map_pos + int3(0, -1, 0)] = final_irradiance;
-        //RenderTarget[map_pos + int3(0, 0, 1)] = final_irradiance;
-        //RenderTarget[map_pos + int3(0, 0, -1)] = final_irradiance;
     }
     
     ray.Origin = payload.origin;
