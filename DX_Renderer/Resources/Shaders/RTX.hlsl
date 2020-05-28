@@ -77,6 +77,7 @@ struct RayPayload
     float4 color;
     float3 origin;
     float3 direction;
+    bool missed;
 };
 
 [shader("raygeneration")]
@@ -87,6 +88,7 @@ void raygen()
     payload.color = light_color;
     payload.origin = float3(0, 0, 0);
     payload.direction = float3(0, 0, 0);
+    payload.missed = false;
     
     // Get the location within the dispatched 2D grid of work items
     // (often maps to pixels, so this could represent a pixel coordinate).
@@ -101,15 +103,17 @@ void raygen()
     RayDesc ray;
     ray.Origin = light_position;
     ray.Direction = direction;
-    ray.TMin = 0.0;
+    ray.TMin = 0.02;
     ray.TMax = 100000;
     
-    uint startTime = NvGetSpecial(9);
+    //uint startTime = NvGetSpecial(9);
     TraceRay(Scene, RAY_FLAG_NONE, 0xFF, 0, 0, 0, ray, payload);
-    uint endTime = NvGetSpecial(9);
-    uint deltaTime = endTime - startTime;
+    //uint endTime = NvGetSpecial(9);
+    //uint deltaTime = endTime - startTime;
     
+    float light_intensity = 5.0f;
     
+    if(!payload.missed)
     {
         //Shade Primary Hit
         float4 hit_pos = float4(payload.origin, 1.0f);
@@ -120,13 +124,8 @@ void raygen()
         uint packed_normal = normal_map[map_pos];
         float4 normal = UnpackFloat4(packed_normal);
         normal.rgb = (normal.rgb * 2) - 1;
-        float falloff = max(dot(normalize(-normal.rgb), normalize(direction)), 0.0);
-        float4 final_irradiance = float4(falloff * light_color.rgb * light_color.a, 1.0f);
-        //AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
-        //PackFloat4(final_irradiance);
-        uint prev;
-        //RenderTarget[map_pos] = PackFloat4(final_irradiance);
-        final_irradiance.rgb = max(normalize(final_irradiance.rgb), float3(0, 0, 0));
+        float NdotL = max(dot(normalize(normal.rgb), normalize(-direction)), 0.0);
+        float4 final_irradiance = float4(NdotL * light_intensity * light_color.rgb, 1.0f);
         AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(-1, 0, 0), final_irradiance);
@@ -171,7 +170,7 @@ void intersection()
 [shader("miss")]
 void miss(inout RayPayload data : SV_RayPayload)
 {
-    data.color = float4(0, 0, 0.0f, 0.0f);
+    data.missed = true;
 }
 
 [shader("anyhit")]
