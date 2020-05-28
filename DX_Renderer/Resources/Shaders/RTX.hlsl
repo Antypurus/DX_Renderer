@@ -76,6 +76,7 @@ struct RayPayload
     float4 color;
     float3 origin;
     float3 direction;
+    float distance;
     bool missed;
 };
 
@@ -88,6 +89,7 @@ void raygen()
     payload.origin = float3(0, 0, 0);
     payload.direction = float3(0, 0, 0);
     payload.missed = false;
+    payload.distance = 0;
     
     // Get the location within the dispatched 2D grid of work items
     // (often maps to pixels, so this could represent a pixel coordinate).
@@ -110,22 +112,32 @@ void raygen()
     //uint endTime = NvGetSpecial(9);
     //uint deltaTime = endTime - startTime;
     
-    float light_intensity = 5.0f;
+    float light_intensity = 1.0f;
     
     if(!payload.missed)
     {
         //Shade Primary Hit
         float4 hit_pos = float4(payload.origin, 1.0f);
+        
         hit_pos = mul(voxel_space_matrix, hit_pos);
         hit_pos.rgb /= hit_pos.w;
         int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
         //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
+        
         uint packed_normal = normal_map[map_pos];
+        
         float4 normal = UnpackFloat4(packed_normal);
         normal.rgb = (normal.rgb * 2) - 1;
+        
         float NdotL = max(dot(normalize(normal.rgb), normalize(-direction)), 0.0);
-        float4 final_irradiance = float4(NdotL * light_intensity * light_color.rgb, 1.0f);
-        AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
+        
+        float3 irradiance = light_intensity * NdotL * light_color.rgb;
+        
+        float t = payload.distance;
+        float3 falloff = lerp(irradiance, float3(0, 0, 0), 1.0 - exp(-0.000002 * t * t * t));
+        
+        AverageRGBA8Voxel(RenderTarget, map_pos, float4(irradiance, 1.0));
+        
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(-1, 0, 0), final_irradiance);
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 1, 0), final_irradiance);
@@ -197,4 +209,5 @@ void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
     data.color = float4(1, 0, 0, 1);
     data.direction = new_dir;
     data.origin = hit_position.rgb;
+    data.distance = dist;
 }
