@@ -47,7 +47,6 @@ float4 UnpackFloat4(uint val)
 
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
-    val.rgb *= 255.0f;
     uint packed_color = PackFloat4(float4(val.rgb, 1.0/255.0));
     uint previousStoredValue = 0;
     uint currentStoredValue;
