@@ -83,7 +83,7 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     //other_col.rgb *= other_col.a;
     //normalize(other_col);
     
-    output.color = 0.1 * col + 2 * falloff * other_col * col;
-    //output.color = other_col;
+    //output.color = 0.1 * col + 2 * falloff * other_col * col;
+    output.color = other_col;
 	return output;
 }
