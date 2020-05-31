@@ -131,6 +131,9 @@ namespace DXR
 	{
 		auto adapter_list = this->GetGraphicsAdapterList();
 		INFO_LOG(L"Creating D3D12 Device");
+        DXGI_ADAPTER_DESC adapter_desc = {};
+        adapter_list[deviceIndex]->GetDesc(&adapter_desc);
+        this->name = std::wstring(adapter_desc.Description);
 		DXCall(D3D12CreateDevice(adapter_list[deviceIndex].Get(), this->m_minimum_feature_level, IID_PPV_ARGS(&this->m_device)));
 		SUCCESS_LOG(L"D3D12 Device Created");
 	}

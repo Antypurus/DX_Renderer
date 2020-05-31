@@ -5,6 +5,7 @@
 #include <vector>
 #include <d3d12.h>
 #include <d3d12video.h>
+#include <string>
 
 #include "Command Queue/GraphicsCommandQueue.hpp"
 
@@ -30,6 +31,7 @@ namespace DXR
 	{
 		// public and private data fields
         public:
+        std::wstring name = L"";
 		std::vector<UINT8> supported_mssa_levels;
 		bool supports_ray_tracing = false;
 		static GraphicsDevice* Device;
