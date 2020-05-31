@@ -134,8 +134,9 @@ void raygen()
         float3 irradiance = light_intensity * NdotL * light_color.rgb;
         
         float t = payload.distance;
-        float3 falloff = lerp(irradiance, float3(0, 0, 0), 1.0 - exp(-0.000002 * t * t * t));
+        float falloff = lerp(1, 0, 1.0 - exp(-0.000002 * t * t * t));
         
+        irradiance *= falloff;
         AverageRGBA8Voxel(RenderTarget, map_pos, float4(irradiance, 1.0));
         
         //AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
