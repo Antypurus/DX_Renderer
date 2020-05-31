@@ -1,5 +1,5 @@
-Average Ray Tracing Dispatch Time (ms):0.515118
-Average Voxelization Time (ms):0.838427
-Average Final Pass Time (ms):0.047406
-Average Total Time (ms):1.40095
-Sample Count:11533
+Average Ray Tracing Dispatch Time (ms):0.481996
+Average Voxelization Time (ms):0.838568
+Average Final Pass Time (ms):0.0640447
+Average Total Time (ms):1.38461
+Sample Count:13830

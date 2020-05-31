@@ -122,35 +122,22 @@ void raygen()
         hit_pos = mul(voxel_space_matrix, hit_pos);
         hit_pos.rgb /= hit_pos.w;
         int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
-        //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
         
         uint packed_normal = normal_map[map_pos];
         
         float4 normal = UnpackFloat4(packed_normal);
         normal.rgb = (normal.rgb * 2) - 1;
         
-        float NdotL = max(dot(normalize(normal.rgb), normalize(-direction)), 0.0);
+        float NdotL = saturate(dot(normalize(-direction), normal.rgb));
         
         float3 irradiance = light_intensity * NdotL * light_color.rgb;
         
         float t = payload.distance;
-        float falloff = lerp(1, 0, 1.0 - exp(-0.000002 * t * t * t * t));
+        float falloff = lerp(0.0, 1.0, (1.0 / abs(t)));
         
         irradiance *= falloff;
-        AverageRGBA8Voxel(RenderTarget, map_pos, float4(irradiance, 1.0));
         
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(1, 0, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(-1, 0, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 1, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, -1, 0), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 0, 1), final_irradiance);
-        //AverageRGBA8Voxel(RenderTarget, map_pos + int3(0, 0, -1), final_irradiance);
-        //RenderTarget[map_pos + int3(1, 0, 0)] = PackFloat4(final_irradiance);
-        //RenderTarget[map_pos + int3(-1, 0, 0)] = PackFloat4(final_irradiance);
-        //RenderTarget[map_pos + int3(0, 1, 0)] = PackFloat4(final_irradiance);
-        //RenderTarget[map_pos + int3(0, -1, 0)] = PackFloat4(final_irradiance);
-        //RenderTarget[map_pos + int3(0, 0, 1)] = PackFloat4(final_irradiance);
-        //RenderTarget[map_pos + int3(0, 0, -1)] = PackFloat4(final_irradiance);
+        AverageRGBA8Voxel(RenderTarget, map_pos, float4((irradiance), 1.0));
     }
     
     ray.Origin = payload.origin;
@@ -205,6 +192,7 @@ void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
     int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
     uint packed_normal = normal_map[map_pos];
     float4 normal = UnpackFloat4(packed_normal)/255;
+    normal.rgb = normal.rgb * 2 - 1;
    
     float3 new_dir = reflect(normalize(ray_dir), normal.rgb);
     data.color = float4(1, 0, 0, 1);
