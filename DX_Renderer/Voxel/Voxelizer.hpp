@@ -39,7 +39,9 @@ namespace DXR
     struct Voxelizer
     {
         VertexShader voxelization_vertex_shader;
+        VertexShader no_tex_voxelization_vertex_shader;
         PixelShader voxelization_pixel_shader;
+        PixelShader no_tex_voxelization_pixel_shader;
         VoxelMap ocupancy_map;
         VoxelMap albedo_map;
         VoxelMap diffuse_map;
@@ -50,6 +52,7 @@ namespace DXR
         VertexBuffer<OBJVertex> model_vertex_buffer;
         IndexBuffer model_index_buffer;
         PipelineStateObject pso;
+        PipelineStateObject no_tex_pso;
         TLAS acceleration_structure;
         RootSignature voxelization_root_signature;
         std::unique_ptr<BLAS> voxel_cube_blas = nullptr;

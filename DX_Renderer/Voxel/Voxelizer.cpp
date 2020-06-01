@@ -251,6 +251,10 @@ namespace DXR
 		const std::wstring PS_entrypoint = L"VoxelPSMain";
 		this->voxelization_vertex_shader = VertexShader::CompileShaderFromFile(voxel_shader_path, VS_entrypoint);
 		this->voxelization_pixel_shader = PixelShader::CompileShaderFromFile(voxel_shader_path, PS_entrypoint);
+        
+        const std::wstring no_tex_voxel_shader_path = L"./DX_Renderer/Resources/Shaders/no_tex_Voxelization.hlsl";
+		this->no_tex_voxelization_vertex_shader = VertexShader::CompileShaderFromFile(no_tex_voxel_shader_path, VS_entrypoint);
+		this->no_tex_voxelization_pixel_shader = PixelShader::CompileShaderFromFile(no_tex_voxel_shader_path, PS_entrypoint);
 	}
     
     
