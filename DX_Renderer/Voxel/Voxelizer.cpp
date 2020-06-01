@@ -32,6 +32,13 @@ namespace DXR
                                         OBJVertex::GetInputLayout(),
                                         Swapchain::m_backbuffer_format,
                                         DepthStencilBuffer::DepthStencilBufferFormat);
+        this->no_tex_pso = PipelineStateObject(device,
+                                               this->no_tex_voxelization_vertex_shader.GetShaderBytecode(),
+                                               this->no_tex_voxelization_pixel_shader.GetShaderBytecode(),
+                                               voxelization_root_signature,
+                                               OBJVertex::GetInputLayout(),
+                                               Swapchain::m_backbuffer_format,
+                                               DepthStencilBuffer::DepthStencilBufferFormat);
 		this->CreateVoxelizationConstantBuffers(device,command_list);
 		this->CalculateVoxelizationSupportData();
 	}
@@ -67,7 +74,7 @@ namespace DXR
         normal_map.Clear(command_list);
 		this->SetViewport(command_list);
 		command_list.SetGraphicsRootSignature(voxelization_root_signature);
-		command_list->SetPipelineState(pso.GetPipelineStateObject());
+        command_list->SetPipelineState(pso.GetPipelineStateObject());
 		this->albedo_map.BindUAV(command_list, 1);
         this->ocupancy_map.BindUAV(command_list, 5);
         this->diffuse_map.BindUAV(command_list, 6);
@@ -87,7 +94,19 @@ namespace DXR
     {
         if(submesh.material->has_texture)
         {
+            command_list->SetPipelineState(pso.GetPipelineStateObject());
             command_list.BindTexture(*submesh.material->texture,2,3);
+            command_list.BindIndexBuffer(*submesh.index_buffer);
+            command_list.BindConstantBuffer(*submesh.material->material_cbuffer,4);
+            //Z-Axis View
+            this->ZAxisVoxelizationCall(command_list, 0);
+            //X-Axis View
+            this->XAxisVoxelizationCall(command_list, 0);
+            //Y-Axis View
+            this->YAxisVoxelizationCall(command_list, 0);
+        }else
+        {
+            command_list->SetPipelineState(no_tex_pso.GetPipelineStateObject());
             command_list.BindIndexBuffer(*submesh.index_buffer);
             command_list.BindConstantBuffer(*submesh.material->material_cbuffer,4);
             //Z-Axis View
