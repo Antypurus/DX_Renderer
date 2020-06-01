@@ -115,7 +115,7 @@ PS_OUTPUT VoxelPSMain(VS_OUTPUT input)
     ocupancy_map[voxel_pos] = uint(1);
     float4 frag_color = gText.Sample(gsampler, input.uv);
     AverageRGBA8Voxel(albedo_map, voxel_pos, frag_color);
-    AverageRGBA8Voxel(diffuse_map, voxel_pos, diffuse_coefficient);
+    AverageRGBA8Voxel(diffuse_map, voxel_pos, float4(diffuse_coefficient.rgb,1)); //TODO(Tiago): Not Needed This Is Just The Texture, so i can just write into the albedo buffer when there is no texture
     AverageRGBA8Voxel(specular_map, voxel_pos, specular_coefficient);
     AverageRGBA8Voxel(normal_map, voxel_pos, input.normal);
     output.color = input.voxel_grip_position / 256.0f;
