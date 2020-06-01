@@ -1,6 +1,6 @@
 GPU:NVIDIA GeForce RTX 2070 SUPER
-Average Ray Tracing Dispatch Time (ms):0.493393
-Average Voxelization Time (ms):0.845803
-Average Final Pass Time (ms):0.102396
-Average Total Time (ms):1.44159
-Sample Count:1055
+Average Ray Tracing Dispatch Time (ms):1.88766
+Average Voxelization Time (ms):2.36288
+Average Final Pass Time (ms):0.265364
+Average Total Time (ms):4.5159
+Sample Count:18644
