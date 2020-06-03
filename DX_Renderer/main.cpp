@@ -152,7 +152,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
-	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.5, 0.5, 0.5);
+	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.01, 0.01, 0.01);
     
 	DirectX::XMMATRIX mvp = model * view * projection;
 	CBuffer raster_cbufer;
@@ -172,9 +172,9 @@ void MainDirectXThread(DXR::Window& window)
 	float x_rotation_angle = 0;
 	float y_rotation_angle = 0;
 	float z_rotation_angle = 0;
-	float scale = 0.5;
+	float scale = 0.01;
     
-	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sibenik/sibenik.obj", device, commandList);
+	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sponza/sponza.obj", device, commandList);
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
     
@@ -184,7 +184,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::BLAS blas(device, commandList, vertex_buffer, index_buffer, true);
 	DXR::TLAS tlas;
-	tlas.AddInstance(blas, DirectX::XMMatrixIdentity(), 0);
+	tlas.AddInstance(blas, DirectX::XMMatrixScaling(0.01, 0.01, 0.01), 0);
 	tlas.BuildTLAS(device, commandList);
     
 	DXR::Voxelizer voxelizer(device, commandList, root_signature, sib_model, mvp);
@@ -193,7 +193,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	RTCBuffer rt_light;
 	rt_light.light_position = { 3.6, -4.1, -0.1 };
-	rt_light.voxel_space_matrix = voxelizer.voxel_space_conversion_matrix;
+	rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/0.01, 1/0.01, 1/0.01) * voxelizer.voxel_space_conversion_matrix;
 	rt_light.light_color = { 1.0f,1.0f,1.0f,1.0f };
 	rt_light.light_radius = 0.5f;
 	rt_light.light_extent = 0.5f;
@@ -257,7 +257,7 @@ void MainDirectXThread(DXR::Window& window)
 			raster_cbufer.vp = view * projection;
 			raster_cbufer.voxel = voxelizer.voxel_space_conversion_matrix;
 			light_buff.mvp = DirectX::XMMatrixTranslation(rt_light.light_position.x, rt_light.light_position.y, rt_light.light_position.z) * view * projection;
-			light_buff.voxel = voxelizer.voxel_space_conversion_matrix;
+			light_buff.voxel = DirectX::XMMatrixScaling(1/0.01, 1/0.01, 1/0.01) * voxelizer.voxel_space_conversion_matrix;
 			constant_buffer.UpdateData({ raster_cbufer });
 			light_cbuffer.UpdateData({ light_buff });
 		}
@@ -314,7 +314,7 @@ void MainDirectXThread(DXR::Window& window)
         
 		swapchain.SetViewport(commandList, swapchain.GetBackbufferResolution());
         
-		rt_light.voxel_space_matrix = voxelizer.voxel_space_conversion_matrix;
+		rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/0.01, 1/0.01, 1/0.01) * voxelizer.voxel_space_conversion_matrix;
 		rtc_buffer.UpdateData({ rt_light });
 		{
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
