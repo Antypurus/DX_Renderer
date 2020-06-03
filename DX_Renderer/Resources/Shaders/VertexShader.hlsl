@@ -77,9 +77,6 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     float3 fp_vox = vox - float3(1, 1, 1);
     int3 voxel = int3(vox) - int3(1, 1, 1);
     float4 col = gText.Sample(gsampler, input.uv);
-    float distance = sqrt((input.u_pos.x-input.light_pos.x)*(input.u_pos.x-input.light_pos.x)+
-                          (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
-                          (input.u_pos.z-input.light_pos.z)*(input.u_pos.z-input.light_pos.z));
     float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 256.0f, fp_vox.y / 256.0f, fp_vox.z / 256.0f));
     
     output.color = 0.1 * col + other_col * col;
