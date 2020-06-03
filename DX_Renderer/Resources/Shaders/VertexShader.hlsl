@@ -80,7 +80,7 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     float distance = sqrt((input.u_pos.x-input.light_pos.x)*(input.u_pos.x-input.light_pos.x)+
                           (input.u_pos.y-input.light_pos.y)*(input.u_pos.y-input.light_pos.y)+
                           (input.u_pos.z-input.light_pos.z)*(input.u_pos.z-input.light_pos.z));
-    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 128.0f, fp_vox.y / 128.0f, fp_vox.z / 128.0f));
+    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 256.0f, fp_vox.y / 256.0f, fp_vox.z / 256.0f));
     
     output.color = 0.1 * col + other_col * col;
 	return output;
