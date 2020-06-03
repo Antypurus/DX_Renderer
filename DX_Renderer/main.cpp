@@ -150,9 +150,11 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
     
+    float initial_scale = 0.01;
+    
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
-	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(0.01, 0.01, 0.01);
+	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(initial_scale, initial_scale, initial_scale);
     
 	DirectX::XMMATRIX mvp = model * view * projection;
 	CBuffer raster_cbufer;
@@ -184,7 +186,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::BLAS blas(device, commandList, vertex_buffer, index_buffer, true);
 	DXR::TLAS tlas;
-	tlas.AddInstance(blas, DirectX::XMMatrixScaling(0.01, 0.01, 0.01), 0);
+	tlas.AddInstance(blas, DirectX::XMMatrixScaling(initial_scale, initial_scale, initial_scale), 0);
 	tlas.BuildTLAS(device, commandList);
     
 	DXR::Voxelizer voxelizer(device, commandList, root_signature, sib_model, mvp);
@@ -193,7 +195,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	RTCBuffer rt_light;
 	rt_light.light_position = { 3.6, -4.1, -0.1 };
-	rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/0.01, 1/0.01, 1/0.01) * voxelizer.voxel_space_conversion_matrix;
+	rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/initial_scale, 1/initial_scale, 1/initial_scale) * voxelizer.voxel_space_conversion_matrix;
 	rt_light.light_color = { 1.0f,1.0f,1.0f,1.0f };
 	rt_light.light_radius = 0.5f;
 	rt_light.light_extent = 0.5f;
