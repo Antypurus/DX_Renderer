@@ -154,7 +154,7 @@ void MainDirectXThread(DXR::Window& window)
     
     float initial_scale = 0.01;
     
-	double fov = 45;
+	double fov = 20;
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(rad(fov), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
