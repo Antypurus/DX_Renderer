@@ -152,7 +152,7 @@ void MainDirectXThread(DXR::Window& window)
     
 	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
     
-    float initial_scale = 0.01;
+    float initial_scale = 1;
     
 	double fov = 20;
 
@@ -180,7 +180,7 @@ void MainDirectXThread(DXR::Window& window)
 	float z_rotation_angle = 0;
 	float scale = initial_scale;
     
-	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sponza/sponza.obj", device, commandList);
+	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sibenik/sibenik.obj", device, commandList);
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
     
@@ -198,7 +198,7 @@ void MainDirectXThread(DXR::Window& window)
 	light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
 	RTCBuffer rt_light;
-	rt_light.light_position = { -0.741f, 3.407f, -0.294f };
+	rt_light.light_position = { -5.481f, -11.111f, 0.0f };
 	rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/initial_scale, 1/initial_scale, 1/initial_scale) * voxelizer.voxel_space_conversion_matrix;
 	rt_light.light_color = { 1.0f,1.0f,1.0f,1.0f };
 	rt_light.light_radius = 0.5f;
@@ -320,7 +320,7 @@ void MainDirectXThread(DXR::Window& window)
         
 		swapchain.SetViewport(commandList, swapchain.GetBackbufferResolution());
         
-		rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/0.01, 1/0.01, 1/0.01) * voxelizer.voxel_space_conversion_matrix;
+		rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/initial_scale, 1/initial_scale, 1/initial_scale) * voxelizer.voxel_space_conversion_matrix;
 		rtc_buffer.UpdateData({ rt_light });
 		{
 			commandList->SetPipelineState1(rtpso.GetRTPSO());
