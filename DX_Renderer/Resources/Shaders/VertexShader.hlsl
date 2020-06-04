@@ -79,6 +79,6 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     float4 col = gText.Sample(gsampler, input.uv);
     float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 256.0f, fp_vox.y / 256.0f, fp_vox.z / 256.0f));
     
-    output.color = 0.1 * col + other_col * col;
+    output.color = 0.2 * col + other_col * col;
 	return output;
 }

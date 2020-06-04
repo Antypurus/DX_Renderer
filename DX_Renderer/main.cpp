@@ -151,10 +151,14 @@ void MainDirectXThread(DXR::Window& window)
 	commandList.FullReset(pso);
     
 	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
+	cam.position = {6.3081f,10.21211f,-0.282405f};
+	cam.pitch = 26.799f;
+	cam.yaw = -89.9004f;
+	cam.Rotate();
     
-    float initial_scale = 1;
+    float initial_scale = 0.01;
     
-	double fov = 20;
+	double fov = 30;
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(rad(fov), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
@@ -180,7 +184,7 @@ void MainDirectXThread(DXR::Window& window)
 	float z_rotation_angle = 0;
 	float scale = initial_scale;
     
-	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sibenik/sibenik.obj", device, commandList);
+	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sponza/sponza.obj", device, commandList);
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
     
@@ -198,7 +202,7 @@ void MainDirectXThread(DXR::Window& window)
 	light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
 	RTCBuffer rt_light;
-	rt_light.light_position = { -5.481f, -11.111f, 0.0f };
+	rt_light.light_position = { -0.741f, 3.407f, -0.294f };
 	rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/initial_scale, 1/initial_scale, 1/initial_scale) * voxelizer.voxel_space_conversion_matrix;
 	rt_light.light_color = { 1.0f,1.0f,1.0f,1.0f };
 	rt_light.light_radius = 0.5f;
@@ -234,6 +238,8 @@ void MainDirectXThread(DXR::Window& window)
 	std::vector<double> final_pass_times;
 	std::vector<double> total_times;
     
+	bool draw_light = true;
+
 	while (window.ShouldContinue)
 	{
 		// Start the Dear ImGui frame
@@ -248,6 +254,7 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::ColorPicker3("Light Color", (float*)&rt_light.light_color);
 		ImGui::SliderFloat("Light Radius", &rt_light.light_radius, 0.001, 1);
 		ImGui::SliderFloat("Light Extent", &rt_light.light_extent, 0.001, 1);
+		ImGui::Checkbox("Draw Light", &draw_light);
 		ImGui::End();
         
 		{
@@ -295,6 +302,8 @@ void MainDirectXThread(DXR::Window& window)
         
 		//commandList.SendDrawCall();
         
+		if(draw_light)
+		{
 		//Render Light
 		{
 			commandList.BindConstantBuffer(light_cbuffer, 1);
@@ -302,7 +311,8 @@ void MainDirectXThread(DXR::Window& window)
 			commandList.BindIndexBuffer(*voxelizer.voxel_cube_index_buffer);
 			commandList.SendDrawCall();
 		}
-        
+		}
+
 		commandList.BindVertexBuffer(vertex_buffer);
 		commandList.BindIndexBuffer(index_buffer);
         
