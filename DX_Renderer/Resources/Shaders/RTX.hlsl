@@ -29,10 +29,10 @@ uint PackFloat4(float4 val)
     uint b = round(clamp(val.b, 0.0, 1.0) * 255.0);
     uint a = round(clamp(val.a, 0.0, 1.0) * 255.0);
     return (
-        (uint(a) & 0x000000FF) << 24U |
-        (uint(b) & 0x000000FF) << 16U |
-        (uint(g) & 0x000000FF) << 8U |
-        (uint(r) & 0x000000FF));
+            (uint(a) & 0x000000FF) << 24U |
+            (uint(b) & 0x000000FF) << 16U |
+            (uint(g) & 0x000000FF) << 8U |
+            (uint(r) & 0x000000FF));
 }
 
 // Unpacks values and returns float4 in [0,1] range
@@ -97,7 +97,8 @@ void raygen()
     float2 dims = float2(DispatchRaysDimensions().xy);
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
-    float3 direction = float3(DispatchRaysIndex().xyz) - float3(256, 256, 256);
+    float3 direction = float3(DispatchRaysIndex().xyz) - float3(512, 512, 512);
+    direction = normalize(direction);
     float4 origin = mul(voxel_space_matrix, float4(light_position, 1.0f));
     
     //ray.Origin = (origin.xyz / origin.w) - float3(1, 1, 1);
@@ -112,7 +113,7 @@ void raygen()
     //uint endTime = NvGetSpecial(9);
     //uint deltaTime = endTime - startTime;
     
-    float light_intensity = 1.0f;
+    float light_intensity = 10.0f;
     
     if(!payload.missed)
     {
@@ -131,7 +132,7 @@ void raygen()
         float NdotL = saturate(dot(normalize(-direction), normal.rgb));
         
         float t = abs(payload.distance);
-        float falloff = lerp(0.0, 1.0, (1.0 / abs(t * 5)));
+        float falloff = lerp(0.0, 1.0, (1.0 / abs(t)));
         
         float3 irradiance = (light_intensity * NdotL * falloff) * light_color.rgb;
         
@@ -191,7 +192,7 @@ void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
     uint packed_normal = normal_map[map_pos];
     float4 normal = UnpackFloat4(packed_normal)/255;
     normal.rgb = normal.rgb * 2 - 1;
-   
+    
     float3 new_dir = reflect(normalize(ray_dir), normal.rgb);
     data.color = float4(1, 0, 0, 1);
     data.direction = new_dir;

@@ -194,7 +194,7 @@ void MainDirectXThread(DXR::Window& window)
 	light_map.voxel_volume_texture->SetName(L"Voxel Irradiance Map");
     
 	RTCBuffer rt_light;
-	rt_light.light_position = { 3.6, -4.1, -0.1 };
+	rt_light.light_position = { -0.741f, 3.407f, -0.294f };
 	rt_light.voxel_space_matrix = DirectX::XMMatrixScaling(1/initial_scale, 1/initial_scale, 1/initial_scale) * voxelizer.voxel_space_conversion_matrix;
 	rt_light.light_color = { 1.0f,1.0f,1.0f,1.0f };
 	rt_light.light_radius = 0.5f;
@@ -343,9 +343,9 @@ void MainDirectXThread(DXR::Window& window)
 			rays.RayGenerationShaderRecord.StartAddress = sbtable.GetRayGenEntryAddress();
 			rays.RayGenerationShaderRecord.SizeInBytes = sbtable.GetRayGenEntrySize();
             
-			rays.Depth = 512;
+			rays.Depth = 1024;
 			rays.Width = 1;//swapchain.GetBackbufferResolution().Width;
-			rays.Height = 512;//swapchain.GetBackbufferResolution().Height;
+			rays.Height = 1024;//swapchain.GetBackbufferResolution().Height;
             
 			timers[0].Start(commandList.GetRAWInterface(),0);
 			commandList->DispatchRays(&rays);
