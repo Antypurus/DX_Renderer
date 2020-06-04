@@ -30,6 +30,8 @@
 #include "ThirdParty/PerfTimers/PerformanceTimers.h"
 #include <fstream>
 
+#define rad(x) (x*DirectX::XM_PI)/180.0f
+
 __declspec(align(16)) struct CBuffer
 {
 	DirectX::XMMATRIX mvp;
@@ -152,7 +154,9 @@ void MainDirectXThread(DXR::Window& window)
     
     float initial_scale = 0.01;
     
-	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, 1280.0f / 720.0f, 0.1f, 1000.0f);
+	double fov = 45;
+
+	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(rad(fov), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
 	DirectX::XMMATRIX model = DirectX::XMMatrixScaling(initial_scale, initial_scale, initial_scale);
     
