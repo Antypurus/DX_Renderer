@@ -174,7 +174,7 @@ void MainDirectXThread(DXR::Window& window)
 	float x_rotation_angle = 0;
 	float y_rotation_angle = 0;
 	float z_rotation_angle = 0;
-	float scale = 0.01;
+	float scale = initial_scale;
     
 	auto sib_model = DXR::ModelLoader::LoadOBJ("./DX_Renderer/Resources/Models/sponza/sponza.obj", device, commandList);
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
