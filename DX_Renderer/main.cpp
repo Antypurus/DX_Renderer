@@ -151,14 +151,14 @@ void MainDirectXThread(DXR::Window& window)
 	commandList.FullReset(pso);
     
 	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
-	cam.position = {4.96508f,2.40953f,-0.54187f};
-	cam.pitch = -1.150005f;
-	cam.yaw = -88.74990f;
+	cam.position = {6.3081f,10.21211f,-0.282405f};
+	cam.pitch = 26.799f;
+	cam.yaw = -89.9004f;
 	cam.Rotate();
     
-    float initial_scale = 0.01f;
+    float initial_scale = 0.01;
     
-	double fov = 20;
+	double fov = 30;
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(rad(fov), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
