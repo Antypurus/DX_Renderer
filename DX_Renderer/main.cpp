@@ -151,9 +151,9 @@ void MainDirectXThread(DXR::Window& window)
 	commandList.FullReset(pso);
     
 	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
-	cam.position = {-13.6709f,-11.017449f,0.9998f};
-	cam.pitch = 0.9998f;
-	cam.yaw = -0.4011603;
+	cam.position = {7.61039f,4.16216f,0.0077f};
+	cam.pitch = 27.5667f;
+	cam.yaw = -89.5019f;
 	cam.Rotate();
     
     float initial_scale = 1.0f;
