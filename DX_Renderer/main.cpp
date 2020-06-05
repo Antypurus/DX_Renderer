@@ -151,14 +151,14 @@ void MainDirectXThread(DXR::Window& window)
 	commandList.FullReset(pso);
     
 	DXR::Camera cam({ 0,0,-10 }, { 0,0,1 });
-	cam.position = {6.3081f,10.21211f,-0.282405f};
-	cam.pitch = 26.799f;
-	cam.yaw = -89.9004f;
+	cam.position = {4.96508f,2.40953f,-0.54187f};
+	cam.pitch = -1.150005f;
+	cam.yaw = -88.74990f;
 	cam.Rotate();
     
-    float initial_scale = 0.01;
+    float initial_scale = 0.01f;
     
-	double fov = 30;
+	double fov = 20;
 
 	DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(rad(fov), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	DirectX::XMMATRIX view = cam.ViewMatrix();
@@ -238,7 +238,7 @@ void MainDirectXThread(DXR::Window& window)
 	std::vector<double> final_pass_times;
 	std::vector<double> total_times;
     
-	bool draw_light = true;
+	bool draw_light = false;
 
 	while (window.ShouldContinue)
 	{
@@ -370,7 +370,7 @@ void MainDirectXThread(DXR::Window& window)
         
 		//voxelizer.Voxelize(cam);
         
-		gui.Render(commandList);
+		//gui.Render(commandList);
         
 		swapchain.PrepareBackbufferForPresentation(commandList);
         
