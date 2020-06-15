@@ -86,7 +86,7 @@ float4 sample_voxel_grid(Texture3D texture, float3 voxel_position, float grid_re
     [unroll]
     for (uint i = 0; i < 7; ++i)
     {
-        if (samples[i].a != 0.0 || samples[i].r != 0.0 || samples[i].g != 0.0 || samples[i].b != 0.0 || true)
+        if (samples[i].a != 0.0 || samples[i].r != 0.0 || samples[i].g != 0.0 || samples[i].b != 0.0)
         {
             sample_sum += samples[i];
         }else

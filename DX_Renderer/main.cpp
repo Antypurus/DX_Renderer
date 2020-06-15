@@ -245,16 +245,21 @@ void MainDirectXThread(DXR::Window& window)
 		// Start the Dear ImGui frame
 		gui.StartFrame();
         
-		ImGui::Begin("Window");
+		ImGui::Begin("Model");
 		ImGui::SliderAngle("X Rotation", &x_rotation_angle);
 		ImGui::SliderAngle("Y Rotation", &y_rotation_angle);
 		ImGui::SliderAngle("Z Rotation", &z_rotation_angle);
 		ImGui::SliderFloat("Model Scale", &scale, 0, 1);
+		ImGui::End();
+
+		ImGui::Begin("Light Control");
 		ImGui::SliderFloat3("Light Position", (float*)&rt_light.light_position, -20, 20);
 		ImGui::ColorPicker3("Light Color", (float*)&rt_light.light_color);
-		ImGui::SliderFloat("Light Radius", &rt_light.light_radius, 0.001, 1);
-		ImGui::SliderFloat("Light Extent", &rt_light.light_extent, 0.001, 1);
 		ImGui::Checkbox("Draw Light", &draw_light);
+		ImGui::End();
+
+		ImGui::Begin("Performance");
+		//ImGui::PlotLines("Total Render Time",(float*)total_times.data(),1000);
 		ImGui::End();
         
 		{
