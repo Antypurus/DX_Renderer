@@ -85,7 +85,7 @@ float4 sample_voxel_grid(Texture3D texture, float3 voxel_position, float grid_re
     [unroll]
     for (uint i = 0; i < 7;++i)
     {
-        sample_sum.rgb += samples[i];
+        sample_sum.rgb += samples[i].rgb;
     }
     
     float4 result = float4(sample_sum.rgb / 7, 1.0f);
