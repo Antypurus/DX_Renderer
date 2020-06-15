@@ -45,7 +45,7 @@ namespace DXR
         this->m_upload_buffer = other.m_upload_buffer;
         this->m_texture_buffer = other.m_texture_buffer;
     }
-
+    
 	void Texture::operator=(const Texture& other)
 	{
 		this->m_resource = other.m_resource;

@@ -370,7 +370,7 @@ void MainDirectXThread(DXR::Window& window)
         
 		//voxelizer.Voxelize(cam);
         
-		//gui.Render(commandList);
+		gui.Render(commandList);
         
 		swapchain.PrepareBackbufferForPresentation(commandList);
         

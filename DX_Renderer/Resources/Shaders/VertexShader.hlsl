@@ -69,15 +69,45 @@ float4 UnpackFloat4(uint val)
     return float4(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 }
 
+float4 sample_voxel_grid(Texture3D texture, float3 voxel_position, float grid_resolution)
+{
+    uint sample_count = 7;
+    float4 sample_sum = float4(0, 0, 0, 0);
+    
+    float4 samples[7];
+    samples[0] = texture.Sample(gsampler, float3( voxel_position                     / grid_resolution));
+    samples[1] = texture.Sample(gsampler, float3((voxel_position + float3( 1, 0, 0)) / grid_resolution));
+    samples[2] = texture.Sample(gsampler, float3((voxel_position + float3(-1, 0, 0)) / grid_resolution));
+    samples[3] = texture.Sample(gsampler, float3((voxel_position + float3( 0, 1, 0)) / grid_resolution));
+    samples[4] = texture.Sample(gsampler, float3((voxel_position + float3( 0,-1, 0)) / grid_resolution));
+    samples[5] = texture.Sample(gsampler, float3((voxel_position + float3( 0, 0, 1)) / grid_resolution));
+    samples[6] = texture.Sample(gsampler, float3((voxel_position + float3( 0, 0,-1)) / grid_resolution));
+
+    [unroll]
+    for (uint i = 0; i < 7; ++i)
+    {
+        if (samples[i].a != 0.0 || samples[i].r != 0.0 || samples[i].g != 0.0 || samples[i].b != 0.0 || true)
+        {
+            sample_sum += samples[i];
+        }else
+        {
+            sample_count--;
+        }
+    }
+    
+    return saturate(sample_sum / sample_count);
+}
+
 PS_OUTPUT PSMain(VS_OUTPUT input)
 {
 	PS_OUTPUT output;
     
-    float3 vox = input.voxel_pos.xyz / input.voxel_pos.w;
+    float3 vox = input.voxel_pos.xyz;
     float3 fp_vox = vox - float3(1, 1, 1);
     int3 voxel = int3(vox) - int3(1, 1, 1);
     float4 col = gText.Sample(gsampler, input.uv);
-    float4 other_col = irradiance_map_tex.Sample(gsampler, float3(fp_vox.x / 256.0f, fp_vox.y / 256.0f, fp_vox.z / 256.0f));
+    
+    float4 other_col = sample_voxel_grid(irradiance_map_tex, fp_vox, 128.0f);
     
     output.color = 0.2 * col + other_col * col;
 	return output;
