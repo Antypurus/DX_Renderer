@@ -69,28 +69,65 @@ float4 UnpackFloat4(uint val)
     return float4(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 }
 
+float to_linear_space_component(float c)
+{
+    if(c <= 0.04045)
+    {
+        return c/12.92;
+    }
+    return pow(((c+0.055)/1.055),2.4);
+}
+
+float4 to_linear_space(float4 color)
+{
+    float r = to_linear_space_component(color.r);
+    float g = to_linear_space_component(color.g);
+    float b = to_linear_space_component(color.b);
+    float a = to_linear_space_component(color.a);
+    return float4(r,g,b,color.a);
+}
+
+float gamma_correct_component(float c)
+{
+    if( c <= 0.0031308)
+    {
+        return 12.92 * c;
+    }
+    return (pow(1.055*c,(1/2.4)) - 0.055);
+}
+
+float4 gamma_correct(float4 color)
+{
+    float r = gamma_correct_component(color.r);
+    float g = gamma_correct_component(color.g);
+    float b = gamma_correct_component(color.b);
+    float a = gamma_correct_component(color.a);
+    return float4(r,g,b,color.a);
+}
+
 float4 sample_voxel_grid(Texture3D texture, float3 voxel_position, float grid_resolution)
 {
     float4 sample_sum = float4(0, 0, 0, 1);
     
-    float4 samples[7];
-    samples[0] = texture.Sample(gsampler, float3( voxel_position                     / grid_resolution));
-    samples[1] = texture.Sample(gsampler, float3((voxel_position + float3( 1.0, 0, 0)) / grid_resolution));
-    samples[2] = texture.Sample(gsampler, float3((voxel_position + float3(-1.0, 0, 0)) / grid_resolution));
-    samples[3] = texture.Sample(gsampler, float3((voxel_position + float3( 0, 1.0, 0)) / grid_resolution));
-    samples[4] = texture.Sample(gsampler, float3((voxel_position + float3( 0,-1.0, 0)) / grid_resolution));
-    samples[5] = texture.Sample(gsampler, float3((voxel_position + float3( 0, 0, 1.0)) / grid_resolution));
-    samples[6] = texture.Sample(gsampler, float3((voxel_position + float3( 0, 0,-1.0)) / grid_resolution));
+    uint sample_count = 7;
     
-    [unroll]
-    for (uint i = 0; i < 7;++i)
+    float4 samples[7];
+    samples[0] = to_linear_space(texture.Sample(gsampler, float3( voxel_position / grid_resolution)));
+    samples[1] = to_linear_space(texture.Sample(gsampler, float3((voxel_position + float3( 1.0, 0, 0)) / grid_resolution)));
+    samples[2] = to_linear_space(texture.Sample(gsampler, float3((voxel_position + float3(-1.0, 0, 0)) / grid_resolution)));
+    samples[3] = to_linear_space(texture.Sample(gsampler, float3((voxel_position + float3( 0, 1.0, 0)) / grid_resolution)));
+    samples[4] = to_linear_space(texture.Sample(gsampler, float3((voxel_position + float3( 0,-1.0, 0)) / grid_resolution)));
+    samples[5] = to_linear_space(texture.Sample(gsampler, float3((voxel_position + float3( 0, 0, 1.0)) / grid_resolution)));
+    samples[6] = to_linear_space(texture.Sample(gsampler, float3((voxel_position + float3( 0, 0,-1.0)) / grid_resolution)));
+    
+    for (uint i = 0; i < sample_count;++i)
     {
         sample_sum.rgb += samples[i].rgb;
     }
     
-    float4 result = float4(sample_sum.rgb / 7, 1.0f);
+    float4 result = float4(sample_sum.rgb / sample_count, 1.0f);
     
-    return result;
+    return gamma_correct(result);
 }
 
 PS_OUTPUT PSMain(VS_OUTPUT input)
@@ -103,8 +140,10 @@ PS_OUTPUT PSMain(VS_OUTPUT input)
     
     float4 col = gText.Sample(gsampler, input.uv);
     
-    float4 other_col = sample_voxel_grid(irradiance_map_tex, fp_vox, 256.0f);
+    float4 other_col = sample_voxel_grid(irradiance_map_tex, fp_vox, 128.0f);
+    float4 result = 0.2 * col + 2 * other_col * col;
+    result.a = 1;
     
-    output.color = 0.2 * col + 2 * other_col * col;
+    output.color = result;
 	return output;
 }

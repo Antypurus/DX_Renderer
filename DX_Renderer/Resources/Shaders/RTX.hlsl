@@ -97,7 +97,7 @@ void raygen()
     float2 dims = float2(DispatchRaysDimensions().xy);
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
-    float3 direction = float3(DispatchRaysIndex().xyz) - float3(512, 512, 512);
+    float3 direction = float3(DispatchRaysIndex().xyz) - float3(256, 256, 256);
     direction = normalize(direction);
     float4 origin = mul(voxel_space_matrix, float4(light_position, 1.0f));
     
@@ -113,7 +113,7 @@ void raygen()
     //uint endTime = NvGetSpecial(9);
     //uint deltaTime = endTime - startTime;
     
-    float light_intensity = 10.0f;
+    float light_intensity = 100.0f;
     
     if(!payload.missed)
     {
@@ -132,7 +132,7 @@ void raygen()
         float NdotL = saturate(-dot(normalize(direction), normal.rgb));
         
         float t = abs(payload.distance);
-        float falloff = (1.0 / abs(t));
+        float falloff = (1.0 / abs(t*t));
         
         float3 irradiance = ((light_intensity * NdotL * falloff) * light_color.rgb);
         

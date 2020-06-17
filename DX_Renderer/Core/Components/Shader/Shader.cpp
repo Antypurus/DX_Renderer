@@ -88,6 +88,8 @@ namespace DXR
 		auto encoding = m_shader_encoding;
 		auto instance = ShaderCompiler::GetInstance();
         
+		LPCWSTR args[] = {L"-O2"};
+
 		ComPtr<IDxcBlobEncoding> shader_code_blob;
 		DXCall(instance.m_library->CreateBlobFromFile(Filepath.c_str(),&encoding,&shader_code_blob));
         
@@ -110,7 +112,7 @@ namespace DXR
 		}
 #else
 		//Note(Tiago): Include Handler Is Not Used ATM but it might be needed in the future
-		DXCall(instance.m_compiler->Compile(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), NULL, 0, NULL, 0, instance.m_include_handler.Get(), &result));
+		DXCall(instance.m_compiler->Compile(shader_code_blob.Get(), Filepath.c_str(), Entrypoint.c_str(), ShaderType.c_str(), args, _countof(args), NULL, 0, instance.m_include_handler.Get(), &result));
 #endif
 		IDxcBlob* code;
 		result->GetResult(&code);
