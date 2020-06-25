@@ -30,6 +30,8 @@
 #include "ThirdParty/PerfTimers/PerformanceTimers.h"
 #include <fstream>
 
+#define ENABLE_UI 1
+
 #define rad(x) (x*DirectX::XM_PI)/180.0f
 
 __declspec(align(16)) struct CBuffer
@@ -188,8 +190,10 @@ void MainDirectXThread(DXR::Window& window)
 	auto vertex_buffer = sib_model.GenerateVertexBuffer(device, commandList);
 	auto index_buffer = sib_model.GenerateIndexBuffer(device, commandList);
     
+#if ENABLE_UI
 	DXR::GUI gui(device, window, swapchain);
-    
+#endif    
+
 	DXR::RayTracingOutput rt_out(device, commandList, swapchain);
     
 	DXR::BLAS blas(device, commandList, vertex_buffer, index_buffer, true);
@@ -242,6 +246,7 @@ void MainDirectXThread(DXR::Window& window)
 
 	while (window.ShouldContinue)
 	{
+#if ENABLE_UI
 		// Start the Dear ImGui frame
 		gui.StartFrame();
         
@@ -261,7 +266,8 @@ void MainDirectXThread(DXR::Window& window)
 		ImGui::Begin("Performance");
 		//ImGui::PlotLines("Total Render Time",(float*)total_times.data(),1000);
 		ImGui::End();
-        
+#endif
+
 		{
 			///NOTE(Tiago): The view matrix will only update if the camera parameters have changed
 			view = cam.ViewMatrix();
@@ -374,8 +380,9 @@ void MainDirectXThread(DXR::Window& window)
 		}
         
 		//voxelizer.Voxelize(cam);
-        
+#if ENABLE_UI
 		gui.Render(commandList);
+#endif
         
 		swapchain.PrepareBackbufferForPresentation(commandList);
         
