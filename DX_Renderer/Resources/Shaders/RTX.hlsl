@@ -97,7 +97,8 @@ void raygen()
     float2 dims = float2(DispatchRaysDimensions().xy);
     float2 d = (((launchIndex.xy + 0.5f) / dims.xy) * 2.f - 1.f);
     
-    float3 direction = float3(DispatchRaysIndex().xyz) - float3(256, 256, 256);
+    float rt_res = 512;
+    float3 direction = float3(DispatchRaysIndex().xyz) - float3(rt_res / 2, rt_res / 2, rt_res / 2);
     direction = normalize(direction);
     float4 origin = mul(voxel_space_matrix, float4(light_position, 1.0f));
     
@@ -114,7 +115,7 @@ void raygen()
     //uint deltaTime = endTime - startTime;
     
     float light_intensity = 100.0f;
-    
+    float4 irradiance_result = float4(0, 0, 0, 0);
     if(!payload.missed)
     {
         //Shade Primary Hit
@@ -135,29 +136,48 @@ void raygen()
         float falloff = (1.0 / abs(t*t));
         
         float3 irradiance = ((light_intensity * NdotL * falloff) * light_color.rgb);
+        irradiance_result = float4(irradiance, 1.0f);
         
         AverageRGBA8Voxel(RenderTarget, map_pos, float4((irradiance), 1.0));
     }
     
-    ray.Origin = payload.origin;
-    ray.Direction = payload.direction;
-    /*
-    TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
+    if(!payload.missed && true)
     {
-        //Shade Primary Hit
-        float4 hit_pos = float4(payload.origin, 1.0f);
-        hit_pos = mul(voxel_space_matrix, hit_pos);
-        hit_pos.rgb /= hit_pos.w;
-        int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
-        //int3 map_pos = int3(hit_pos.x, hit_pos.y, hit_pos.z);
-        uint packed_normal = normal_map[map_pos];
-        float4 normal = UnpackFloat4(packed_normal);
-        ///normal.rgb = (normal.rgb - 0.5) / 0.5;
-        float falloff = saturate(dot(normalize(ray.Direction), -normal.rgb));
-        float4 final_irradiance = float4(falloff * light_color.rgb * light_color.a, 1.0f);
-        AverageRGBA8Voxel(RenderTarget, map_pos, final_irradiance);
-        //RenderTarget[map_pos] = PackFloat4(final_irradiance);
-    }*/
+    
+        float3 reflection_direction = payload.direction;
+        payload.color = irradiance_result;
+        payload.origin = float3(0, 0, 0);
+        payload.direction = float3(0, 0, 0);
+        payload.missed = false;
+        payload.distance = 0;
+    
+        ray.Origin = payload.origin;
+        ray.Direction = reflection_direction;
+        
+        TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 0xFF, 0, 0, 0, ray, payload);
+        {
+            //Shade Secondary Hit
+            float4 hit_pos = float4(payload.origin, 1.0f);
+        
+            hit_pos = mul(voxel_space_matrix, hit_pos);
+            hit_pos.rgb /= hit_pos.w;
+            int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
+        
+            uint packed_normal = normal_map[map_pos];
+        
+            float4 normal = UnpackFloat4(packed_normal);
+            normal.rgb = (normal.rgb * 2) - 1;
+        
+            float NdotL = saturate(-dot(normalize(reflection_direction), normal.rgb));
+        
+            float t = abs(payload.distance);
+            float falloff = (1.0 / abs(t * t));
+        
+            float3 irradiance = ((light_intensity * NdotL * falloff) * light_color.rgb);
+        
+            AverageRGBA8Voxel(RenderTarget, map_pos, float4((irradiance), 1.0));
+        }
+    }
 }
 
 [shader("intersection")]
@@ -188,9 +208,10 @@ void closesthit(inout RayPayload data, in BuiltinIntersectionAttribs hit)
     float4 hit_pos = hit_position;
     hit_pos = mul(voxel_space_matrix, hit_pos);
     hit_pos.rgb /= hit_pos.w;
+    
     int3 map_pos = int3(hit_pos.x - 1, hit_pos.y - 1, hit_pos.z - 1);
     uint packed_normal = normal_map[map_pos];
-    float4 normal = UnpackFloat4(packed_normal)/255;
+    float4 normal = UnpackFloat4(packed_normal);
     normal.rgb = normal.rgb * 2 - 1;
     
     float3 new_dir = reflect(normalize(ray_dir), normal.rgb);
