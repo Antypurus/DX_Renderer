@@ -32,7 +32,7 @@ namespace DXR
         XMMATRIX voxel_space_transformation_matrix;
     };
     
-#define VOXEL_RES 256
+#define VOXEL_RES 128
 #define VOXEL_WIDTH VOXEL_RES
 #define VOXEL_HEIGHT VOXEL_RES
 #define VOXEL_DEPTH VOXEL_RES

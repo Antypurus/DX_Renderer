@@ -48,6 +48,7 @@ float4 UnpackFloat4(uint val)
 void AverageRGBA8Voxel(RWTexture3D<uint> voxel_map, int3 voxel_coords, float4 val)
 {
     uint packed_color = PackFloat4(float4(val.rgb, 1.0/255.0));
+    
     uint previousStoredValue = 0;
     uint currentStoredValue;
     
@@ -141,7 +142,7 @@ void raygen()
         AverageRGBA8Voxel(RenderTarget, map_pos, float4((irradiance), 1.0));
     }
     
-    if(!payload.missed && true)
+    if(!payload.missed && false)
     {
     
         float3 reflection_direction = payload.direction;
